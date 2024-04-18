@@ -9,3 +9,92 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          Int        @id @default(autoincrement())
+  username    String     @unique
+  email       String     @unique
+  first_name  String
+  last_name   String
+  task        Task[]
+  activity    Activity[]
+  role_id     Role?
+  projects    Projects[]
+}
+
+model Projects {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String
+  users        Users[]
+  sprints      Sprints[]
+}
+
+model Activity {
+  id           Int       @id @default(autoincrement())
+  description  String
+  timestamp    DateTime
+  user         User      @relation(fields: [user_id], references: [id])
+  user_id      Int
+  task         Task      @relation(fields: [task_id], references: [id])
+  task_id      Int
+}
+
+model Sprints {
+  id                Int       @id @default(autoincrement())
+  title             String
+  start_date        DateTime
+  end_date          DateTime
+  planned_capacity  Int
+  project           Projects  @relation(fields: [project_id], references: [id])
+  project_id        Int
+  status            Status    @relation(fields: [status_id], references: [id])
+  status_id         Int
+  tasks             Task[]  
+}
+
+model Task {
+  id                  Int       @id @default(autoincrement())
+  title               String
+  description         String
+  requirements        String
+  acceptance_criteria String
+  points              Int
+  user                User      @relation(fields: [assigned_to], references: [id])    
+  assigned_to         Int
+  sprints             Sprints   @relation(fields: [sprint_id], references: [id])
+  sprint_id           Int
+  status              Status    @relation(fields: [status_id], references: [id])
+  status_id           Int
+  priority            Priority  @relation(fields: [priority], references: [id])
+  priority_id         Int
+  comments            Comments[]
+}
+
+model Comment {
+  id             Int       @id @default(autoincrement())
+  text           String
+  last_modified  DateTime
+  task           Task      @relation(fields: [task_id], references: [id])
+  task_id        Int
+  user           User      @relation(fields: [user_id], references: [id])
+  user_id        Int
+}
+
+model Role {
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String
+}
+
+model Status {
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String
+}
+
+model Priority {
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String
+}
