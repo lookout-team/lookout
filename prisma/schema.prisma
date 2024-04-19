@@ -22,7 +22,7 @@ model User {
   projects    Projects[]
 }
 
-model Projects {
+model Project {
   id           Int       @id @default(autoincrement())
   title        String
   description  String
@@ -40,7 +40,7 @@ model Activity {
   task_id      Int
 }
 
-model Sprints {
+model Sprint {
   id                Int       @id @default(autoincrement())
   title             String
   start_date        DateTime
