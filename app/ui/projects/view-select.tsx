@@ -8,8 +8,16 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
+import { usePathname, useRouter } from "next/navigation";
 
-export default function Sidebar({ selectedView }: { selectedView: string }) {
+export default function ViewSelect({ selectedView }: { selectedView: string }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  function selectView(view: string) {
+    router.push(`${pathname}?view=${view}`)
+  }
+
   return (
     <>
       <Table
@@ -24,10 +32,18 @@ export default function Sidebar({ selectedView }: { selectedView: string }) {
           <TableColumn>Project Name</TableColumn>
         </TableHeader>
         <TableBody>
-          <TableRow className="h-12" key="table">
+          <TableRow
+            className="h-12"
+            key="table"
+            onClick={() => selectView("table")}
+          >
             <TableCell>Backlog Table</TableCell>
           </TableRow>
-          <TableRow className="h-12" key="board">
+          <TableRow
+            className="h-12"
+            key="board"
+            onClick={() => selectView("board")}
+          >
             <TableCell>Kanban Board</TableCell>
           </TableRow>
         </TableBody>
