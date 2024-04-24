@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
+import AppNavbar from "./ui/navbar";
 
 export const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <body className={`${inter.className} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppNavbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );
