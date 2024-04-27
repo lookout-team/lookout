@@ -8,7 +8,16 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
-import { Sprint, Task } from "@prisma/client";
+import { Sprint, Prisma } from "@prisma/client";
+import SprintHeader from "./sprint-header";
+
+type Task = Prisma.TaskGetPayload<{
+  include: {
+    user: true;
+    status: true;
+    priority: true;
+  };
+}>;
 
 export default function SprintTable({
   sprint,
@@ -19,26 +28,20 @@ export default function SprintTable({
 }) {
   const columns = ["Title", "Points", "Assigned To", "Status", "Priority"];
 
-  const rows = tasks.map(task => (
+  const rows = tasks.map((task) => (
     <TableRow>
       <TableCell>{task.title}</TableCell>
       <TableCell>{task.points}</TableCell>
-      <TableCell>{task.assigned_to}</TableCell>
-      <TableCell>{task.status_id}</TableCell>
-      <TableCell>{task.priority_id}</TableCell>
+      <TableCell>{task.user.username}</TableCell>
+      <TableCell>{task.status.name}</TableCell>
+      <TableCell>{task.priority.name}</TableCell>
     </TableRow>
   ));
 
   return (
     <>
-      <div>
-        <h1>{sprint.title}</h1>
-      </div>
-      <Table
-        color="primary"
-        selectionMode="single"
-        defaultSelectedKeys={["2"]}
-      >
+      <SprintHeader sprint={sprint} />
+      <Table color="primary" selectionMode="single" defaultSelectedKeys={["2"]}>
         <TableHeader>
           {columns.map((column) => (
             <TableColumn>{column}</TableColumn>
