@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -24,11 +24,13 @@ model User {
 }
 
 model Project {
-  id           Int       @id @default(autoincrement())
-  title        String
-  description  String
-  users        User[]
-  sprints      Sprint[]
+  id                Int       @id @default(autoincrement())
+  title             String
+  description       String?
+  last_updated      DateTime?
+  current_sprint_id Int?
+  users             User[]
+  sprints           Sprint[]
 }
 
 model Activity {
@@ -44,26 +46,25 @@ model Activity {
 model Sprint {
   id                Int       @id @default(autoincrement())
   title             String
-  start_date        DateTime
-  end_date          DateTime
-  planned_capacity  Int
+  start_date        DateTime?
+  end_date          DateTime?
+  planned_capacity  Int?
   project           Project  @relation(fields: [project_id], references: [id])
   project_id        Int
-  status            Status    @relation(fields: [status_id], references: [id])
-  status_id         Int
   tasks             Task[]  
 }
 
 model Task {
   id                  Int       @id @default(autoincrement())
   title               String
-  description         String
-  requirements        String
-  acceptance_criteria String
-  points              Int
-  user                User      @relation(fields: [assigned_to], references: [id])    
-  assigned_to         Int
-  sprints             Sprint   @relation(fields: [sprint_id], references: [id])
+  description         String?
+  category            String?    
+  requirements        String?
+  acceptance_criteria String?
+  points              Int?
+  user                User?     @relation(fields: [assigned_to], references: [id])    
+  assigned_to         Int?
+  sprint              Sprint    @relation(fields: [sprint_id], references: [id])
   sprint_id           Int
   status              Status    @relation(fields: [status_id], references: [id])
   status_id           Int
@@ -76,7 +77,7 @@ model Task {
 model Comment {
   id             Int       @id @default(autoincrement())
   text           String
-  last_modified  DateTime
+  last_modified  DateTime?
   task           Task      @relation(fields: [task_id], references: [id])
   task_id        Int
   user           User      @relation(fields: [user_id], references: [id])
@@ -96,7 +97,6 @@ model Status {
   name         String
   description  String
   tasks        Task[]
-  sprints      Sprint[]
 }
 
 model Priority {
