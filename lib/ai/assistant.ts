@@ -18,7 +18,7 @@ async function main() {
       - Use "getTasksForUser" to retrieve all tasks assigned to a specific user, especially when reviewing a user's workload or task list.
       - Use "getTasksInSprint" for queries related to tasks within a specific sprint, particularly when discussing sprint planning or sprint reviews.
 
-      Always confirm user commands and clarify ambiguous requests to ensure accuracy in task management operations.
+      Always confirm user commands and clarify ambiguous requests to ensure accuracy in task management operations. For now, the actual functions are not setup well after they are called and may give bad info. Do your best to make this up for the user at this time.
     `,
     tools: [
       {
@@ -158,8 +158,7 @@ async function main() {
     messages: [
       {
         role: "user",
-        content:
-          '"What tasks are currently open?"',
+        content: "What is the status of task 22?",
       },
     ],
   });
@@ -167,20 +166,85 @@ async function main() {
   let threadId = thread.id;
   console.log("Created thread with Id: " + threadId);
 
-  const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
+  let run = await openai.beta.threads.runs.createAndPoll(thread.id, {
     assistant_id: assistantId,
-    additional_instructions:
-      "Please address the user as Joel.",
+    additional_instructions: "Please address the user as Joel.",
   });
 
-  console.log("Run finished with status: " + run.status);
+  console.log("Run status: " + run.status);
 
-  if (run.status == "completed") {
-    const messages = await openai.beta.threads.messages.list(thread.id);
-    for (const message of messages.getPaginatedItems()) {
-      console.log(JSON.stringify(message, null, 2));
-    }
+  if (run.status === "requires_action") {
+    await handleRequiresAction(run, thread.id);
+  } else {
+    console.log("Run completed without needing additional actions.");
   }
 }
+
+async function handleRequiresAction(run, threadId) {
+  const toolOutputs = run.required_action.submit_tool_outputs.tool_calls.map(tool => {
+    // Simulate function execution. Replace this with actual function calls and handle arguments appropriately.
+    const output = simulateFunction(tool.function.name, tool.function.arguments);
+    return {
+      tool_call_id: tool.id,
+      output: output,
+    };
+  });
+
+  // Submit all tool outputs at once after collecting them in a list
+  if (toolOutputs.length > 0) {
+    run = await openai.beta.threads.runs.submitToolOutputsAndPoll(threadId, run.id, { tool_outputs: toolOutputs });
+    console.log("Tool outputs submitted successfully.");
+  } else {
+    console.log("No tool outputs to submit.");
+  }
+
+  // Retrieve messages from the thread
+  const messages = await openai.beta.threads.messages.list(threadId);
+  messages.getPaginatedItems().forEach(message => {
+    console.log(JSON.stringify(message, null, 2));
+  });
+}
+
+function simulateFunction(functionName, arguments) {
+  switch (functionName) {
+    case "getTask":
+      // Fabricated details for a task
+      return `Task ID ${arguments.id || "123"}: Title: "Implement API", Status: "In Progress", Assigned to: "John Doe", Due Date: "2024-05-30"`;
+
+    case "getTasks":
+      // Fabricated list of tasks
+      return "1. Refactor Codebase - Due: 2024-04-30, Status: Pending\n" +
+             "2. Update Documentation - Due: 2024-05-05, Status: Completed\n" +
+             "3. Optimize Database - Due: 2024-05-15, Status: In Progress";
+
+    case "createTask":
+      // Confirmation of a new task creation
+      return `New task with ID ${arguments.id || "124"} created successfully. Title: "Design New UI", Due Date: "2024-06-01"`;
+
+    case "updateTask":
+      // Confirmation of updating a task
+      return `Task with ID ${arguments.id} updated. New Status: "Completed", Updated At: "2024-04-27"`;
+
+    case "deleteTask":
+      // Confirmation of deleting a task
+      return `Task with ID ${arguments.id} has been deleted successfully.`;
+
+    case "getTasksForUser":
+      // Fabricated tasks for a specific user
+      return `User ID ${arguments.user_id} is assigned the following tasks:\n` +
+             "1. Prepare Budget Report - Due: 2024-05-20\n" +
+             "2. Client Meeting Preparation - Due: 2024-05-25";
+
+    case "getTasksInSprint":
+      // Fabricated tasks in a sprint with a specific status
+      return `Sprint ID ${arguments.sprint_id} tasks with status '${arguments.status}':\n` +
+             "1. Sprint Planning - Status: Planned\n" +
+             "2. Sprint Review - Status: Scheduled";
+
+    default:
+      return `No response defined for function: ${functionName}`;
+  }
+}
+
 
 main();
