@@ -180,7 +180,7 @@ async function main() {
   }
 }
 
-async function handleRequiresAction(run, threadId) {
+async function handleRequiresAction(run: { required_action: { submit_tool_outputs: { tool_calls: any[]; }; }; id: any; }, threadId: any) {
   const toolOutputs = run.required_action.submit_tool_outputs.tool_calls.map(tool => {
     // Simulate function execution. Replace this with actual function calls and handle arguments appropriately.
     const output = simulateFunction(tool.function.name, tool.function.arguments);
@@ -200,16 +200,16 @@ async function handleRequiresAction(run, threadId) {
 
   // Retrieve messages from the thread
   const messages = await openai.beta.threads.messages.list(threadId);
-  messages.getPaginatedItems().forEach(message => {
+  messages.getPaginatedItems().forEach((message: any) => {
     console.log(JSON.stringify(message, null, 2));
   });
 }
 
-function simulateFunction(functionName, arguments) {
+function simulateFunction(functionName: string, args: any) {
   switch (functionName) {
     case "getTask":
       // Fabricated details for a task
-      return `Task ID ${arguments.id || "123"}: Title: "Implement API", Status: "In Progress", Assigned to: "John Doe", Due Date: "2024-05-30"`;
+      return `Task ID ${args.id || "123"}: Title: "Implement API", Status: "In Progress", Assigned to: "John Doe", Due Date: "2024-05-30"`;
 
     case "getTasks":
       // Fabricated list of tasks
@@ -219,25 +219,25 @@ function simulateFunction(functionName, arguments) {
 
     case "createTask":
       // Confirmation of a new task creation
-      return `New task with ID ${arguments.id || "124"} created successfully. Title: "Design New UI", Due Date: "2024-06-01"`;
+      return `New task with ID ${args.id || "124"} created successfully. Title: "Design New UI", Due Date: "2024-06-01"`;
 
     case "updateTask":
       // Confirmation of updating a task
-      return `Task with ID ${arguments.id} updated. New Status: "Completed", Updated At: "2024-04-27"`;
+      return `Task with ID ${args.id} updated. New Status: "Completed", Updated At: "2024-04-27"`;
 
     case "deleteTask":
       // Confirmation of deleting a task
-      return `Task with ID ${arguments.id} has been deleted successfully.`;
+      return `Task with ID ${args.id} has been deleted successfully.`;
 
     case "getTasksForUser":
       // Fabricated tasks for a specific user
-      return `User ID ${arguments.user_id} is assigned the following tasks:\n` +
+      return `User ID ${args.user_id} is assigned the following tasks:\n` +
              "1. Prepare Budget Report - Due: 2024-05-20\n" +
              "2. Client Meeting Preparation - Due: 2024-05-25";
 
     case "getTasksInSprint":
       // Fabricated tasks in a sprint with a specific status
-      return `Sprint ID ${arguments.sprint_id} tasks with status '${arguments.status}':\n` +
+      return `Sprint ID ${args.sprint_id} tasks with status '${args.status}':\n` +
              "1. Sprint Planning - Status: Planned\n" +
              "2. Sprint Review - Status: Scheduled";
 
