@@ -232,8 +232,8 @@ function simulateFunction(functionName: string, args: any) {
     case "getTasksForUser":
       // Fabricated tasks for a specific user
       return `User ID ${args.user_id} is assigned the following tasks:\n` +
-             "1. Prepare Budget Report - Due: 2024-05-20\n" +
-             "2. Client Meeting Preparation - Due: 2024-05-25";
+             "1. Create Home Page - Due: 2024-05-20\n" +
+             "2. Meet with Sponsors - Due: 2024-05-25";
 
     case "getTasksInSprint":
       // Fabricated tasks in a sprint with a specific status
