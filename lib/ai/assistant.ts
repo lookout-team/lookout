@@ -34,7 +34,7 @@ async function main() {
                 description: "The ID of the task to retrieve."
               },
               params: {
-                type: "any",
+                type: "string",
                 description: "Parameters to query tasks."
               }
             },
@@ -51,7 +51,7 @@ async function main() {
             type: "object",
             properties: {
               params: {
-                type: "any",
+                type: "string",
                 description: "Parameters to search for multiple tasks."
               }
             },
