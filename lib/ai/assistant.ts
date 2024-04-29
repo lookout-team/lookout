@@ -1,6 +1,12 @@
 const { OpenAI } = require("openai");
 require('dotenv').config();
 
+class AIAssistantManager {
+  constructor() {
+    this.openai = new OpenAI();
+  }
+}
+
 const openai = new OpenAI; // API key is automatically read from OPENAI_API_KEY env variable
 
 async function main() {
