@@ -5,8 +5,8 @@ require('dotenv').config();
 class AssistantManager {
   openai: any;
   assistantId: any;
-  threadId: any;
   thread: any;
+  run: any;
   constructor() {
     this.openai = new OpenAI();
   }
@@ -39,8 +39,7 @@ class AssistantManager {
   async createThread() {
     this.thread = await this.openai.beta.threads.create();
   
-    this.threadId = this.thread.id;
-    console.log("Created thread with Id: " + this.threadId);
+    console.log("Created thread with Id: " + this.thread.id);
   }
 
   async addMessageToThread(message: any) {
@@ -52,14 +51,14 @@ class AssistantManager {
   }
 
   async createRun() {
-    const run = await this.openai.beta.threads.runs.createAndPoll(this.thread.id, {
+    this.run = await this.openai.beta.threads.runs.createAndPoll(this.thread.id, {
       assistant_id: this.assistantId,
       additional_instructions: "Please address the user by their name."
     });
     
-    console.log("Run status: " + run.status);
+    console.log("Run status: " + this.run.status);
 
-    if (run.status === "completed") {
+    if (this.run.status === "completed") {
       // Fetch and print messagess after the run is completed
       const messages = await this.openai.beta.threads.messages.list(this.thread.id);
       console.log("assistant >", messages.data[0].content[0].text.value);
@@ -68,16 +67,16 @@ class AssistantManager {
       // for (const message of messages.data.reverse()) {
       //   console.log(`${message.role} > ${message.content[0].text.value}`);
       // }
-    } else if (run.status === "requires_action") {
-      await this.handleRequiresAction(run, this.thread.id);
+    } else if (this.run.status === "requires_action") {
+      await this.handleRequiresAction();
     } else {
       console.log("Run completed without needing additional actions.");
     }
   }
 
-  async handleRequiresAction(run: { required_action: { submit_tool_outputs: { tool_calls: any[]; }; }; id: any; }, threadId: any) {
-    console.log("Handling required action...");
-    const toolOutputs = run.required_action.submit_tool_outputs.tool_calls.map(tool => {
+  async handleRequiresAction() {
+    console.log("Handling requires_action...");
+    const toolOutputs = this.run.required_action.submit_tool_outputs.tool_calls.map((tool: { function: { name: string; arguments: any; }; id: any; }) => {
       // Simulate function execution. Replace this with actual function calls and handle arguments appropriately.
       const output = this.simulateFunction(tool.function.name, tool.function.arguments);
       return {
@@ -88,14 +87,14 @@ class AssistantManager {
   
     // Submit all tool outputs at once after collecting them in a list
     if (toolOutputs.length > 0) {
-      run = await this.openai.beta.threads.runs.submitToolOutputsAndPoll(threadId, run.id, { tool_outputs: toolOutputs });
+      this.run = await this.openai.beta.threads.runs.submitToolOutputsAndPoll(this.thread.id, this.run.id, { tool_outputs: toolOutputs });
       console.log("Tool outputs submitted successfully.");
     } else {
       console.log("No tool outputs to submit.");
     }
   
     // Retrieve messages from the thread
-    const messages = await this.openai.beta.threads.messages.list(threadId);
+    const messages = await this.openai.beta.threads.messages.list(this.thread.id);
     console.log("assistant >", messages.data[0].content[0].text.value);
     
     // Use for printing JSON log of messages in thread
