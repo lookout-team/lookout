@@ -51,16 +51,11 @@ class AssistantManager {
     console.log("Run status: " + this.run.status);
 
     if (this.run.status === "completed") {
-      // Fetch and print messagess after the run is completed
-      const messages = await this.openai.beta.threads.messages.list(this.thread.id);
-      console.log("assistant >", messages.data[0].content[0].text.value);
-
-      // Use for printing a log of all messages in the thread
-      // for (const message of messages.data.reverse()) {
-      //   console.log(`${message.role} > ${message.content[0].text.value}`);
-      // }
+      await this.printAssistantMessage();
     } else if (this.run.status === "requires_action") {
       await this.handleRequiresAction();
+      console.log("Run status: " + this.run.status);
+      await this.printAssistantMessage();
     } else {
       console.log("Run completed without needing additional actions.");
     }
@@ -84,9 +79,12 @@ class AssistantManager {
     } else {
       console.log("No tool outputs to submit.");
     }
-  
-    // Retrieve messages from the thread, index 0 should always be the assistant's response if working correctly
+  }
+
+  async printAssistantMessage() {
     const messages = await this.openai.beta.threads.messages.list(this.thread.id);
+
+    // Retrieve assistant response from the thread, index 0 should always be the assistant's response if working correctly
     console.log("assistant >", messages.data[0].content[0].text.value);
     
     // Use for printing JSON log of messages in thread
