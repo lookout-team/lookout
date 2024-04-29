@@ -1,3 +1,4 @@
+import { Priority } from "@prisma/client";
 import prisma from "./prisma";
 
 /**
@@ -5,16 +6,18 @@ import prisma from "./prisma";
  *
  * @export
  * @async
- * @param {Object} params Information about the priority to create.
- * @param {string} params.name The name of the priority.
- * @param {string} params.description The description of the priority.
- * @returns {Promise<Object>} The created priority object.
+ * @param {string} name The name of the priority.
+ * @param {string} description The description of the priority.
+ * @returns {Promise<Priority>} The created priority object.
  */
-export async function createPriority(params: any) {
+export async function createPriority(
+  name: string,
+  description: string
+): Promise<Priority> {
   const priority = await prisma.priority.create({
     data: {
-      name: params.name,
-      description: params.description,
+      name: name,
+      description: description,
     },
   });
   return priority;
@@ -26,9 +29,9 @@ export async function createPriority(params: any) {
  * @export
  * @async
  * @param {number} id The ID of the priority to delete.
- * @returns {Promise<Object>} The deleted priority object.
+ * @returns {Promise<Priority>} The deleted priority object.
  */
-export async function deletePriority(id: any) {
+export async function deletePriority(id: number): Promise<Priority> {
   const priority = await prisma.priority.delete({
     where: {
       id: id,

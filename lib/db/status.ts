@@ -1,20 +1,23 @@
 import prisma from "./prisma";
+import { Status } from "@prisma/client";
 
 /**
  * Creates a new status.
  *
  * @export
  * @async
- * @param {Object} params Information about the status to create.
- * @param {string} params.name The name of the status.
- * @param {string} params.description The description of the status.
- * @returns {Promise<Object>} The created status object.
+ * @param {string} name The name of the status.
+ * @param {string} description The description of the status.
+ * @returns {Promise<Status>} The created status object.
  */
-export async function createStatus(params: any) {
+export async function createStatus(
+  name: string,
+  description: string
+): Promise<Status> {
   const status = await prisma.status.create({
     data: {
-      name: params.name,
-      description: params.description,
+      name: name,
+      description: description,
     },
   });
   return status;
@@ -26,9 +29,9 @@ export async function createStatus(params: any) {
  * @export
  * @async
  * @param {number} id The ID of the status to delete.
- * @returns {Promise<Object>} The deleted status object.
+ * @returns {Promise<Status>} The deleted status object.
  */
-export async function deleteStatus(id: any) {
+export async function deleteStatus(id: number): Promise<Status> {
   const status = await prisma.status.delete({
     where: {
       id: id,

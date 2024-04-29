@@ -26,16 +26,16 @@ describe("Testing task file", () => {
     });
     createdSprintId = sprintData.id;
 
-    const priorityData = await priority.createPriority({
-      name: "High Priority",
-      description: "Get this shit done now!",
-    });
+    const priorityData = await priority.createPriority(
+      "High Priority",
+      "Get this shit done now!"
+    );
     createdPriorityId = priorityData.id;
 
-    const statusData = await status.createStatus({
-      name: "To-Do",
-      description: "On the list of things to-do...",
-    });
+    const statusData = await status.createStatus(
+      "To-Do",
+      "On the list of things to-do..."
+    );
     createdStatusId = statusData.id;
   });
 
