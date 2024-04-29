@@ -163,28 +163,25 @@ class AssistantManager {
     return assistant;
   }
 
-  async createThread(initialMessage: string) {
-    this.thread = await this.openai.beta.threads.create({
-      messages: [
-        {
-          role: "user",
-          content: initialMessage,
-        },
-      ],
-    });
+  async createThread() {
+    this.thread = await this.openai.beta.threads.create();
   
     this.threadId = this.thread.id;
     console.log("Created thread with Id: " + this.threadId);
   }
 
-  async sendMessage(message: any) {
+  async addMessageToThread(message: any) {
+    const msg = await this.openai.beta.threads.messages.create(this.thread.id, {
+      role: "user",
+      content: message
+    });
+    console.log("Message added to thread: " + msg.id);
+  }
+
+  async createRun() {
     const run = await this.openai.beta.threads.runs.createAndPoll(this.thread.id, {
       assistant_id: this.assistantId,
-      additional_instructions: "Please address the user by their name.",
-      messages: [{
-        role: "user",
-        content: message,
-      }]
+      additional_instructions: "Please address the user by their name."
     });
   
     console.log("Run status: " + run.status);
@@ -265,7 +262,7 @@ class AssistantManager {
 
   async startConversation() {
     await this.createAssistant();
-    await this.createThread("Hello, how can I help you today?");
+    await this.createThread();
 
     const readLine = require('readline').createInterface({
       input: process.stdin,
@@ -273,16 +270,12 @@ class AssistantManager {
     });
 
     readLine.on('line', async (input: any) => {
-      if (this.thread && this.thread.id) { // Ensure thread is available
-        await this.sendMessage(input);
-      } else {
-        console.log("Thread not initialized. Please check the thread creation process.");
-      }
+      await this.addMessageToThread(input);
+      await this.createRun();
     });
   }
 }
 
 
-
-const Assistant = new AssistantManager();
-Assistant.startConversation();
+const manager = new AssistantManager();
+manager.startConversation();
