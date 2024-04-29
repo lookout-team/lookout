@@ -1,0 +1,132 @@
+{
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "getTask",
+          "description": "Retrieve a specific task by ID or parameters",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "description": "The ID of the task to retrieve."
+              },
+              "params": {
+                "type": "string",
+                "description": "Parameters to query tasks."
+              }
+            },
+            "required": ["id"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "getTasks",
+          "description": "Retrieve tasks based on given parameters",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "params": {
+                "type": "string",
+                "description": "Parameters to search for multiple tasks."
+              }
+            },
+            "required": ["params"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "createTask",
+          "description": "Create a new task",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "description": "ID for the new task."
+              }
+            },
+            "required": ["id"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "updateTask",
+          "description": "Update an existing task",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "description": "The ID of the task to update."
+              }
+            },
+            "required": ["id"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "deleteTask",
+          "description": "Delete an existing task",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "description": "The ID of the task to delete."
+              }
+            },
+            "required": ["id"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "getTasksForUser",
+          "description": "Retrieve all tasks assigned to a specific user",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "number",
+                "description": "The user ID to retrieve tasks for."
+              }
+            },
+            "required": ["user_id"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "getTasksInSprint",
+          "description": "Retrieve all tasks in a specific sprint with a given status",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "sprint_id": {
+                "type": "number",
+                "description": "The sprint ID to retrieve tasks from."
+              },
+              "status": {
+                "type": "string",
+                "description": "The status of the tasks to retrieve."
+              }
+            },
+            "required": ["sprint_id", "status"]
+          }
+        }
+      }
+    ]
+  }
+  
