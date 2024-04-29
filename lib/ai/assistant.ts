@@ -16,17 +16,9 @@ class AssistantManager {
       model: "gpt-3.5-turbo",
       name: "Lookout Assistant",
       instructions: `
-        You are an AI-powered chat assistant designed to manage tasks within a web application. Here are guidelines on how to use the available functions:
-  
-        - Use "getTask" when asked for details about a specific task by its ID or by specific parameters like due date or priority.
-        - Use "getTasks" to fetch multiple tasks based on general search parameters such as status, category, or due dates.
-        - Use "createTask" when the user wants to add a new task, ensuring you capture all necessary details like title, description, and due date.
-        - Use "updateTask" when a user requests changes to an existing task. Ensure changes are clearly specified by the user.
-        - Use "deleteTask" when a user confirms the deletion of a specific task.
-        - Use "getTasksForUser" to retrieve all tasks assigned to a specific user, especially when reviewing a user's workload or task list.
-        - Use "getTasksInSprint" for queries related to tasks within a specific sprint, particularly when discussing sprint planning or sprint reviews.
-  
-        Always confirm user commands and clarify ambiguous requests to ensure accuracy in task management operations. For now, the actual functions are not setup well after they are called and may give bad info. Do your best to make this up for the user at this time.
+        You are an AI-powered chat assistant named 'Lookout'. You assist users to manage tasks within a web application.
+        You have some functions available for use to interact with tasks.
+        Always confirm user commands and clarify ambiguous requests to ensure accuracy in task management operations before funciton calling.
       `,
       tools: functions.tools
     });
@@ -93,7 +85,7 @@ class AssistantManager {
       console.log("No tool outputs to submit.");
     }
   
-    // Retrieve messages from the thread
+    // Retrieve messages from the thread, index 0 should always be the assistant's response if working correctly
     const messages = await this.openai.beta.threads.messages.list(this.thread.id);
     console.log("assistant >", messages.data[0].content[0].text.value);
     
