@@ -266,12 +266,15 @@ class AssistantManager {
 
     const readLine = require('readline').createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
+      prompt: 'User: '
     });
 
+    readLine.prompt();
     readLine.on('line', async (input: any) => {
       await this.addMessageToThread(input);
       await this.createRun();
+      readLine.prompt();
     });
   }
 }
