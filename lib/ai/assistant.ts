@@ -189,9 +189,12 @@ class AssistantManager {
     if (run.status === "completed") {
       // Fetch and print messagess after the run is completed
       const messages = await this.openai.beta.threads.messages.list(this.thread.id);
-      for (const message of messages.data.reverse()) {
-        console.log(`${message.role} > ${message.content[0].text.value}`);
-      }
+      console.log("assistant >", messages.data[0].content[0].text.value);
+
+      // Use for printing a log of all messages in the thread
+      // for (const message of messages.data.reverse()) {
+      //   console.log(`${message.role} > ${message.content[0].text.value}`);
+      // }
     } else if (run.status === "requires_action") {
       await this.handleRequiresAction(run, this.thread.id);
     } else {
@@ -220,12 +223,17 @@ class AssistantManager {
   
     // Retrieve messages from the thread
     const messages = await this.openai.beta.threads.messages.list(threadId);
+    console.log("assistant >", messages.data[0].content[0].text.value);
+    
+    // Use for printing JSON log of messages in thread
     // messages.getPaginatedItems().forEach((message: any) => {
     //   console.log(JSON.stringify(message, null, 2));
     // });
-    for (const message of messages.data.reverse()) {
-      console.log(`${message.role} > ${message.content[0].text.value}`);
-    }
+
+    // Use for printing a log of all messages in the thread
+    // for (const message of messages.data.reverse()) {
+    //   console.log(`${message.role} > ${message.content[0].text.value}`);
+    // }
   }
 
   simulateFunction(functionName: string, args: any) {
@@ -276,7 +284,7 @@ class AssistantManager {
     const readLine = require('readline').createInterface({
       input: process.stdin,
       output: process.stdout,
-      prompt: 'User > '
+      prompt: 'user > '
     });
 
     readLine.prompt();
