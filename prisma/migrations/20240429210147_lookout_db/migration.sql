@@ -10,7 +10,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Project" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
+    "title" TEXT,
     "description" TEXT,
     "last_updated" DATETIME,
     "current_sprint_id" INTEGER
@@ -30,7 +30,7 @@ CREATE TABLE "Activity" (
 -- CreateTable
 CREATE TABLE "Sprint" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
+    "title" TEXT,
     "start_date" DATETIME,
     "end_date" DATETIME,
     "planned_capacity" INTEGER,
@@ -41,7 +41,7 @@ CREATE TABLE "Sprint" (
 -- CreateTable
 CREATE TABLE "Task" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
+    "title" TEXT,
     "description" TEXT,
     "category" TEXT,
     "requirements" TEXT,
