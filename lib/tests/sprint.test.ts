@@ -5,18 +5,16 @@ let createdSprintId: number;
 let createdNextSprintId: number;
 let createdProjectId: number;
 
-describe("Testing sprint file", () => {
-  beforeAll(async () => {
-    // Call the createSprint function
-    const data = await project.createProject({
-      title: "Test Project",
-      description: "Root project",
-    });
-
-    // Save the ID of the created object to the global variable
-    createdProjectId = data.id;
+beforeAll(async () => {
+  // Call the createSprint function
+  const data = await project.createProject({
+    title: "Test Project",
+    description: "Root project",
   });
+  createdProjectId = data.id;
+});
 
+describe("Testing sprint file", () => {
   test("Testing Create function", async () => {
     const data = await sprint.createSprint({
       title: "Test Create",
@@ -120,12 +118,12 @@ describe("Testing sprint file", () => {
     });
     expect(data).toBe(null);
   });
+});
 
-  afterAll(async () => {
-    // Delete sprint record
-    await sprint.deleteSprint(createdNextSprintId);
+afterAll(async () => {
+  // Delete sprint record
+  await sprint.deleteSprint(createdNextSprintId);
 
-    // Delete project record
-    await project.deleteProject(createdProjectId);
-  });
+  // Delete project record
+  await project.deleteProject(createdProjectId);
 });

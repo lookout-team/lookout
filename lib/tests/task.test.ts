@@ -11,34 +11,34 @@ let createdSprintId: number;
 let createdPriorityId: number;
 let createdStatusId: number;
 
-describe("Testing task file", () => {
-  beforeAll(async () => {
-    // Call the createProject function
-    const projectData = await project.createProject({
-      title: "Test Project",
-      description: "Root project",
-    });
-    createdProjectId = projectData.id;
-
-    const sprintData = await sprint.createSprint({
-      title: "Test Create",
-      project_id: createdProjectId,
-    });
-    createdSprintId = sprintData.id;
-
-    const priorityData = await priority.createPriority(
-      "High Priority",
-      "Get this shit done now!"
-    );
-    createdPriorityId = priorityData.id;
-
-    const statusData = await status.createStatus(
-      "To-Do",
-      "On the list of things to-do..."
-    );
-    createdStatusId = statusData.id;
+beforeAll(async () => {
+  // Call the createProject function
+  const projectData = await project.createProject({
+    title: "Test Project",
+    description: "Root project",
   });
+  createdProjectId = projectData.id;
 
+  const sprintData = await sprint.createSprint({
+    title: "Test Create",
+    project_id: createdProjectId,
+  });
+  createdSprintId = sprintData.id;
+
+  const priorityData = await priority.createPriority(
+    "High Priority",
+    "Get this shit done now!"
+  );
+  createdPriorityId = priorityData.id;
+
+  const statusData = await status.createStatus(
+    "To-Do",
+    "On the list of things to-do..."
+  );
+  createdStatusId = statusData.id;
+});
+
+describe("Testing task file", () => {
   test("Testing Create function", async () => {
     const data = await task.createTask({
       title: "Test Create",
@@ -184,21 +184,21 @@ describe("Testing task file", () => {
     });
     expect(data).toBe(null);
   });
+});
 
-  afterAll(async () => {
-    // Delete task records
-    await task.deleteTask(createdNextTaskId);
+afterAll(async () => {
+  // Delete task records
+  await task.deleteTask(createdNextTaskId);
 
-    // Delete sprint record
-    await sprint.deleteSprint(createdSprintId);
+  // Delete sprint record
+  await sprint.deleteSprint(createdSprintId);
 
-    // Delete project record
-    await project.deleteProject(createdProjectId);
+  // Delete project record
+  await project.deleteProject(createdProjectId);
 
-    // Delete priority record
-    await priority.deletePriority(createdPriorityId);
+  // Delete priority record
+  await priority.deletePriority(createdPriorityId);
 
-    // Delete status record
-    await status.deleteStatus(createdStatusId);
-  });
+  // Delete status record
+  await status.deleteStatus(createdStatusId);
 });
