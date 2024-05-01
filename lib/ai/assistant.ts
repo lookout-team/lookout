@@ -2,12 +2,13 @@
 const { OpenAI } = require("openai");
 const functions = require("./functions");
 const mocks = require("./mockFunctions");
+const readline = require("readline");
 require("dotenv").config();
 
 type AssistantResponse = {
   message: string;
   data: any;
-  componentType: "board" | "table" | undefined;
+  componentType: "card" | "table" | null;
 };
 
 class AssistantManager {
@@ -29,7 +30,11 @@ class AssistantManager {
         available for use to interact with tasks. Always confirm user commands
         (any create, update, or delete action) and clarify ambiguous requests
         to ensure accuracy in task management operations before function calling.
+        You must produce JSON for your output. Your output will have two fields:
+        1. message: string - the text response from the assistant
+        2. data: any - the data returned from the function call
       `,
+      response_format: { "type": "json_object" },
       tools: functions.tools,
     });
 
@@ -48,12 +53,34 @@ class AssistantManager {
     });
     console.log("Message added to thread: " + userMessage.id);
     
-    const runResult = await this.createRun();
+    await this.createRun();
+    const messages = await this.openai.beta.threads.messages.list(
+      this.thread.id
+    );
+    
+    // Option to log all messages in the thread
+    // messages.getPaginatedItems().forEach((message: any) => {
+    //   console.log(JSON.stringify(message, null, 2));
+    // });
+    
+    const firstMessageContent = messages.data[0].content[0].text.value;
+    const parsedContent = JSON.parse(firstMessageContent);
+    const message = parsedContent.message;
+    const data = parsedContent.data;
+    
+    let componentType: "card" | "table" | null = null;
+    if (data !== null && Array.isArray(data)) {
+      if (data.length === 1) {
+        componentType = "card";
+      } else if (data.length > 1) {
+        componentType = "table";
+      }
+    }
 
     const assistantResponse: AssistantResponse = {
-      message: runResult ? runResult.response : "",
-      data: runResult ? runResult.data : null,
-      componentType: "board",
+      message: message,
+      data: data,
+      componentType: componentType,
     };
 
     return assistantResponse;
@@ -67,44 +94,31 @@ class AssistantManager {
         additional_instructions: "Please address the user by their name.",
       }
     );
-    
-    const messages = await this.openai.beta.threads.messages.list(
-      this.thread.id
-    );
-    // Retrieve assistant response from the thread, index 0 should always be
-    // the assistant's response if working correctly
-    // console.log("assistant >", messages.data[0].content[0].text.value);
 
     console.log("Run status: " + this.run.status);
     
     // No function calls needed
     if (this.run.status === "completed") {
-      const response = messages.data[0].content[0].text.value
-      return {response, data: null}
+      console.log("Run status: " + this.run.status);
     // Function calls needed
     } else if (this.run.status === "requires_action") {
-      const handleResult = await this.handleRequiresAction();
-      console.log("Run status: " + this.run.status);
-      const response = messages.data[0].content[0].text.value
-      return {response, data: handleResult}
+      await this.handleRequiresAction();
     } else {
       console.log("Run completed without needing additional actions.");
     }
   }
 
   async handleRequiresAction() {
-    let data;
-    
     console.log("Handling requires_action...");
     const toolOutputs =
       this.run.required_action.submit_tool_outputs.tool_calls.map(
         (tool: { function: { name: string; arguments: any }; id: any }) => {
           // Simulate function execution. Replace this with actual function
           // calls and handle arguments appropriately.
-          data = mocks(tool.function.name, tool.function.arguments);
+          const output = mocks(tool.function.name, tool.function.arguments);
           return {
             tool_call_id: tool.id,
-            output: data,
+            output: output,
           };
         }
       );
@@ -120,24 +134,24 @@ class AssistantManager {
     } else {
       console.log("No tool outputs to submit.");
     }
-
-    return data;
   }
 }
 
 const manager = new AssistantManager();
 manager.startConversation();
 
-const readLine = require("readline").createInterface({
+const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   prompt: "user > ",
 });
 
-readLine.on("line", async (input: any) => {
+rl.prompt();
+rl.on("line", async (input: any) => {
   const response = await manager.processUserInput(input);
-  console.log(response.message);
-  console.log(response.data);
-  console.log(response.componentType);
-  readLine.prompt();
+
+  console.log("Message: " + response.message);
+  console.log("Data: " + response.data);
+  console.log("Component Type: " + response.componentType);
+  rl.prompt();
 });
