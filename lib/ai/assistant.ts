@@ -118,7 +118,7 @@ class AssistantManager {
           const output = mocks(tool.function.name, tool.function.arguments);
           return {
             tool_call_id: tool.id,
-            output: output,
+            output: JSON.stringify(output),
           };
         }
       );
@@ -151,7 +151,7 @@ rl.on("line", async (input: any) => {
   const response = await manager.processUserInput(input);
 
   console.log("Message: " + response.message);
-  console.log("Data: " + response.data);
+  console.log("Data: " + JSON.stringify(response.data, null, 2));
   console.log("Component Type: " + response.componentType);
   rl.prompt();
 });
