@@ -2,47 +2,74 @@ function mockFunction(functionName: string, args: any) {
   switch (functionName) {
     case "getTask":
       // Fabricated details for a task
-      return `Task ID ${
-        args.id || "123"
-      }: Title: "Implement API", Status: "In Progress", Assigned to: "John Doe", Due Date: "2024-05-30"`;
+      return {
+        id: args.id || "123",
+        title: "Implement API",
+        status: "In Progress",
+        assigned_to: "John Doe",
+        due_date: "2024-05-30",
+      };
 
     case "getTasks":
       // Fabricated list of tasks
-      return (
-        "1. Refactor Codebase - Due: 2024-04-30, Status: Pending\n" +
-        "2. Update Documentation - Due: 2024-05-05, Status: Completed\n" +
-        "3. Optimize Database - Due: 2024-05-15, Status: In Progress"
-      );
+      return [
+        {
+          id: 1,
+          title: "Refactor Codebase",
+          due_date: "2024-04-30",
+          status: "Pending",
+        },
+        {
+          id: 2,
+          title: "Update Documentation",
+          due_date: "2024-05-05",
+          status: "Completed",
+        },
+        {
+          id: 3,
+          title: "Optimize Database",
+          due_date: "2024-05-15",
+          status: "In Progress",
+        },
+      ];
 
     case "createTask":
       // Confirmation of a new task creation
-      return `New task with ID ${
-        args.id || "124"
-      } created successfully. Title: "Design New UI", Due Date: "2024-06-01"`;
+      return {
+        id: args.id || "124",
+        title: "Design New UI",
+        due_date: "2024-06-01",
+        status: "Created",
+      };
 
     case "updateTask":
       // Confirmation of updating a task
-      return `Task with ID ${args.id} updated. New Status: "Completed", Updated At: "2024-04-27"`;
+      return {
+        id: args.id,
+        status: "Completed",
+        updated_at: "2024-04-27",
+      };
 
     case "deleteTask":
       // Confirmation of deleting a task
-      return `Task with ID ${args.id} has been deleted successfully.`;
+      return {
+        id: args.id,
+        status: "Deleted",
+      };
 
     case "getTasksForUser":
       // Fabricated tasks for a specific user
-      return (
-        `User ID ${args.user_id} is assigned the following tasks:\n` +
-        "1. Create Home Page - Due: 2024-05-20\n" +
-        "2. Meet with Sponsors - Due: 2024-05-25"
-      );
+      return [
+        { id: 1, title: "Create Home Page", due_date: "2024-05-20" },
+        { id: 2, title: "Meet with Sponsors", due_date: "2024-05-25" },
+      ];
 
     case "getTasksInSprint":
       // Fabricated tasks in a sprint with a specific status
-      return (
-        `Sprint ID ${args.sprint_id} tasks with status '${args.status}':\n` +
-        "1. Sprint Planning - Status: Planned\n" +
-        "2. Sprint Review - Status: Scheduled"
-      );
+      return [
+        { id: 1, title: "Sprint Planning", status: "Planned" },
+        { id: 2, title: "Sprint Review", status: "Scheduled" },
+      ];
 
     default:
       return `No response defined for function: ${functionName}`;
