@@ -13,29 +13,33 @@ let createdStatusId: number;
 
 beforeAll(async () => {
   // Call the createProject function
-  const projectData = await project.createProject({
-    title: "Test Project",
-    description: "Root project",
-  });
-  createdProjectId = projectData.id;
+  try {
+    const projectData = await project.createProject({
+      title: "Test Project",
+      description: "Root project",
+    });
+    createdProjectId = projectData.id;
 
-  const sprintData = await sprint.createSprint({
-    title: "Test Create",
-    project_id: createdProjectId,
-  });
-  createdSprintId = sprintData.id;
+    const sprintData = await sprint.createSprint({
+      title: "Test Create",
+      project_id: createdProjectId,
+    });
+    createdSprintId = sprintData.id;
 
-  const priorityData = await priority.createPriority(
-    "High Priority",
-    "Get this shit done now!"
-  );
-  createdPriorityId = priorityData.id;
+    const priorityData = await priority.createPriority(
+      "High Priority",
+      "Get this shit done now!"
+    );
+    createdPriorityId = priorityData.id;
 
-  const statusData = await status.createStatus(
-    "To-Do",
-    "On the list of things to-do..."
-  );
-  createdStatusId = statusData.id;
+    const statusData = await status.createStatus(
+      "To-Do",
+      "On the list of things to-do..."
+    );
+    createdStatusId = statusData.id;
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 describe("Testing task file", () => {

@@ -7,11 +7,15 @@ let createdProjectId: number;
 
 beforeAll(async () => {
   // Call the createSprint function
-  const data = await project.createProject({
-    title: "Test Project",
-    description: "Root project",
-  });
-  createdProjectId = data.id;
+  try {
+    const data = await project.createProject({
+      title: "Test Project",
+      description: "Root project",
+    });
+    createdProjectId = data.id;
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 describe("Testing sprint file", () => {
