@@ -39,10 +39,10 @@ class AssistantManager {
     });
 
     this.assistantId = assistant.id;
-    console.log("Created Assistant with Id: " + this.assistantId);
+    // console.log("Created Assistant with Id: " + this.assistantId);
 
     this.thread = await this.openai.beta.threads.create();
-    console.log("Created thread with Id: " + this.thread.id);
+    // console.log("Created thread with Id: " + this.thread.id);
   }
 
   // Previously addMessageToThread
@@ -51,7 +51,7 @@ class AssistantManager {
       role: "user",
       content: userInput,
     });
-    console.log("Message added to thread: " + userMessage.id);
+    // console.log("Message added to thread: " + userMessage.id);
     
     await this.createRun();
     const messages = await this.openai.beta.threads.messages.list(
@@ -65,15 +65,19 @@ class AssistantManager {
     
     const firstMessageContent = messages.data[0].content[0].text.value;
     const parsedContent = JSON.parse(firstMessageContent);
-    const message = parsedContent.message;
-    const data = parsedContent.data;
+    let { message, data } = parsedContent;
     
+    // Ensure data is always an array if not null
+    if (data != null && !Array.isArray(data)) {
+      data = [data];
+}
+
     let componentType: "card" | "table" | null = null;
-    if (data !== null && Array.isArray(data)) {
+    if (data !== null) {
       if (data.length === 1) {
-        componentType = "card";
+      componentType = "card";
       } else if (data.length > 1) {
-        componentType = "table";
+      componentType = "table";
       }
     }
 
@@ -95,25 +99,22 @@ class AssistantManager {
       }
     );
 
-    console.log("Run status: " + this.run.status);
+    // console.log("Run status: " + this.run.status);
     
-    // No function calls needed
-    if (this.run.status === "completed") {
-      console.log("Run status: " + this.run.status);
-    // Function calls needed
-    } else if (this.run.status === "requires_action") {
+    if (this.run.status === "requires_action") {
       await this.handleRequiresAction();
     } else {
-      console.log("Run completed without needing additional actions.");
+      // console.log("Run completed without needing additional actions.");
     }
   }
 
   async handleRequiresAction() {
-    console.log("Handling requires_action...");
+    // console.log("Handling requires_action...");
     const toolOutputs = await Promise.all(this.run.required_action.submit_tool_outputs.tool_calls.map(
       async (tool: any) => {
-        console.log(`Arguments for ${tool.function.name}:`, tool.function.arguments, `Type: ${typeof tool.function.arguments}`);
         const parsedArguments = JSON.parse(tool.function.arguments);
+        // Shows what function and arguments are being called
+        console.log(`Arguments for ${tool.function.name}:`, tool.function.arguments);
         // Handle function execution based on the function name and arguments.
         let output;
         switch (tool.function.name) {
@@ -150,9 +151,9 @@ class AssistantManager {
         this.run.id,
         { tool_outputs: toolOutputs }
       );
-      console.log("Tool outputs submitted successfully.");
+      // console.log("Tool outputs submitted successfully.");
     } else {
-      console.log("No tool outputs to submit.");
+      // console.log("No tool outputs to submit.");
     }
   }
   
