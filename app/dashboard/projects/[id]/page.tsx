@@ -1,7 +1,8 @@
 import SprintTable from "@/app/ui/projects/sprint-table";
 import SprintBoard from "@/app/ui/projects/sprint-board";
 import ViewSelect from "@/app/ui/projects/view-select";
-import prisma from "@/lib/db/prisma";
+import { getSprints } from "@/lib/db/sprint";
+import { getTasks } from "@/lib/db/task";
 
 type QueryParams = {
   view: "board" | "table";
@@ -15,22 +16,20 @@ export default async function Page({
   const selectedView = searchParams?.view ?? "table";
   const isTableView = selectedView == "table";
 
-  const sprints = await prisma.sprint.findMany();
+  const sprints = await getSprints();
   const sprintComponents = [];
 
   for (const sprint of sprints) {
-    const tasks = await prisma.task.findMany({
-      include: {
-        user: true,
-        status: true,
-        priority: true,
-      },
-    });
+    const tasks = await getTasks();
 
     const component = isTableView ? (
-      <SprintTable key={sprint.id} sprint={sprint} tasks={tasks} />
+      <div className="mb-6">
+        <SprintTable key={sprint.id} sprint={sprint} tasks={tasks} />
+      </div>
     ) : (
-      <SprintBoard key={sprint.id} sprint={sprint} tasks={tasks} />
+      <div className="mb-6">
+        <SprintBoard key={sprint.id} sprint={sprint} tasks={tasks} />
+      </div>
     );
 
     sprintComponents.push(component);

@@ -40,7 +40,7 @@ export async function getTask(
  * @returns {Promise<TaskWithIncludes[]>} An array of retrieved task objects.
  */
 export async function getTasks(
-  params: Partial<Task>
+  params?: Partial<Task>
 ): Promise<TaskWithIncludes[]> {
   const task = await prisma.task.findMany({
     where: {

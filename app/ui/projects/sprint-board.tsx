@@ -8,28 +8,18 @@ import {
   Chip,
   Divider,
 } from "@nextui-org/react";
-import { Prisma, Sprint } from "@prisma/client";
 import SprintHeader from "./sprint-header";
-
-type Task = Prisma.TaskGetPayload<{
-  include: {
-    user: true;
-    status: true;
-    priority: true;
-  };
-}>;
+import { TaskWithIncludes } from "@/lib/db/types";
+import { Sprint } from "@prisma/client";
 
 export default function SprintBoard({
   sprint,
   tasks,
 }: {
   sprint: Sprint;
-  tasks: Task[];
+  tasks: TaskWithIncludes[];
 }) {
-  // TODO: Get categories from database
-  const statuses = ["To Do", "In Progress", "Completed"];
-
-  function sortTasks() {}
+  const statuses = ["To-Do", "In Progress", "Completed"];
 
   const statusColumns = statuses.map((status) => (
     <Card radius="sm" shadow="sm" className="border-1 w-96">
@@ -41,7 +31,7 @@ export default function SprintBoard({
           .map((task) => (
             <Card shadow="sm" isHoverable isPressable disableAnimation>
               <CardHeader>
-                {task.user.first_name} {task.user.last_name}
+                {task.user?.first_name} {task.user?.last_name}
               </CardHeader>
               <Divider />
               <CardBody>{task.title}</CardBody>

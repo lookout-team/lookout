@@ -31,7 +31,7 @@ export async function getSprint(
  * @returns {Promise<SprintWithIncludes[]>} An array of retrieved sprint objects.
  */
 export async function getSprints(
-  params: Partial<Sprint>
+  params?: Partial<Sprint>
 ): Promise<SprintWithIncludes[]> {
   const sprints = await prisma.sprint.findMany({
     where: {

@@ -8,23 +8,16 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
-import { Sprint, Prisma } from "@prisma/client";
+import { Sprint } from "@prisma/client";
 import SprintHeader from "./sprint-header";
-
-type Task = Prisma.TaskGetPayload<{
-  include: {
-    user: true;
-    status: true;
-    priority: true;
-  };
-}>;
+import { TaskWithIncludes } from "@/lib/db/types";
 
 export default function SprintTable({
   sprint,
   tasks,
 }: {
   sprint: Sprint;
-  tasks: Task[];
+  tasks: TaskWithIncludes[];
 }) {
   const columns = ["Title", "Points", "Assigned To", "Status", "Priority"];
 
@@ -32,7 +25,7 @@ export default function SprintTable({
     <TableRow>
       <TableCell>{task.title}</TableCell>
       <TableCell>{task.points}</TableCell>
-      <TableCell>{task.user.username}</TableCell>
+      <TableCell>{task.user?.username}</TableCell>
       <TableCell>{task.status.name}</TableCell>
       <TableCell>{task.priority.name}</TableCell>
     </TableRow>

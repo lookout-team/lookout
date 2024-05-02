@@ -10,10 +10,17 @@ import {
   Divider,
 } from "@nextui-org/react";
 import { usePathname, useRouter } from "next/navigation";
+import { getDuration } from "../utils";
 
 export default function ProjectCard({ project }: { project: Project }) {
   const router = useRouter();
   const pathname = usePathname();
+
+  let duration = "No activity yet...";
+
+  if (project.last_updated !== null) {
+    duration = getDuration(project.last_updated);
+  }
 
   return (
     <Card
@@ -32,7 +39,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         <p className="text-md">{project.description}</p>
       </CardBody>
       <Divider />
-      <CardFooter>Last updated 23 minutes ago</CardFooter>
+      <CardFooter>{duration}</CardFooter>
     </Card>
   );
 }

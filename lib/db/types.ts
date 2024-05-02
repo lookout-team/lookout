@@ -1,6 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
 
 const TaskWithIncludes = Prisma.validator<Prisma.TaskDefaultArgs>()({
   include: {
