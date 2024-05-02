@@ -10,8 +10,10 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Project" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL
+    "title" TEXT,
+    "description" TEXT,
+    "last_updated" DATETIME,
+    "current_sprint_id" INTEGER
 );
 
 -- CreateTable
@@ -28,29 +30,28 @@ CREATE TABLE "Activity" (
 -- CreateTable
 CREATE TABLE "Sprint" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
-    "start_date" DATETIME NOT NULL,
-    "end_date" DATETIME NOT NULL,
-    "planned_capacity" INTEGER NOT NULL,
+    "title" TEXT,
+    "start_date" DATETIME,
+    "end_date" DATETIME,
+    "planned_capacity" INTEGER,
     "project_id" INTEGER NOT NULL,
-    "status_id" INTEGER NOT NULL,
-    CONSTRAINT "Sprint_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Sprint_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "Status" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Sprint_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "Project" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Task" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "requirements" TEXT NOT NULL,
-    "acceptance_criteria" TEXT NOT NULL,
-    "points" INTEGER NOT NULL,
-    "assigned_to" INTEGER NOT NULL,
+    "title" TEXT,
+    "description" TEXT,
+    "category" TEXT,
+    "requirements" TEXT,
+    "acceptance_criteria" TEXT,
+    "points" INTEGER,
+    "assigned_to" INTEGER,
     "sprint_id" INTEGER NOT NULL,
     "status_id" INTEGER NOT NULL,
     "priority_id" INTEGER NOT NULL,
-    CONSTRAINT "Task_assigned_to_fkey" FOREIGN KEY ("assigned_to") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Task_assigned_to_fkey" FOREIGN KEY ("assigned_to") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Task_sprint_id_fkey" FOREIGN KEY ("sprint_id") REFERENCES "Sprint" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Task_status_id_fkey" FOREIGN KEY ("status_id") REFERENCES "Status" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Task_priority_id_fkey" FOREIGN KEY ("priority_id") REFERENCES "Priority" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -60,7 +61,7 @@ CREATE TABLE "Task" (
 CREATE TABLE "Comment" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "text" TEXT NOT NULL,
-    "last_modified" DATETIME NOT NULL,
+    "last_modified" DATETIME,
     "task_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
     CONSTRAINT "Comment_task_id_fkey" FOREIGN KEY ("task_id") REFERENCES "Task" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
