@@ -2,16 +2,25 @@ import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export type Task = Prisma.TaskGetPayload<{
+const TaskWithIncludes = Prisma.validator<Prisma.TaskDefaultArgs>()({
   include: {
-    user: true;
-    status: true;
-    priority: true;
-  };
-}>;
+    user: true,
+    activities: true,
+    comments: true,
+    status: true,
+    sprint: true,
+    priority: true,
+  },
+});
 
-export type Sprint = Prisma.SprintGetPayload<{
+export type TaskWithIncludes = Prisma.TaskGetPayload<typeof TaskWithIncludes>;
+
+const SprintWithIncludes = Prisma.validator<Prisma.SprintDefaultArgs>()({
   include: {
-    tasks: true;
-  };
-}>;
+    tasks: true,
+  },
+});
+
+export type SprintWithIncludes = Prisma.SprintGetPayload<
+  typeof SprintWithIncludes
+>;

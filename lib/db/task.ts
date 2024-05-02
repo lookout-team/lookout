@@ -1,6 +1,7 @@
 import { start } from "repl";
 import prisma from "./prisma";
 import { Task } from "@prisma/client";
+import { TaskWithIncludes } from "./types";
 
 /**
  * Retrieves a single task based on provided parameters.
@@ -8,10 +9,12 @@ import { Task } from "@prisma/client";
  * @export
  * @async
  * @param {Partial<Task>} params Information about the task.
- * @returns {Promise<Task | null>}
+ * @returns {Promise<TaskWithIncludes | null>}
  *} The retrieved task object.
  */
-export async function getTask(params: Partial<Task>): Promise<Task | null> {
+export async function getTask(
+  params: Partial<Task>
+): Promise<TaskWithIncludes | null> {
   const task = await prisma.task.findFirst({
     where: {
       ...params,
@@ -22,6 +25,7 @@ export async function getTask(params: Partial<Task>): Promise<Task | null> {
       comments: true,
       status: true,
       sprint: true,
+      priority: true,
     },
   });
   return task;
@@ -33,9 +37,11 @@ export async function getTask(params: Partial<Task>): Promise<Task | null> {
  * @export
  * @async
  * @param {Partial<Task>} params Information about the tasks to retrieve.
- * @returns {Promise<Task[]>} An array of retrieved task objects.
+ * @returns {Promise<TaskWithIncludes[]>} An array of retrieved task objects.
  */
-export async function getTasks(params: Partial<Task>): Promise<Task[]> {
+export async function getTasks(
+  params: Partial<Task>
+): Promise<TaskWithIncludes[]> {
   const task = await prisma.task.findMany({
     where: {
       ...params,
@@ -46,6 +52,7 @@ export async function getTasks(params: Partial<Task>): Promise<Task[]> {
       comments: true,
       status: true,
       sprint: true,
+      priority: true,
     },
   });
   return task;
@@ -59,7 +66,7 @@ export async function getTasks(params: Partial<Task>): Promise<Task[]> {
  * @param {Partial<Task>} params Information about the task to create.
  * @returns {Promise<Task>} The created task object.
  */
-export async function createTask(params: any): Promise<Task> {
+export async function createTask(params: any): Promise<TaskWithIncludes> {
   const task = await prisma.task.create({
     data: {
       title: params.title,
@@ -73,6 +80,14 @@ export async function createTask(params: any): Promise<Task> {
       status: { connect: { id: params.status_id } },
       priority: { connect: { id: params.priority_id } },
     },
+    include: {
+      user: true,
+      activities: true,
+      comments: true,
+      status: true,
+      sprint: true,
+      priority: true,
+    },
   });
   return task;
 }
@@ -85,11 +100,21 @@ export async function createTask(params: any): Promise<Task> {
  * @param {Partial<Task>} params Information about the task to update.
  * @returns {Promise<Task>} The updated task object.
  */
-export async function updateTask(params: Partial<Task>): Promise<Task> {
+export async function updateTask(
+  params: Partial<Task>
+): Promise<TaskWithIncludes> {
   const task = await prisma.task.update({
     where: { id: params.id },
     data: {
       ...params,
+    },
+    include: {
+      user: true,
+      activities: true,
+      comments: true,
+      status: true,
+      sprint: true,
+      priority: true,
     },
   });
 
@@ -104,10 +129,18 @@ export async function updateTask(params: Partial<Task>): Promise<Task> {
  * @param {number} id The ID of the task to delete.
  * @returns {Promise<Task>} The deleted task object.
  */
-export async function deleteTask(id: number): Promise<Task> {
+export async function deleteTask(id: number): Promise<TaskWithIncludes> {
   const task = await prisma.task.delete({
     where: {
       id: id,
+    },
+    include: {
+      user: true,
+      activities: true,
+      comments: true,
+      status: true,
+      sprint: true,
+      priority: true,
     },
   });
   return task;
