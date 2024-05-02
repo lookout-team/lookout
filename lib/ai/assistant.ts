@@ -1,7 +1,7 @@
 
 const { OpenAI } = require("openai");
 const functions = require("./functions");
-const mocks = require("./mockFunctions");
+const { getTask, getTasks, createTask, updateTask, deleteTask } = require('../db/task');
 const readline = require("readline");
 require("dotenv").config();
 
@@ -110,19 +110,39 @@ class AssistantManager {
 
   async handleRequiresAction() {
     console.log("Handling requires_action...");
-    const toolOutputs =
-      this.run.required_action.submit_tool_outputs.tool_calls.map(
-        (tool: { function: { name: string; arguments: any }; id: any }) => {
-          // Simulate function execution. Replace this with actual function
-          // calls and handle arguments appropriately.
-          const output = mocks(tool.function.name, tool.function.arguments);
-          return {
-            tool_call_id: tool.id,
-            output: JSON.stringify(output),
-          };
+    const toolOutputs = await Promise.all(this.run.required_action.submit_tool_outputs.tool_calls.map(
+      async (tool: any) => {
+        console.log(`Arguments for ${tool.function.name}:`, tool.function.arguments, `Type: ${typeof tool.function.arguments}`);
+        const parsedArguments = JSON.parse(tool.function.arguments);
+        // Handle function execution based on the function name and arguments.
+        let output;
+        switch (tool.function.name) {
+          case "getTask":
+            output = await getTask(tool.function.parsedArguments);
+            break;
+          case "getTasks":
+            output = await getTasks(tool.function.parsedArguments);
+            break;
+          case "createTask":
+            output = await createTask(tool.function.parsedArguments);
+            break;
+          case "updateTask":
+            output = await updateTask(tool.function.parsedArguments);
+            break;
+          case "deleteTask":
+            output = await deleteTask(tool.function.parsedArguments.id);
+            break;
+          default:
+            output = "Function not supported";
+            break;
         }
-      );
-
+        return {
+          tool_call_id: tool.id,
+          output: JSON.stringify(output),
+        };
+      }
+    ));
+  
     // Submit all tool outputs at once after collecting them in a list
     if (toolOutputs.length > 0) {
       this.run = await this.openai.beta.threads.runs.submitToolOutputsAndPoll(
@@ -135,6 +155,7 @@ class AssistantManager {
       console.log("No tool outputs to submit.");
     }
   }
+  
 }
 
 const manager = new AssistantManager();
