@@ -50,9 +50,7 @@ export async function getSprints(
  * @param {Sprint} params Information about the sprint to create.
  * @returns {Promise<Sprint>} The created sprint object.
  */
-export async function createSprint(
-  params: Partial<Sprint>
-): Promise<SprintWithIncludes> {
+export async function createSprint(params: Partial<Sprint>): Promise<Sprint> {
   const sprint = await prisma.sprint.create({
     data: {
       project: { connect: { id: params.project_id } },
@@ -61,7 +59,6 @@ export async function createSprint(
       end_date: params.end_date,
       planned_capacity: params.planned_capacity,
     },
-    include: { tasks: true },
   });
   return sprint;
 }
@@ -74,15 +71,12 @@ export async function createSprint(
  * @param {Sprint} params Information about the sprint to update.
  * @returns {Promise<Sprint>} The updated sprint object.
  */
-export async function updateSprint(
-  params: Partial<Sprint>
-): Promise<SprintWithIncludes> {
+export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
   const sprint = await prisma.sprint.update({
     where: { id: params.id },
     data: {
       ...params,
     },
-    include: { tasks: true },
   });
   return sprint;
 }
@@ -95,12 +89,11 @@ export async function updateSprint(
  * @param {number} id The ID of the sprint to delete.
  * @returns {Promise<Sprint>} The deleted sprint object.
  */
-export async function deleteSprint(id: number): Promise<SprintWithIncludes> {
+export async function deleteSprint(id: number): Promise<Sprint> {
   const sprint = await prisma.sprint.delete({
     where: {
       id: id,
     },
-    include: { tasks: true },
   });
   return sprint;
 }

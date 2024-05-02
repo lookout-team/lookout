@@ -66,7 +66,7 @@ export async function getTasks(
  * @param {Partial<Task>} params Information about the task to create.
  * @returns {Promise<Task>} The created task object.
  */
-export async function createTask(params: any): Promise<TaskWithIncludes> {
+export async function createTask(params: any): Promise<Task> {
   const task = await prisma.task.create({
     data: {
       title: params.title,
@@ -80,14 +80,6 @@ export async function createTask(params: any): Promise<TaskWithIncludes> {
       status: { connect: { id: params.status_id } },
       priority: { connect: { id: params.priority_id } },
     },
-    include: {
-      user: true,
-      activities: true,
-      comments: true,
-      status: true,
-      sprint: true,
-      priority: true,
-    },
   });
   return task;
 }
@@ -100,21 +92,11 @@ export async function createTask(params: any): Promise<TaskWithIncludes> {
  * @param {Partial<Task>} params Information about the task to update.
  * @returns {Promise<Task>} The updated task object.
  */
-export async function updateTask(
-  params: Partial<Task>
-): Promise<TaskWithIncludes> {
+export async function updateTask(params: Partial<Task>): Promise<Task> {
   const task = await prisma.task.update({
     where: { id: params.id },
     data: {
       ...params,
-    },
-    include: {
-      user: true,
-      activities: true,
-      comments: true,
-      status: true,
-      sprint: true,
-      priority: true,
     },
   });
 
@@ -129,18 +111,10 @@ export async function updateTask(
  * @param {number} id The ID of the task to delete.
  * @returns {Promise<Task>} The deleted task object.
  */
-export async function deleteTask(id: number): Promise<TaskWithIncludes> {
+export async function deleteTask(id: number): Promise<Task> {
   const task = await prisma.task.delete({
     where: {
       id: id,
-    },
-    include: {
-      user: true,
-      activities: true,
-      comments: true,
-      status: true,
-      sprint: true,
-      priority: true,
     },
   });
   return task;
