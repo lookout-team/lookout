@@ -1,208 +1,169 @@
-import * as sprint from "../db/sprint";
-import * as project from "../db/project";
-import * as task from "../db/task";
-import * as priority from "../db/priority";
-import * as status from "../db/status";
+import { createSprint, deleteSprint } from "../db/sprint";
+import { createProject, deleteProject } from "../db/project";
+import {
+  createTask,
+  getTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+} from "../db/task";
+import { createPriority, deletePriority } from "../db/priority";
+import { createStatus, deleteStatus } from "../db/status";
+import prisma from "../db/prisma";
 
-let createdTaskId: number;
-let createdNextTaskId: number;
-let createdProjectId: number;
-let createdSprintId: number;
-let createdPriorityId: number;
-let createdStatusId: number;
+let projectId: number;
+let taskId: number;
+let priorityId: number;
+let statusId: number;
+
+const startDate = new Date("2024-05-01T08:00:00Z");
+const endDate = new Date("2024-05-07T17:00:00Z");
 
 beforeAll(async () => {
-  // Call the createProject function
-  try {
-    const projectData = await project.createProject({
-      title: "Test Project",
-      description: "Root project",
-    });
-    createdProjectId = projectData.id;
+  const projectData = await createProject({
+    title: "Project Z",
+    description: "This project is classified!",
+  });
+  projectId = projectData.id;
 
-    const sprintData = await sprint.createSprint({
-      title: "Test Create",
-      project_id: createdProjectId,
-    });
-    createdSprintId = sprintData.id;
-
-    const priorityData = await priority.createPriority(
-      "High Priority",
-      "Get this shit done now!"
-    );
-    createdPriorityId = priorityData.id;
-
-    const statusData = await status.createStatus(
-      "To-Do",
-      "On the list of things to-do..."
-    );
-    createdStatusId = statusData.id;
-  } catch (err) {
-    console.error(err);
+  for (let i = 1; i < 4; i++) {
+    const sprint = {
+      title: `Sprint ${i}`,
+      project_id: projectId,
+      start_date: startDate,
+      end_date: endDate,
+      planned_capacity: i + 40,
+    };
+    const data = await createSprint(sprint);
+    expect(data).toMatchObject(sprint);
   }
+
+  const priorityData = await createPriority("High", "Get this shit done now!");
+  priorityId = priorityData.id;
+
+  const statusData = await createStatus(
+    "To Do",
+    "On the list of things to-do..."
+  );
+  statusId = statusData.id;
 });
 
-describe("Testing task file", () => {
-  test("Testing Create function", async () => {
-    const data = await task.createTask({
-      title: "Test Create",
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
-    });
-    createdTaskId = data.id;
+describe("Task tests", () => {
+  test("Create tasks", async () => {
+    const items = [
+      "Design UX wireframe for Project Z",
+      "Set up database and ORM",
+      "Obtain OpenAI API keys",
+      "AuthError defect with login page",
+    ];
+
+    for (const item of items) {
+      const task = {
+        title: item,
+        sprint_id: 1,
+        status_id: statusId,
+        priority_id: priorityId,
+      };
+      const data = await createTask(task);
+      expect(data).toMatchObject(task);
+    }
+  });
+
+  test("Retrieve a single task", async () => {
+    const data = await getTask({ id: 1 });
     expect(data).toMatchObject({
-      title: "Test Create",
-      description: null,
-      category: null,
-      requirements: null,
-      acceptance_criteria: null,
-      points: null,
-      assigned_to: null,
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
+      title: "Design UX wireframe for Project Z",
+      sprint_id: 1,
+      status_id: statusId,
+      priority_id: priorityId,
     });
   });
 
-  test("Creating another task...", async () => {
-    const data = await task.createTask({
-      title: "Test Create Number Two",
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
-    });
-    createdNextTaskId = data.id;
-    expect(data).toMatchObject({
-      title: "Test Create Number Two",
-      description: null,
-      category: null,
-      requirements: null,
-      acceptance_criteria: null,
-      points: null,
-      assigned_to: null,
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
-    });
-  });
-
-  test("Testing Get function", async () => {
-    const data = await task.getTask({
-      id: createdTaskId,
-    });
-    expect(data).toMatchObject({
-      title: "Test Create",
-      description: null,
-      category: null,
-      requirements: null,
-      acceptance_criteria: null,
-      points: null,
-      assigned_to: null,
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
-    });
-  });
-
-  test("Testing Get Many Tasks function", async () => {
-    const data = await task.getTasks({
-      sprint_id: createdSprintId,
+  test("Retrieve multiple tasks", async () => {
+    const data = await getTasks({
+      sprint_id: 1,
     });
     expect(data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: createdTaskId,
-          title: "Test Create",
-          description: null,
-          category: null,
-          requirements: null,
-          acceptance_criteria: null,
-          points: null,
-          assigned_to: null,
-          sprint_id: createdSprintId,
-          status_id: createdStatusId,
-          priority_id: createdPriorityId,
+          title: "Design UX wireframe for Project Z",
+          sprint_id: 1,
+          status_id: statusId,
+          priority_id: priorityId,
         }),
         expect.objectContaining({
-          id: createdNextTaskId,
-          title: "Test Create Number Two",
-          description: null,
-          category: null,
-          requirements: null,
-          acceptance_criteria: null,
-          points: null,
-          assigned_to: null,
-          sprint_id: createdSprintId,
-          status_id: createdStatusId,
-          priority_id: createdPriorityId,
+          title: "Set up database and ORM",
+          sprint_id: 1,
+          status_id: statusId,
+          priority_id: priorityId,
+        }),
+        expect.objectContaining({
+          title: "Obtain OpenAI API keys",
+          sprint_id: 1,
+          status_id: statusId,
+          priority_id: priorityId,
+        }),
+        expect.objectContaining({
+          title: "AuthError defect with login page",
+          sprint_id: 1,
+          status_id: statusId,
+          priority_id: priorityId,
         }),
       ])
     );
   });
 
-  test("Testing Update function", async () => {
-    const data = await task.updateTask({
-      id: createdTaskId,
-      description: "Yeehaw",
-      category: "Catboy",
+  test("Update task", async () => {
+    const data = await updateTask({
+      id: 4,
+      description: "Sample task description",
+      category: "Feature",
       requirements: "minimal",
       acceptance_criteria: "must dance",
       points: 5,
+      sprint_id: 2,
     });
     expect(data).toMatchObject({
-      id: createdTaskId,
-      title: "Test Create",
-      description: "Yeehaw",
-      category: "Catboy",
+      id: 4,
+      title: "AuthError defect with login page",
+      description: "Sample task description",
+      category: "Feature",
       requirements: "minimal",
       acceptance_criteria: "must dance",
       points: 5,
-      assigned_to: null,
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
+      sprint_id: 2,
+      status_id: statusId,
+      priority_id: priorityId,
     });
   });
 
-  test("Testing Delete function", async () => {
-    const data = await task.deleteTask(createdTaskId);
-    expect(data).toMatchObject({
-      id: createdTaskId,
-      title: "Test Create",
-      description: "Yeehaw",
-      category: "Catboy",
-      requirements: "minimal",
-      acceptance_criteria: "must dance",
-      points: 5,
-      assigned_to: null,
-      sprint_id: createdSprintId,
-      status_id: createdStatusId,
-      priority_id: createdPriorityId,
-    });
+  test("Delete task", async () => {
+    const taskDetails = {
+      title: "DELETE ME!",
+      sprint_id: 3,
+      status_id: statusId,
+      priority_id: priorityId,
+    };
+    const newTask = await createTask(taskDetails);
+    const data = await deleteTask(newTask.id);
+    expect(data).toMatchObject(taskDetails);
   });
 
-  test("Testing Get deleted Task function", async () => {
-    const data = await task.getTask({
-      id: createdTaskId,
-    });
+  test("Attempt to retrieve deleted task", async () => {
+    const data = await getTask({ id: 5 });
     expect(data).toBe(null);
   });
 });
 
 afterAll(async () => {
-  // Delete task records
-  await task.deleteTask(createdNextTaskId);
-
-  // Delete sprint record
-  await sprint.deleteSprint(createdSprintId);
-
-  // Delete project record
-  await project.deleteProject(createdProjectId);
-
-  // Delete priority record
-  await priority.deletePriority(createdPriorityId);
-
-  // Delete status record
-  await status.deleteStatus(createdStatusId);
+  for (let i = 1; i < 5; i++) {
+    await deleteTask(i);
+  }
+  for (let i = 1; i < 4; i++) {
+    await deleteSprint(i);
+  }
+  await deleteProject(1);
+  await deletePriority(1);
+  await deleteStatus(1);
+  await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`
 });
