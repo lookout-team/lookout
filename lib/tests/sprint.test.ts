@@ -1,133 +1,126 @@
-import * as sprint from "../db/sprint";
-import * as project from "../db/project";
+import {
+  createSprint,
+  getSprint,
+  getSprints,
+  updateSprint,
+  deleteSprint,
+} from "../db/sprint";
+import { createProject, deleteProject } from "../db/project";
+import prisma from "../db/prisma";
 
-let createdSprintId: number;
-let createdNextSprintId: number;
-let createdProjectId: number;
+let projectId: number;
+const startDate = new Date("2024-05-01T08:00:00Z");
+const endDate = new Date("2024-05-07T17:00:00Z");
 
 beforeAll(async () => {
-  // Call the createSprint function
-  try {
-    const data = await project.createProject({
-      title: "Test Project",
-      description: "Root project",
-    });
-    createdProjectId = data.id;
-  } catch (err) {
-    console.error(err);
-  }
+  const data = await createProject({
+    title: "Project X",
+    description: "Likely the greatest project humanity has ever seen",
+    last_updated: new Date("2024-05-01T10:00:00Z"),
+  });
+  projectId = data.id;
 });
 
-describe("Testing sprint file", () => {
-  test("Testing Create function", async () => {
-    const data = await sprint.createSprint({
-      title: "Test Create",
-      project_id: createdProjectId,
+describe("Sprint Tests", () => {
+  test("Create 3 sprints", async () => {
+    for (let i = 1; i < 4; i++) {
+      const sprint = {
+        title: `Sprint ${i}`,
+        project_id: projectId,
+        start_date: startDate,
+        end_date: endDate,
+        planned_capacity: i + 40,
+      };
+      const data = await createSprint(sprint);
+      expect(data).toMatchObject(sprint);
+    }
+  });
+
+  test("Retrieve single sprint", async () => {
+    const data = await getSprint({
+      id: 1,
     });
-    createdSprintId = data.id;
     expect(data).toMatchObject({
-      title: "Test Create",
-      project_id: createdProjectId,
-      start_date: null,
-      end_date: null,
-      planned_capacity: null,
+      id: 1,
+      title: "Sprint 1",
+      project_id: projectId,
+      start_date: startDate,
+      end_date: endDate,
+      planned_capacity: 41,
     });
   });
 
-  test("Creating another sprint...", async () => {
-    const data = await sprint.createSprint({
-      title: "Test Create Number Two",
-      project_id: createdProjectId,
+  test("Retrieve multiple sprints", async () => {
+    const data = await getSprints({
+      project_id: projectId,
     });
-    createdNextSprintId = data.id;
-    expect(data).toMatchObject({
-      title: "Test Create Number Two",
-      project_id: createdProjectId,
-      start_date: null,
-      end_date: null,
-      planned_capacity: null,
-    });
-  });
-
-  test("Testing Get function", async () => {
-    const data = await sprint.getSprint({
-      id: createdSprintId,
-    });
-    expect(data).toMatchObject({
-      id: createdSprintId,
-      title: "Test Create",
-      project_id: createdProjectId,
-      start_date: null,
-      end_date: null,
-      planned_capacity: null,
-    });
-  });
-
-  test("Testing Get Many Sprints function", async () => {
-    const data = await sprint.getSprints({
-      project_id: createdProjectId,
-    });
+    expect(data).toHaveLength(3);
     expect(data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: createdSprintId,
-          title: "Test Create",
-          project_id: createdProjectId,
-          start_date: null,
-          end_date: null,
-          planned_capacity: null,
+          title: "Sprint 1",
+          project_id: projectId,
+          start_date: startDate,
+          end_date: endDate,
+          planned_capacity: 41,
         }),
         expect.objectContaining({
-          id: createdNextSprintId,
-          title: "Test Create Number Two",
-          project_id: createdProjectId,
-          start_date: null,
-          end_date: null,
-          planned_capacity: null,
+          title: "Sprint 2",
+          project_id: projectId,
+          start_date: startDate,
+          end_date: endDate,
+          planned_capacity: 42,
+        }),
+        expect.objectContaining({
+          title: "Sprint 3",
+          project_id: projectId,
+          start_date: startDate,
+          end_date: endDate,
+          planned_capacity: 43,
         }),
       ])
     );
   });
 
-  test("Testing Update function", async () => {
-    const data = await sprint.updateSprint({
-      id: createdSprintId,
-      planned_capacity: 5,
+  test("Update sprint details", async () => {
+    const data = await updateSprint({
+      id: 1,
+      end_date: null,
+      planned_capacity: 30,
     });
     expect(data).toMatchObject({
-      id: createdSprintId,
-      title: "Test Create",
-      project_id: createdProjectId,
-      start_date: null,
+      id: 1,
+      title: "Sprint 1",
+      project_id: projectId,
+      start_date: startDate,
       end_date: null,
-      planned_capacity: 5,
+      planned_capacity: 30,
     });
   });
 
-  test("Testing Delete function", async () => {
-    const data = await sprint.deleteSprint(createdSprintId);
+  test("Delete sprint", async () => {
+    const data = await deleteSprint(3);
     expect(data).toMatchObject({
-      id: createdSprintId,
-      title: "Test Create",
-      project_id: createdProjectId,
-      start_date: null,
-      end_date: null,
-      planned_capacity: 5,
+      id: 3,
+      title: "Sprint 3",
+      project_id: projectId,
+      start_date: startDate,
+      end_date: endDate,
+      planned_capacity: 43,
     });
   });
 
-  test("Testing Get deleted Sprint function", async () => {
-    const data = await sprint.getSprint({
-      id: createdSprintId,
+  test("Attempt to retrieve nonexist sprint", async () => {
+    const data = await getSprint({
+      id: 3,
     });
     expect(data).toBe(null);
   });
 });
 
 afterAll(async () => {
-  // Delete sprint record
-  await sprint.deleteSprint(createdNextSprintId);
-
-  // Delete project record
-  await project.deleteProject(createdProjectId);
+  await deleteSprint(1);
+  await deleteSprint(2);
+  await deleteProject(1);
+  await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`
 });
