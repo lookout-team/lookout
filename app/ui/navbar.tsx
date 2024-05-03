@@ -6,6 +6,7 @@ import {
   NavbarContent,
   NavbarItem,
   Link,
+  Button,
 } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 
@@ -31,7 +32,7 @@ export default function AppNavbar() {
   }
 
   return (
-    <Navbar isBordered>
+    <Navbar className="justify-center" maxWidth="xl" isBordered>
       <NavbarBrand>
         <p className="font-bold text-inherit">Lookout</p>
       </NavbarBrand>
@@ -40,14 +41,14 @@ export default function AppNavbar() {
       </NavbarContent>
       {/* TODO: Authentication */}
       <NavbarContent justify="end">
-        {/* <NavbarItem className="hidden lg:flex">
+        <NavbarItem className="hidden lg:flex">
           <Link href="#">Login</Link>
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="#" variant="flat">
             Sign Up
           </Button>
-        </NavbarItem> */}
+        </NavbarItem>
       </NavbarContent>
     </Navbar>
   );
