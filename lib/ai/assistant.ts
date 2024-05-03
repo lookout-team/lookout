@@ -1,38 +1,31 @@
-const { OpenAI } = require("openai");
-const functions = require("./functions");
-const {
-  getTask,
-  getTasks,
-  createTask,
-  updateTask,
-  deleteTask,
-} = require("../db/task");
-const readline = require("readline");
+import { OpenAI } from "openai";
+const functions = require("./functions.json");
+import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
 require("dotenv").config();
+
+type ComponentType = "table" | "card" | null;
 
 type AssistantResponse = {
   message: string;
   data: any;
-  componentType: "card" | "table" | null;
+  componentType: ComponentType;
 };
 
 /**
- * The AssistantManager class represents a manager for an AI-powered chat assistant.
- * It provides methods to start a conversation, process user input, and handle assistant actions.
+ * Provides an interface for the AI chat assistant.
  */
-class AssistantManager {
+export class AssistantManager {
   openai: any;
   assistantId: any;
   thread: any;
   run: any;
+
   constructor() {
     this.openai = new OpenAI();
   }
 
   /**
-   * Starts a conversation with the AI-powered chat assistant.
-   *
-   * @returns {Promise<void>} A promise that resolves when the conversation is started.
+   * Starts a new conversation thread.
    */
   async startConversation() {
     const assistant = await this.openai.beta.assistants.create({
@@ -53,28 +46,26 @@ class AssistantManager {
     });
 
     this.assistantId = assistant.id;
-    // console.log("Created Assistant with Id: " + this.assistantId);
-
     this.thread = await this.openai.beta.threads.create();
-    // console.log("Created thread with Id: " + this.thread.id);
   }
 
   /**
-   * Processes the user input and returns an AssistantResponse.
-   * @param userInput - The user input to process.
-   * @returns A Promise that resolves to an AssistantResponse.
+   * Processes the user input and returns a response.
+   * @param {string} userInput - The user input to process.
+   * @returns {AssistantResponse} - Response returned by the Assistant API,
+   * containing the message, data, and type of component to render.
    */
   async processUserInput(userInput: string): Promise<AssistantResponse> {
-    const userMessage = await this.openai.beta.threads.messages.create(
+    await this.openai.beta.threads.messages.create(
       this.thread.id,
       {
         role: "user",
         content: userInput,
       }
     );
-    // console.log("Message added to thread: " + userMessage.id);
 
     await this.createRun();
+
     const messages = await this.openai.beta.threads.messages.list(
       this.thread.id
     );
@@ -84,12 +75,13 @@ class AssistantManager {
     let { message, data } = parsedContent;
 
     // Ensure data is always an array if not null
-    if (data != null && !Array.isArray(data)) {
-      data = [data];
-    }
+    let componentType: ComponentType = null;
 
-    let componentType: "card" | "table" | null = null;
     if (data !== null) {
+      if (!Array.isArray(data)) {
+        data = [data];
+      }
+
       if (data.length === 1) {
         componentType = "card";
       } else if (data.length > 1) {
@@ -108,7 +100,8 @@ class AssistantManager {
 
   /**
    * Creates a new run for the assistant and polls for its status.
-   * If the run requires action, it handles the action. Otherwise, it completes without needing additional actions.
+   * If the run requires action, it handles the action. 
+   * Otherwise, it completes without needing additional actions.
    */
   async createRun() {
     this.run = await this.openai.beta.threads.runs.createAndPoll(
@@ -119,32 +112,30 @@ class AssistantManager {
       }
     );
 
-    // console.log("Run status: " + this.run.status);
-
     if (this.run.status === "requires_action") {
       await this.handleRequiresAction();
-    } else {
-      // console.log("Run completed without needing additional actions.");
     }
   }
 
   /**
-   * Handles the requires_action state by executing the necessary tool functions and submitting the tool outputs.
-   * @returns {Promise<void>} A promise that resolves when the tool outputs are submitted.
+   * Handles the requires_action state by executing the 
+   * necessary tool functions and submitting the tool outputs.
    */
   async handleRequiresAction() {
-    // console.log("Handling requires_action...");
     const toolOutputs = await Promise.all(
       this.run.required_action.submit_tool_outputs.tool_calls.map(
         async (tool: any) => {
           const parsedArguments = JSON.parse(tool.function.arguments);
+
           // Shows what function and arguments are being called
           console.log(
             `Arguments for ${tool.function.name}:`,
             tool.function.arguments
           );
+
           // Handle function execution based on the function name and arguments.
           let output;
+
           switch (tool.function.name) {
             case "getTask":
               output = await getTask(tool.function.parsedArguments);
@@ -165,6 +156,7 @@ class AssistantManager {
               output = "Function not supported";
               break;
           }
+          
           return {
             tool_call_id: tool.id,
             output: JSON.stringify(output),
@@ -180,28 +172,6 @@ class AssistantManager {
         this.run.id,
         { tool_outputs: toolOutputs }
       );
-      // console.log("Tool outputs submitted successfully.");
-    } else {
-      // console.log("No tool outputs to submit.");
     }
   }
 }
-
-const manager = new AssistantManager();
-manager.startConversation();
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  prompt: "user > ",
-});
-
-rl.prompt();
-rl.on("line", async (input: any) => {
-  const response = await manager.processUserInput(input);
-
-  console.log("Message: " + response.message);
-  console.log("Data: " + JSON.stringify(response.data, null, 2));
-  console.log("Component Type: " + response.componentType);
-  rl.prompt();
-});
