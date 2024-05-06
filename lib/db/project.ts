@@ -3,8 +3,9 @@ import { Project } from "@prisma/client";
 
 /**
  * Creates a new project.
- * @param {Project} params Information about the project to create.
- * @returns {Promise<Project>} The created project object.
+ *
+ * @param {Project} params - Project details
+ * @returns {Promise<Project>} The created project
  */
 export async function createProject(
   params: Partial<Project>
@@ -19,8 +20,9 @@ export async function createProject(
 
 /**
  * Retrieves a project by ID.
+ *
  * @param {number} id - Project ID
- * @returns {Promise<Project>} The created project.
+ * @returns {Promise<Project>} The created project
  */
 export async function getProject(id: number): Promise<Project | null> {
   const project = await prisma.project.findFirst({
@@ -32,11 +34,25 @@ export async function getProject(id: number): Promise<Project | null> {
 }
 
 /**
- * Deletes a project.
- * @export
- * @async
- * @param {number} id The ID of the project to delete.
- * @returns {Promise<Project>} The deleted project.
+ * Retrieves projects.
+ *
+ * @param {Partial<Project>} params - Project ID
+ * @returns {Promise<Project[]>} The created project
+ */
+export async function getProjects(
+  params?: Partial<Project>
+): Promise<Project[]> {
+  const project = await prisma.project.findMany({
+    where: { ...params },
+  });
+  return project;
+}
+
+/**
+ * Deletes project.
+ *
+ * @param {number} id - Project ID
+ * @returns {Promise<Project>} - The deleted project
  */
 export async function deleteProject(id: number): Promise<Project> {
   const project = await prisma.project.delete({

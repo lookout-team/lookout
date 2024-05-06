@@ -1,6 +1,6 @@
-import SprintTable from "@/app/ui/projects/sprint-table";
-import SprintBoard from "@/app/ui/projects/sprint-board";
-import ViewSelect from "@/app/ui/projects/view-select";
+import SprintTable from "@/app/ui/sprints/sprint-table";
+import SprintBoard from "@/app/ui/sprints/sprint-board";
+import ViewSelect from "@/app/ui/sprints/view-select";
 import { getSprints } from "@/lib/db/sprint";
 import { getTasks } from "@/lib/db/task";
 import { getProject } from "@/lib/db/project";

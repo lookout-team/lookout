@@ -26,15 +26,15 @@ export default function SprintTable({
       <TableCell>{task.title}</TableCell>
       <TableCell>{task.points}</TableCell>
       <TableCell>{task.user?.username}</TableCell>
-      <TableCell>{task.status.name}</TableCell>
-      <TableCell>{task.priority.name}</TableCell>
+      <TableCell>{task.status?.name}</TableCell>
+      <TableCell>{task.priority?.name}</TableCell>
     </TableRow>
   ));
 
   return (
     <>
       <SprintHeader sprint={sprint} />
-      <Table color="primary" selectionMode="single" defaultSelectedKeys={["2"]}>
+      <Table color="primary" selectionMode="single">
         <TableHeader>
           {columns.map((column) => (
             <TableColumn>{column}</TableColumn>

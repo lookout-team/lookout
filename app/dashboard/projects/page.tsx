@@ -1,15 +1,19 @@
-import prisma from "@/lib/db/prisma";
-import { Project } from "@prisma/client";
-import ProjectCard from "@/app/ui/projects/project-card";
+import ProjectButtonModal from "@/app/ui/projects/project-button-modal";
+import ProjectTable from "@/app/ui/projects/project-table";
+import { createProject, getProjects } from "@/lib/db/project";
 
 export default async function Page() {
-  const projects: Project[] = await prisma.project.findMany();
+  const projects = await getProjects();
 
   return (
-    <div className="grid grid-cols-4 gap-8">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
-      ))}
+    <div>
+      <div className="flex justify-between items-center">
+        <div className="text-2xl font-medium">Projects</div>
+        <div>
+          <ProjectButtonModal />
+        </div>
+      </div>
+      {projects.length > 0 && <ProjectTable projects={projects} />}
     </div>
   );
 }
