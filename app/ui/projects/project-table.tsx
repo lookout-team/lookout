@@ -8,19 +8,20 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Button,
 } from "@nextui-org/react";
 import { usePathname, useRouter } from "next/navigation";
 import { getDuration } from "../utils";
+import { Pencil, Trash2 } from "lucide-react";
 
 export default function ProjectTable({ projects }: { projects: Project[] }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  let columns = ["Title", "Description", "Current Sprint", "Last Updated"];
   let rows = [];
 
   for (const project of projects) {
-    let last_updated = "No activity yet...";
+    let last_updated = "No activity yet";
 
     if (project.last_updated !== null) {
       last_updated = getDuration(project.last_updated);
@@ -32,6 +33,16 @@ export default function ProjectTable({ projects }: { projects: Project[] }) {
         <TableCell>{project.description}</TableCell>
         <TableCell>{project.current_sprint_id}</TableCell>
         <TableCell>{last_updated}</TableCell>
+        <TableCell>
+          <Button size="sm" variant="light">
+            <Pencil size={16} />
+          </Button>
+        </TableCell>
+        <TableCell>
+          <Button size="sm" variant="light">
+            <Trash2 size={16} />
+          </Button>
+        </TableCell>
       </TableRow>
     );
   }
@@ -39,9 +50,12 @@ export default function ProjectTable({ projects }: { projects: Project[] }) {
   return (
     <Table color="primary" selectionMode="single">
       <TableHeader>
-        {columns.map((column) => (
-          <TableColumn>{column}</TableColumn>
-        ))}
+        <TableColumn>Title</TableColumn>
+        <TableColumn>Description</TableColumn>
+        <TableColumn>Current Sprint</TableColumn>
+        <TableColumn>Last Updated</TableColumn>
+        <TableColumn> </TableColumn>
+        <TableColumn> </TableColumn>
       </TableHeader>
       <TableBody>{rows}</TableBody>
     </Table>
