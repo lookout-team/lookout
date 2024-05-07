@@ -11,8 +11,26 @@ import {
 } from "@nextui-org/react";
 
 interface Props {
-  buttonText: string;
-  modalTitle?: string;
+  buttonChildren: any;
+  buttonSize?: "lg" | "sm" | "md" | undefined;
+  buttonColor?:
+    | "primary"
+    | "default"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger"
+    | undefined;
+  buttonVariant?:
+    | "flat"
+    | "solid"
+    | "bordered"
+    | "light"
+    | "faded"
+    | "shadow"
+    | "ghost"
+    | undefined;
+  modalTitle: string;
   modalSize?:
     | "lg"
     | "xs"
@@ -44,8 +62,13 @@ export default function ButtonModal(props: Props) {
 
   return (
     <>
-      <Button color="primary" variant="flat" onPress={onOpen}>
-        {props.buttonText}
+      <Button
+        color={props.buttonColor}
+        size={props.buttonSize}
+        variant={props.buttonVariant ?? "flat"}
+        onPress={onOpen}
+        >
+        {props.buttonChildren}
       </Button>
       <Modal
         placement={props.modalPlacement ?? "top-center"}
@@ -57,12 +80,12 @@ export default function ButtonModal(props: Props) {
           {(onClose) => (
             <form action={props.submitAction}>
               <ModalHeader className="flex flex-col gap-1">
-                {props.modalTitle ?? props.buttonText}
+                {props.modalTitle}
               </ModalHeader>
               <ModalBody>{props.modalBody}</ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  {props.cancelText ?? "Confirm"}
+                  {props.cancelText ?? "Cancel"}
                 </Button>
                 <Button type="submit" color="primary" onPress={onClose}>
                   {props.confirmText ?? "Confirm"}
