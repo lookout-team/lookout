@@ -16,14 +16,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en" className="light">
-      <body className={`${inter.className} antialiased`}>
-        <Providers>
-          <AppNavbar />
-          {children}
-        </Providers>
-      </body>
-    </html>
-  );
+    return (
+      <html lang="en" className="light">
+        <body className={`${inter.className} antialiased`}>
+          <Providers>
+            <AppNavbar />
+            {children}
+          </Providers>
+        </body>
+      </html>
+    );
 }
