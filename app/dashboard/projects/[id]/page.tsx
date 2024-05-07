@@ -1,10 +1,18 @@
 import SprintTable from "@/app/ui/sprints/sprint-table";
 import SprintBoard from "@/app/ui/sprints/sprint-board";
 import ViewSelect from "@/app/ui/sprints/view-select";
-import { getSprints } from "@/lib/db/sprint";
+import {
+  createSprint,
+  deleteSprint,
+  getSprints,
+  updateSprint,
+} from "@/lib/db/sprint";
 import { getTasks } from "@/lib/db/task";
 import { getProject } from "@/lib/db/project";
 import { notFound } from "next/navigation";
+import ButtonModal from "@/app/ui/core/button-modal";
+import SprintForm from "@/app/ui/sprints/sprint-form";
+import { revalidatePath } from "next/cache";
 
 type QueryParams = {
   view: "board" | "table";
@@ -17,14 +25,16 @@ export default async function Page({
   params: { id: number };
   searchParams?: QueryParams;
 }) {
+  const pathname = `/dashboard/projects/${params.id}`;
+
   const selectedView = searchParams?.view ?? "table";
   const isTableView = selectedView == "table";
 
   const project = await getProject(+params.id);
   if (!project) return notFound();
 
-  const sprints = await getSprints({ project_id: project?.id });
   const sprintComponents = [];
+  const sprints = await getSprints({ project_id: project?.id });
 
   for (const sprint of sprints) {
     const tasks = await getTasks({ sprint_id: sprint.id });
@@ -42,8 +52,39 @@ export default async function Page({
     sprintComponents.push(component);
   }
 
+  async function createAction(form: FormData) {
+    "use server";
+    const sprint = Object.fromEntries(form.entries());
+    createSprint({ ...sprint });
+    revalidatePath(pathname);
+  }
+
+  async function editAction(form: FormData) {
+    "use server";
+    const sprint = Object.fromEntries(form.entries());
+    updateSprint({ ...sprint });
+    revalidatePath(pathname);
+  }
+
+  async function deleteAction(form: FormData) {
+    "use server";
+    const id = form.get("id");
+    if (id !== null) deleteSprint(+id);
+    revalidatePath(pathname);
+  }
+
   return (
     <>
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-2xl font-medium">{project.title}</div>
+        <ButtonModal
+          buttonChildren="Create New Sprint"
+          buttonColor="primary"
+          modalTitle="Create New Sprint"
+          modalBody={<SprintForm />}
+          submitAction={createAction}
+        />
+      </div>
       <div className="grid grid-cols-10 gap-4">
         <div className="col-span-2">
           <ViewSelect selectedView={selectedView} />

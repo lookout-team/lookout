@@ -12,7 +12,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
     <>
       {project && <input type="hidden" name="id" value={project.id} /> }
       <Input
-        className="mb-4"
+        className="mb-2"
         variant="bordered"
         label="Title"
         name="title"

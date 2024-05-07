@@ -46,7 +46,7 @@ export default function ProjectTable(props: ComponentProps) {
     );
 
     rows.push(
-      <TableRow onClick={() => router.push(`${pathname}/${project.id}`)}>
+      <TableRow key={project.id} onClick={() => router.push(`${pathname}/${project.id}`)}>
         <TableCell>{project.title}</TableCell>
         <TableCell>{project.description}</TableCell>
         <TableCell>{project.current_sprint_id}</TableCell>
