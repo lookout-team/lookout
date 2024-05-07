@@ -13,6 +13,8 @@ import { notFound } from "next/navigation";
 import ButtonModal from "@/app/ui/core/button-modal";
 import SprintForm from "@/app/ui/sprints/sprint-form";
 import { revalidatePath } from "next/cache";
+import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import PageBreadcrumbs from "@/app/ui/core/breadcrumbs";
 
 type QueryParams = {
   view: "board" | "table";
@@ -73,9 +75,15 @@ export default async function Page({
     revalidatePath(pathname);
   }
 
+  const breadcrumbs = [
+    { title: "Projects", link: "/dashboard/projects" },
+    { title: project.title ?? "", link: undefined },
+  ];
+
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <PageBreadcrumbs items={breadcrumbs} />
+      <div className="flex justify-between items-center mt-4 mb-6">
         <div className="text-2xl font-medium">{project.title}</div>
         <ButtonModal
           buttonChildren="Create New Sprint"
