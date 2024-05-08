@@ -8,17 +8,13 @@ import {
   Chip,
   Divider,
 } from "@nextui-org/react";
-import SprintHeader from "./sprint-header";
 import { TaskWithIncludes } from "@/lib/db/types";
-import { Sprint } from "@prisma/client";
 
-export default function SprintBoard({
-  sprint,
-  tasks,
-}: {
-  sprint: Sprint;
+interface ComponentProps {
   tasks: TaskWithIncludes[];
-}) {
+}
+
+export default function SprintBoard(props: ComponentProps) {
   const statuses = ["To Do", "In Progress", "Completed"];
 
   const statusColumns = statuses.map((status) => (
@@ -26,7 +22,7 @@ export default function SprintBoard({
       <CardHeader className="font-medium">{status}</CardHeader>
       <Divider />
       <CardBody className="p-4 bg-slate-50">
-        {tasks
+        {props.tasks
           .filter((task) => task.status.name == status)
           .map((task) => (
             <Card className="mt-2 mb-2" shadow="sm" isHoverable isPressable>
@@ -51,7 +47,6 @@ export default function SprintBoard({
 
   return (
     <>
-      <SprintHeader sprint={sprint} />
       <Card radius="sm" shadow="none" className="border-2 p-4">
         <CardBody>
           <div className="flex flex-row gap-4">{statusColumns}</div>

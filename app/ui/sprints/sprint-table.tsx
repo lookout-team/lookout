@@ -8,21 +8,17 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
-import { Sprint } from "@prisma/client";
-import SprintHeader from "./sprint-header";
 import { TaskWithIncludes } from "@/lib/db/types";
 
-export default function SprintTable({
-  sprint,
-  tasks,
-}: {
-  sprint: Sprint;
+interface ComponentProps {
   tasks: TaskWithIncludes[];
-}) {
+}
+
+export default function SprintTable(props: ComponentProps) {
   const columns = ["Title", "Points", "Assigned To", "Status", "Priority"];
 
-  const rows = tasks.map((task) => (
-    <TableRow>
+  const rows = props.tasks.map((task) => (
+    <TableRow key={task.id}>
       <TableCell>{task.title}</TableCell>
       <TableCell>{task.points}</TableCell>
       <TableCell>{task.user?.username}</TableCell>
@@ -33,11 +29,10 @@ export default function SprintTable({
 
   return (
     <>
-      <SprintHeader sprint={sprint} />
       <Table color="primary" selectionMode="single">
         <TableHeader>
           {columns.map((column) => (
-            <TableColumn>{column}</TableColumn>
+            <TableColumn key={column}>{column}</TableColumn>
           ))}
         </TableHeader>
         <TableBody>{rows}</TableBody>

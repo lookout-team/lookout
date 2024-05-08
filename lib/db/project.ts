@@ -57,13 +57,17 @@ export async function getProjects(
 export async function updateProject(
   params: Partial<Project>
 ): Promise<Project> {
-  params.id = typeof params.id === "string" ? +params.id : params.id;
+  if (typeof params.id === "string") {
+    params.id = +params.id;
+  }
+
   const project = await prisma.project.update({
     where: { id: params.id },
     data: {
       ...params,
     },
   });
+
   return project;
 }
 

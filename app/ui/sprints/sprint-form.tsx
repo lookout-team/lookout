@@ -8,13 +8,12 @@ import { CalendarDate } from "@internationalized/date";
 function toCalendarDate(date: Date | null | undefined) {
   if (date === undefined || date === null) return date;
   const year = date.getFullYear();
-  const month = date.getMonth();
+  const month = date.getMonth() + 1;
   const day = date.getDate();
   return new CalendarDate(year, month, day);
 }
 
 export default function SprintForm({ sprint }: { sprint?: Sprint }) {
-  const now = new Date();
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const [title, setTitle] = useState(sprint?.title);
