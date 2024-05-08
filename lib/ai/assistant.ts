@@ -127,16 +127,17 @@ export class AssistantManager {
             `Arguments for ${tool.function.name}:`,
             tool.function.arguments
           );
+          console.log("Arguments as Object: " + parsedArguments);
 
           // Handle function execution based on the function name and arguments.
           let output;
 
           switch (tool.function.name) {
             case "getTask":
-              output = await getTask(tool.function.parsedArguments);
+              output = await getTask(parsedArguments);
               break;
             case "getTasks":
-              output = await getTasks(tool.function.parsedArguments);
+              output = await getTasks(parsedArguments);
               break;
             case "createTask":
               output = await createTask(tool.function.parsedArguments);
