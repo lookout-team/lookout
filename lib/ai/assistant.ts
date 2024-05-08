@@ -1,15 +1,9 @@
 import { OpenAI } from "openai";
 const functions = require("./functions.json");
 import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
+import { AssistantResponse, ComponentType } from "./types";
 require("dotenv").config();
 
-type ComponentType = "table" | "card" | null;
-
-type AssistantResponse = {
-  message: string;
-  data: any;
-  componentType: ComponentType;
-};
 
 /**
  * Provides an interface for the AI chat assistant.
@@ -72,7 +66,7 @@ export class AssistantManager {
 
     const firstMessageContent = messages.data[0].content[0].text.value;
     const parsedContent = JSON.parse(firstMessageContent);
-    let { message, data } = parsedContent;
+    let { message, data, status } = parsedContent;
 
     // Ensure data is always an array if not null
     let componentType: ComponentType = null;
@@ -93,6 +87,7 @@ export class AssistantManager {
       message: message,
       data: data,
       componentType: componentType,
+      status: status,
     };
 
     return assistantResponse;
