@@ -17,5 +17,6 @@ rl.on("line", async (input: any) => {
   console.log("Message: " + response.message);
   console.log("Data: " + JSON.stringify(response.data, null, 2));
   console.log("Component Type: " + response.componentType);
+  console.log("Status: " + response.status);
   rl.prompt();
 });
