@@ -15,6 +15,8 @@ import SprintForm from "@/app/ui/sprints/sprint-form";
 import { revalidatePath } from "next/cache";
 import PageBreadcrumbs from "@/app/ui/core/breadcrumbs";
 import SprintHeader from "@/app/ui/sprints/sprint-header";
+import { CalendarPlus, SquarePen } from "lucide-react";
+import TaskForm from "@/app/ui/tasks/task-form";
 
 type QueryParams = {
   view: "board" | "table";
@@ -28,11 +30,11 @@ export default async function Page({
   searchParams?: QueryParams;
 }) {
   const pathname = `/dashboard/projects/${params.id}`;
-  
+
   const project = await getProject(+params.id);
   if (!project) return notFound();
 
-  async function createAction(form: FormData) {
+  async function createSprintAction(form: FormData) {
     "use server";
     if (!project) return;
 
@@ -53,7 +55,7 @@ export default async function Page({
     revalidatePath(pathname);
   }
 
-  async function editAction(form: FormData) {
+  async function updateSprintAction(form: FormData) {
     "use server";
     if (!project) return;
 
@@ -76,11 +78,15 @@ export default async function Page({
     revalidatePath(pathname);
   }
 
-  async function deleteAction(form: FormData) {
+  async function deleteSprintAction(form: FormData) {
     "use server";
     const id = form.get("id");
     if (id !== null) deleteSprint(+id);
     revalidatePath(pathname);
+  }
+
+  async function createTaskAction(form: FormData) {
+    "use server";
   }
 
   const selectedView = searchParams?.view ?? "table";
@@ -96,8 +102,8 @@ export default async function Page({
       <div key={sprint.id} className="mb-6">
         <SprintHeader
           sprint={sprint}
-          editAction={editAction}
-          deleteAction={deleteAction}
+          updateAction={updateSprintAction}
+          deleteAction={deleteSprintAction}
         />
         <SprintTable tasks={tasks} />
       </div>
@@ -105,8 +111,8 @@ export default async function Page({
       <div key={sprint.id} className="mb-6">
         <SprintHeader
           sprint={sprint}
-          editAction={editAction}
-          deleteAction={deleteAction}
+          updateAction={updateSprintAction}
+          deleteAction={deleteSprintAction}
         />
         <SprintBoard tasks={tasks} />
       </div>
@@ -125,13 +131,33 @@ export default async function Page({
       <PageBreadcrumbs items={breadcrumbs} />
       <div className="flex justify-between items-center mt-4 mb-2">
         <div className="text-2xl font-medium">{project.title}</div>
-        <ButtonModal
-          buttonChildren="Create New Sprint"
-          buttonColor="primary"
-          modalTitle="Create New Sprint"
-          modalBody={<SprintForm />}
-          submitAction={createAction}
-        />
+        <div className="flex items-row gap-2">
+          <ButtonModal
+            buttonChildren={
+              <>
+                <SquarePen size={16} /> Create Task
+              </>
+            }
+            buttonColor="primary"
+            modalTitle="Create New Task"
+            modalSize="2xl"
+            modalBody={<TaskForm sprints={sprints} />}
+            modalScroll="outside"
+            confirmText="Create Task"
+            submitAction={createTaskAction}
+          />
+          <ButtonModal
+            buttonChildren={
+              <>
+                <CalendarPlus size={16} /> Add Sprint
+              </>
+            }
+            buttonColor="primary"
+            modalTitle="Add New Sprint"
+            modalBody={<SprintForm />}
+            submitAction={createSprintAction}
+          />
+        </div>
       </div>
       <div className="grid grid-cols-10 gap-6">
         <div className="col-span-2">

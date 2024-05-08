@@ -15,7 +15,11 @@ interface ComponentProps {
 }
 
 export default function SprintTable(props: ComponentProps) {
-  const columns = ["Title", "Points", "Assigned To", "Status", "Priority"];
+  const columnTitles = ["Title", "Points", "Assigned To", "Status", "Priority"];
+
+  const columns = columnTitles.map((column) => (
+    <TableColumn key={column}>{column}</TableColumn>
+  ));
 
   const rows = props.tasks.map((task) => (
     <TableRow key={task.id}>
@@ -30,11 +34,7 @@ export default function SprintTable(props: ComponentProps) {
   return (
     <>
       <Table color="primary" selectionMode="single">
-        <TableHeader>
-          {columns.map((column) => (
-            <TableColumn key={column}>{column}</TableColumn>
-          ))}
-        </TableHeader>
+        <TableHeader>{columns}</TableHeader>
         <TableBody>{rows}</TableBody>
       </Table>
     </>

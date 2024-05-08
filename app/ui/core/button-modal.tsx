@@ -52,6 +52,7 @@ interface Props {
     | "bottom-center"
     | undefined;
   modalBody: React.ReactNode;
+  modalScroll?: "inside" | "outside";
   confirmText?: string;
   cancelText?: string;
   submitAction: (form: FormData) => Promise<void>;
@@ -73,6 +74,7 @@ export default function ButtonModal(props: Props) {
       <Modal
         placement={props.modalPlacement ?? "top-center"}
         size={props.modalSize ?? "lg"}
+        scrollBehavior={props.modalScroll}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
       >

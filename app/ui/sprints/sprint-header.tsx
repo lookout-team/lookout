@@ -7,7 +7,7 @@ import { Pencil, Trash2 } from "lucide-react";
 
 interface ComponentProps {
   sprint: Sprint;
-  editAction: (formData: FormData) => Promise<void>;
+  updateAction: (formData: FormData) => Promise<void>;
   deleteAction: (formData: FormData) => Promise<void>;
 }
 
@@ -28,10 +28,10 @@ export default function SprintHeader(props: ComponentProps) {
     <div className="flex justify-between items-end mb-4">
       <div>
         <h1 className="text-xl font-medium">{sprint.title}</h1>
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-row gap-5">
           <h2>Planned Capacity: {sprint.planned_capacity}</h2>
-          <h2>Start: {sprint.start_date?.toDateString()}</h2>
-          <h2>End: {sprint.end_date?.toDateString()}</h2>
+          <h2>Starts: {sprint.start_date?.toDateString()}</h2>
+          <h2>Ends: {sprint.end_date?.toDateString()}</h2>
         </div>
       </div>
       <div className="flex items-row">
@@ -42,7 +42,7 @@ export default function SprintHeader(props: ComponentProps) {
           buttonColor="default"
           modalTitle={`Edit ${sprint.title}`}
           modalBody={<SprintForm sprint={sprint} />}
-          submitAction={props.editAction}
+          submitAction={props.updateAction}
         />
         <ButtonModal
           buttonChildren={<Trash2 size={20} />}
