@@ -29,15 +29,54 @@
         "parameters": {
           "type": "object",
           "properties": {
-            "params": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the task."
+            },
+            "title": {
               "type": "string",
-              "description": "Parameters to search for multiple tasks."
+              "description": "The title of the task."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the task."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of the task."
+            },
+            "requirements": {
+              "type": "string",
+              "description": "Specific requirements needed for the task."
+            },
+            "acceptance_criteria": {
+              "type": "string",
+              "description": "Criteria that determine when the task is considered completed."
+            },
+            "points": {
+              "type": "number",
+              "description": "Effort estimation points of the task."
+            },
+            "assigned_to": {
+              "type": "number",
+              "description": "User ID the task is assigned to."
+            },
+            "sprint_id": {
+              "type": "number",
+              "description": "Sprint ID the task is associated with."
+            },
+            "status_id": {
+              "type": "number",
+              "description": "Status ID of the task."
+            },
+            "priority_id": {
+              "type": "number",
+              "description": "Priority ID to filter tasks by."
             }
-          },
-          "required": ["params"]
+          }
         }
       }
-    },
+    },    
     {
       "type": "function",
       "function": {
