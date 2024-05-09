@@ -136,6 +136,15 @@ export default function TaskForm(props: ComponentProps) {
           </SelectItem>
         ))}
       </Select>
+      <Input
+        type="numeric"
+        variant="bordered"
+        label="Points"
+        name="points"
+        value={points?.toString()}
+        onChange={(e) => setPoints(+e.target.value)}
+        isRequired={true}
+      />
       <Textarea
         className="mb-2"
         variant="bordered"
@@ -151,15 +160,6 @@ export default function TaskForm(props: ComponentProps) {
         name="acceptance_criteria"
         value={criteria ?? undefined}
         onChange={(e) => setCriteria(e.target.value)}
-      />
-      <Input
-        type="numeric"
-        variant="bordered"
-        label="Points"
-        name="points"
-        value={points?.toString()}
-        onChange={(e) => setPoints(+e.target.value)}
-        isRequired={true}
       />
     </>
   );

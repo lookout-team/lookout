@@ -36,16 +36,16 @@ export async function getProject(id: number): Promise<Project | null> {
 /**
  * Retrieves projects.
  *
- * @param {Partial<Project>} params - Project ID
- * @returns {Promise<Project[]>} The created project
+ * @param {Partial<Project>} params - Query parameters
+ * @returns {Promise<Project[]>} - Array of projects
  */
 export async function getProjects(
   params?: Partial<Project>
 ): Promise<Project[]> {
-  const project = await prisma.project.findMany({
+  const projects = await prisma.project.findMany({
     where: { ...params },
   });
-  return project;
+  return projects;
 }
 
 /**

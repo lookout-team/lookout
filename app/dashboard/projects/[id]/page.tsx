@@ -17,6 +17,8 @@ import PageBreadcrumbs from "@/app/ui/core/breadcrumbs";
 import SprintHeader from "@/app/ui/sprints/sprint-header";
 import { CalendarPlus, SquarePen } from "lucide-react";
 import TaskForm from "@/app/ui/tasks/task-form";
+import { getStatuses } from "@/lib/db/status";
+import { getPriorities } from "@/lib/db/priority";
 
 type QueryParams = {
   view: "board" | "table";
@@ -121,6 +123,8 @@ export default async function Page({
 
   const sprintComponents = [];
   const sprints = await getSprints({ project_id: project?.id });
+  const statuses = await getStatuses();
+  const priorities = await getPriorities();
 
   for (const sprint of sprints) {
     const tasks = await getTasks({ sprint_id: sprint.id });
@@ -141,7 +145,7 @@ export default async function Page({
           updateAction={updateSprintAction}
           deleteAction={deleteSprintAction}
         />
-        <SprintBoard tasks={tasks} />
+        <SprintBoard tasks={tasks} statuses={statuses} priorities={priorities} />
       </div>
     );
 
