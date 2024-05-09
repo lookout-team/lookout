@@ -15,7 +15,7 @@ export async function getSprint(
     where: {
       ...params,
     },
-    include: { tasks: true },
+    include: { tasks: true, project: true },
   });
   return sprint;
 }
@@ -33,7 +33,7 @@ export async function getSprints(
     where: {
       ...params,
     },
-    include: { tasks: true },
+    include: { tasks: true, project: true },
   });
   return sprints;
 }

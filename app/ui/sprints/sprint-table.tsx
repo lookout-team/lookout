@@ -9,12 +9,15 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import { TaskWithIncludes } from "@/lib/db/types";
+import { useRouter } from "next/navigation";
 
 interface ComponentProps {
   tasks: TaskWithIncludes[];
 }
 
 export default function SprintTable(props: ComponentProps) {
+  const router = useRouter();
+
   const columnTitles = ["Title", "Points", "Assigned To", "Status", "Priority"];
 
   const columns = columnTitles.map((column) => (
@@ -22,7 +25,7 @@ export default function SprintTable(props: ComponentProps) {
   ));
 
   const rows = props.tasks.map((task) => (
-    <TableRow key={task.id}>
+    <TableRow key={task.id} onClick={() => router.push(`/dashboard/tasks/${task.id}`)}>
       <TableCell>{task.title}</TableCell>
       <TableCell>{task.points}</TableCell>
       <TableCell>{task.user?.username}</TableCell>

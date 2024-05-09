@@ -15,6 +15,7 @@ export type TaskWithIncludes = Prisma.TaskGetPayload<typeof TaskWithIncludes>;
 
 const SprintWithIncludes = Prisma.validator<Prisma.SprintDefaultArgs>()({
   include: {
+    project: true,
     tasks: true,
   },
 });
