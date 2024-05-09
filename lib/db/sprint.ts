@@ -50,14 +50,12 @@ export async function getSprints(
  * @param {Sprint} params Information about the sprint to create.
  * @returns {Promise<Sprint>} The created sprint object.
  */
-export async function createSprint(params: Partial<Sprint>): Promise<Sprint> {
+export async function createSprint(
+  params: Omit<Sprint, "id">
+): Promise<Sprint> {
   const sprint = await prisma.sprint.create({
     data: {
-      project: { connect: { id: params.project_id } },
-      title: params.title,
-      start_date: params.start_date,
-      end_date: params.end_date,
-      planned_capacity: params.planned_capacity,
+      ...params,
     },
   });
   return sprint;

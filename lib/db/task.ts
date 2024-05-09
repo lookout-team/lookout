@@ -1,6 +1,6 @@
 import { start } from "repl";
 import prisma from "./prisma";
-import { Task } from "@prisma/client";
+import { Prisma, Task } from "@prisma/client";
 import { TaskWithIncludes } from "./types";
 
 /**
@@ -58,6 +58,10 @@ export async function getTasks(
   return task;
 }
 
+type TaskCreationParams = {
+  [K in keyof Omit<Task, "id"> as Exclude<K, "id">]?: Task[K];
+};
+
 /**
  * Creates a new task.
  *
@@ -68,18 +72,7 @@ export async function getTasks(
  */
 export async function createTask(params: any): Promise<Task> {
   const task = await prisma.task.create({
-    data: {
-      title: params.title,
-      description: params.description,
-      category: params.category,
-      requirements: params.requirements,
-      acceptance_criteria: params.acceptance_criteria,
-      points: params.points,
-      assigned_to: params.assigned_to,
-      sprint: { connect: { id: params.sprint_id } },
-      status: { connect: { id: params.status_id } },
-      priority: { connect: { id: params.priority_id } },
-    },
+    data: { ...params },
   });
   return task;
 }
