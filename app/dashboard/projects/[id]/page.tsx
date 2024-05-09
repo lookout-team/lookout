@@ -7,7 +7,7 @@ import {
   getSprints,
   updateSprint,
 } from "@/lib/db/sprint";
-import { getTasks } from "@/lib/db/task";
+import { createTask, getTasks } from "@/lib/db/task";
 import { getProject } from "@/lib/db/project";
 import { notFound } from "next/navigation";
 import ButtonModal from "@/app/ui/core/button-modal";
@@ -51,7 +51,7 @@ export default async function Page({
       project_id: project.id,
     };
 
-    createSprint({ ...sprint });
+    await createSprint({ ...sprint });
     revalidatePath(pathname);
   }
 
@@ -74,19 +74,46 @@ export default async function Page({
       project_id: project.id,
     };
 
-    updateSprint({ ...sprint });
+    await updateSprint({ ...sprint });
     revalidatePath(pathname);
   }
 
   async function deleteSprintAction(form: FormData) {
     "use server";
     const id = form.get("id");
-    if (id !== null) deleteSprint(+id);
+    if (id === null) return;
+    await deleteSprint(+id);
     revalidatePath(pathname);
   }
 
   async function createTaskAction(form: FormData) {
     "use server";
+
+    const sprintId = +`${form.get("sprint_id")}`;
+    const title = `${form.get("title")}`;
+    const description = `${form.get("description")}`;
+    const category = `${form.get("category")}`;
+    const priorityId = +`${form.get("priority_id")}`;
+    const requirements = `${form.get("requirements")}`;
+    const criteria = `${form.get("criteria")}`;
+    const points = +`${form.get("points")}`;
+    const userId = +`${form.get("user_id")}`;
+
+    const task = {
+      sprint_id: sprintId,
+      title: title,
+      description: description,
+      category: category,
+      status_id: 1,
+      priority_id: priorityId,
+      requirements: requirements,
+      acceptance_criteria: criteria,
+      points: points,
+      assigned_to: userId
+    }
+
+    await createTask(task);
+    revalidatePath(pathname);
   }
 
   const selectedView = searchParams?.view ?? "table";

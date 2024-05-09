@@ -3,8 +3,8 @@
 import { Sprint } from "@prisma/client";
 import { TaskWithIncludes } from "@/lib/db/types";
 import {
-  Autocomplete,
-  AutocompleteItem,
+  Select,
+  SelectItem,
   Input,
   Radio,
   RadioGroup,
@@ -26,33 +26,53 @@ export default function TaskForm(props: ComponentProps) {
   const [title, setTitle] = useState(task?.title);
   const [description, setDescription] = useState(task?.description);
   const [category, setCategory] = useState(task?.category);
-  const [priority, setPriority] = useState(task?.priority.name);
+  const [priority, setPriority] = useState(`${task?.priority.id}`);
   const [requirements, setRequirements] = useState(task?.requirements);
   const [criteria, setCriteria] = useState(task?.acceptance_criteria);
   const [points, setPoints] = useState(task?.points);
   const [assignee, setAssignee] = useState(task?.user?.username);
 
-  const users = ["Wasim Sandhu", "Winston Chan", "Joel Henningson"];
-  const categories = ["Feature", "Epic", "Story", "Defect", "Spike", "Request"];
-  const priorities = ["None", "Low", "Medium", "High", "Critical"];
+  const users = [
+    { name: "Wasim Sandhu", id: "1" },
+    { name: "Winston Chan", id: "2" },
+    { name: "Joel Henningson", id: "3" },
+  ];
+
+  const categories = [
+    "Story",
+    "Feature",
+    "Test",
+    "Defect",
+    "Spike",
+    "Enhancement",
+  ];
+
+  const priorities = [
+    { name: "None", id: "1" },
+    { name: "Low", id: "2" },
+    { name: "Medium", id: "3" },
+    { name: "High", id: "4" },
+    { name: "Critical", id: "5" },
+  ];
 
   return (
     <>
       {task && <input type="hidden" name="id" value={task.id} />}
-      <Autocomplete
+      <Select
         label="Sprint"
         variant="bordered"
-        name=""
+        name="sprint_id"
         className="w-full"
         value={sprintId}
-        onValueChange={setSprintId}
+        onSelectionChange={(id) => setSprintId(`${id}`)}
+        isRequired={true}
       >
         {sprints.map((sprint) => (
-          <AutocompleteItem key={sprint.id} value={sprint.id}>
+          <SelectItem key={sprint.id} value={sprint.id}>
             {sprint.title}
-          </AutocompleteItem>
+          </SelectItem>
         ))}
-      </Autocomplete>
+      </Select>
       <Input
         className="mb-2"
         variant="bordered"
@@ -60,6 +80,7 @@ export default function TaskForm(props: ComponentProps) {
         name="title"
         value={title ?? undefined}
         onChange={(e) => setTitle(e.target.value)}
+        isRequired={true}
       />
       <Textarea
         className="mb-2"
@@ -68,17 +89,20 @@ export default function TaskForm(props: ComponentProps) {
         name="description"
         value={description ?? undefined}
         onChange={(e) => setDescription(e.target.value)}
+        isRequired={true}
       />
       <RadioGroup
         className="ms-2 mb-2"
+        name="category"
         label="Category"
         orientation="horizontal"
-        value={category ?? "Feature"}
+        value={category ?? "Story"}
         onValueChange={setCategory}
+        isRequired={true}
       >
-        {categories.map((item) => (
-          <Radio key={item} value={item}>
-            {item}
+        {categories.map((category) => (
+          <Radio key={category} value={category}>
+            {category}
           </Radio>
         ))}
       </RadioGroup>
@@ -86,26 +110,32 @@ export default function TaskForm(props: ComponentProps) {
         className="ms-2 mb-2"
         label="Priority"
         orientation="horizontal"
-        value={priority ?? "None"}
+        name="priority_id"
+        value={priority}
         onValueChange={setPriority}
+        isRequired={true}
       >
-        {priorities.map((item) => (
-          <Radio key={item} value={item}>
-            {item}
+        {priorities.map((priority) => (
+          <Radio key={priority.id} value={priority.id}>
+            {priority.name}
           </Radio>
         ))}
       </RadioGroup>
-      <Autocomplete
+      <Select
         label="Assignee"
         variant="bordered"
         className="w-full"
-        value={assignee}
-        onValueChange={setAssignee}
+        name="user_id"
+        value={1}
+        onSelectionChange={(id) => setAssignee(`${id}`)}
+        isRequired={true}
       >
         {users.map((user) => (
-          <AutocompleteItem key={user}>{user}</AutocompleteItem>
+          <SelectItem key={user.id} value={user.id}>
+            {user.name}
+          </SelectItem>
         ))}
-      </Autocomplete>
+      </Select>
       <Textarea
         className="mb-2"
         variant="bordered"
@@ -129,6 +159,7 @@ export default function TaskForm(props: ComponentProps) {
         name="points"
         value={points?.toString()}
         onChange={(e) => setPoints(+e.target.value)}
+        isRequired={true}
       />
     </>
   );

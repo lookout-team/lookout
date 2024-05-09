@@ -16,21 +16,21 @@ export default async function Page() {
   async function createAction(form: FormData) {
     "use server";
     const project = Object.fromEntries(form.entries());
-    createProject({ ...project });
+    await createProject({ ...project });
     revalidatePath("/dashboard/projects");
   }
 
   async function editAction(form: FormData) {
     "use server";
     const project = Object.fromEntries(form.entries());
-    updateProject({ ...project });
+    await updateProject({ ...project });
     revalidatePath("/dashboard/projects");
   }
 
   async function deleteAction(form: FormData) {
     "use server";
     const id = form.get("id");
-    if (id !== null) deleteProject(+id);
+    if (id !== null) await deleteProject(+id);
     revalidatePath("/dashboard/projects");
   }
 

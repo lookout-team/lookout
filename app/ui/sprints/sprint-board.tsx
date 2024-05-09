@@ -21,7 +21,7 @@ export default function SprintBoard(props: ComponentProps) {
     <Card radius="sm" shadow="sm" className="border-1 w-96">
       <CardHeader className="font-medium">{status}</CardHeader>
       <Divider />
-      <CardBody className="p-4 bg-slate-50">
+      <CardBody className="p-4">
         {props.tasks
           .filter((task) => task.status.name == status)
           .map((task) => (
