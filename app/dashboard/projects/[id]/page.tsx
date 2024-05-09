@@ -97,7 +97,7 @@ export default async function Page({
     const category = `${form.get("category")}`;
     const priorityId = +`${form.get("priority_id")}`;
     const requirements = `${form.get("requirements")}`;
-    const criteria = `${form.get("criteria")}`;
+    const criteria = `${form.get("acceptance_criteria")}`;
     const points = +`${form.get("points")}`;
     const userId = +`${form.get("user_id")}`;
 

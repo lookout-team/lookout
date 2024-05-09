@@ -1,6 +1,8 @@
 import PageBreadcrumbs from "@/app/ui/core/breadcrumbs";
-import { getSprint } from "@/lib/db/sprint";
-import { getTask } from "@/lib/db/task";
+import TaskDetails from "@/app/ui/tasks/task-details";
+import { getSprint, getSprints } from "@/lib/db/sprint";
+import { getTask, updateTask } from "@/lib/db/task";
+import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { id: number } }) {
@@ -9,6 +11,15 @@ export default async function Page({ params }: { params: { id: number } }) {
 
   const sprint = await getSprint({ id: task?.sprint_id });
   if (!sprint) return notFound();
+
+  const sprints = await getSprints({ project_id: sprint.project_id });
+
+  async function updateAction(form: FormData) {
+    "use server";
+    const task = Object.fromEntries(form.entries());
+    await updateTask(task);
+    revalidatePath(`/dashboard/tasks/${task.id}`);
+  }
 
   const breadcrumbs = [
     { title: "Projects", link: "/dashboard/projects" },
@@ -26,10 +37,7 @@ export default async function Page({ params }: { params: { id: number } }) {
   return (
     <>
       <PageBreadcrumbs items={breadcrumbs} />
-      <div className="grid grid-cols-10 gap-6">
-        <div className="col-span-2"></div>
-        <div className="mt-4 col-span-8"></div>
-      </div>
+      <TaskDetails task={task} sprints={sprints} updateAction={updateAction} />
     </>
   );
 }

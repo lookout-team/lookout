@@ -79,6 +79,10 @@ export async function createTask(params: Omit<Task, "id">): Promise<Task> {
  * @returns {Promise<Task>} - The updated task
  */
 export async function updateTask(params: Partial<Task>): Promise<Task> {
+  if (typeof params.id === "string") {
+    params.id = +params.id;
+  }
+  
   const task = await prisma.task.update({
     where: { id: params.id },
     data: {

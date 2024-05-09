@@ -20,9 +20,9 @@ interface ComponentProps {
 export default function TaskForm(props: ComponentProps) {
   const task = props.task;
   const sprints = props.sprints;
-  const currentSprintId = sprints[0].id;
+  const currentSprintId = sprints[0].id.toString();
 
-  const [sprintId, setSprintId] = useState(`${currentSprintId}`);
+  const [sprintId, setSprintId] = useState(currentSprintId);
   const [title, setTitle] = useState(task?.title);
   const [description, setDescription] = useState(task?.description);
   const [category, setCategory] = useState(task?.category);
@@ -30,12 +30,12 @@ export default function TaskForm(props: ComponentProps) {
   const [requirements, setRequirements] = useState(task?.requirements);
   const [criteria, setCriteria] = useState(task?.acceptance_criteria);
   const [points, setPoints] = useState(task?.points);
-  const [assignee, setAssignee] = useState(task?.user?.username);
+  const [assignee, setAssignee] = useState("1");
 
   const users = [
-    { name: "Wasim Sandhu", id: "1" },
-    { name: "Winston Chan", id: "2" },
-    { name: "Joel Henningson", id: "3" },
+    { name: "Wasim Sandhu", id: 1 },
+    { name: "Winston Chan", id: 2 },
+    { name: "Joel Henningson", id: 3 },
   ];
 
   const categories = [
@@ -62,9 +62,9 @@ export default function TaskForm(props: ComponentProps) {
         label="Sprint"
         variant="bordered"
         name="sprint_id"
-        className="w-full"
-        value={sprintId}
-        onSelectionChange={(id) => setSprintId(`${id}`)}
+        className="w-full mb-1"
+        selectedKeys={sprintId}
+        onChange={(e) => setAssignee(e.target.value)}
         isRequired={true}
       >
         {sprints.map((sprint) => (
@@ -74,7 +74,7 @@ export default function TaskForm(props: ComponentProps) {
         ))}
       </Select>
       <Input
-        className="mb-2"
+        className="mb-1"
         variant="bordered"
         label="Title"
         name="title"
@@ -83,7 +83,7 @@ export default function TaskForm(props: ComponentProps) {
         isRequired={true}
       />
       <Textarea
-        className="mb-2"
+        className="mb-1"
         variant="bordered"
         label="Description"
         name="description"
@@ -92,7 +92,7 @@ export default function TaskForm(props: ComponentProps) {
         isRequired={true}
       />
       <RadioGroup
-        className="ms-2 mb-2"
+        className="ms-2 mb-1"
         name="category"
         label="Category"
         orientation="horizontal"
@@ -107,7 +107,7 @@ export default function TaskForm(props: ComponentProps) {
         ))}
       </RadioGroup>
       <RadioGroup
-        className="ms-2 mb-2"
+        className="ms-2 mb-1"
         label="Priority"
         orientation="horizontal"
         name="priority_id"
@@ -124,10 +124,10 @@ export default function TaskForm(props: ComponentProps) {
       <Select
         label="Assignee"
         variant="bordered"
-        className="w-full"
+        className="w-full mb-1"
         name="user_id"
-        value={1}
-        onSelectionChange={(id) => setAssignee(`${id}`)}
+        selectedKeys={assignee}
+        onChange={(e) => setAssignee(e.target.value)}
         isRequired={true}
       >
         {users.map((user) => (
@@ -141,12 +141,13 @@ export default function TaskForm(props: ComponentProps) {
         variant="bordered"
         label="Points"
         name="points"
+        className="mb-1"
         value={points?.toString()}
         onChange={(e) => setPoints(+e.target.value)}
         isRequired={true}
       />
       <Textarea
-        className="mb-2"
+        className="mb-1"
         variant="bordered"
         label="Requirements"
         name="requirements"
@@ -154,7 +155,7 @@ export default function TaskForm(props: ComponentProps) {
         onChange={(e) => setRequirements(e.target.value)}
       />
       <Textarea
-        className="mb-2"
+        className="mb-1"
         variant="bordered"
         label="Acceptance Criteria"
         name="acceptance_criteria"
