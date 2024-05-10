@@ -137,9 +137,11 @@ describe("Testing chat functions", () => {
     expect(data).toMatchObject({ count: 2 });
   });
 
-  test("Attempt to retrieve deleted conversation", async () => {
-    const data = await getChat({ id: chatIds[0] });
-    expect(data).toEqual(null);
+  test("Attempt to retrieve deleted conversation(s)", async () => {
+    for (var chatId in chatIds) {
+      const data = await getChat({ id: parseInt(chatId) });
+      expect(data).toEqual(null);
+    }
   });
 });
 
