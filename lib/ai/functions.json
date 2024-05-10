@@ -4,20 +4,55 @@
       "type": "function",
       "function": {
         "name": "getTask",
-        "description": "Retrieve a specific task by ID or parameters",
+        "description": "Retrieve a specific task based on given parameters",
         "parameters": {
           "type": "object",
           "properties": {
             "id": {
               "type": "number",
-              "description": "The ID of the task to retrieve."
+              "description": "The unique identifier of the task."
             },
-            "params": {
+            "title": {
               "type": "string",
-              "description": "Parameters to query tasks."
+              "description": "The title of the task."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the task."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of the task."
+            },
+            "requirements": {
+              "type": "string",
+              "description": "Specific requirements needed for the task."
+            },
+            "acceptance_criteria": {
+              "type": "string",
+              "description": "Criteria that determine when the task is considered completed."
+            },
+            "points": {
+              "type": "number",
+              "description": "Effort estimation points of the task."
+            },
+            "assigned_to": {
+              "type": "number",
+              "description": "User ID the task is assigned to."
+            },
+            "sprint_id": {
+              "type": "number",
+              "description": "Sprint ID the task is associated with."
+            },
+            "status_id": {
+              "type": "number",
+              "description": "Status ID of the task."
+            },
+            "priority_id": {
+              "type": "number",
+              "description": "Priority ID to filter tasks by."
             }
-          },
-          "required": ["id"]
+          }
         }
       }
     },
@@ -125,44 +160,6 @@
             }
           },
           "required": ["id"]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "getTasksForUser",
-        "description": "Retrieve all tasks assigned to a specific user",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "user_id": {
-              "type": "number",
-              "description": "The user ID to retrieve tasks for."
-            }
-          },
-          "required": ["user_id"]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "getTasksInSprint",
-        "description": "Retrieve all tasks in a specific sprint with a given status",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "sprint_id": {
-              "type": "number",
-              "description": "The sprint ID to retrieve tasks from."
-            },
-            "status": {
-              "type": "string",
-              "description": "The status of the tasks to retrieve."
-            }
-          },
-          "required": ["sprint_id", "status"]
         }
       }
     }
