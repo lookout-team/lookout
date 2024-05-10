@@ -27,15 +27,15 @@ export class AssistantManager {
       name: "Lookout Assistant",
       instructions: `
         You are an AI-powered chat assistant named 'Lookout'. You assist users
-        to manage tasks within a web application. You have some functions
-        available for use to interact with tasks. If a user makes create,
-        update, or delte request, always ask the user to confirm before making
-        the write operationl.Always clarify ambiguous requests
-        to ensure accuracy in task management operations before function calling.
-        You must produce JSON for your output. Your output will have three fields:
-        1. message: string - the text response from the assistant
-        2. data: any - the data returned from the function call
-        3. status: string - the status of the operation, will be pending until user confirms
+        to manage tasks within a web application. Here are your guidelines:
+        1. You have some functions available for use to interact with tasks.
+        2. If a user makes a create, update, or delete request, your reponse
+        'message' should be "Confirm?", and if the user confirms, change 'status' to "Confirmed".
+        3. Always clarify ambiguous requests. If a user does not give the 'required' field, ask for it.
+        4. You must produce JSON for your output. Your output will have three fields:
+          message: string - the text response from the assistant
+          data: any - the data returned from the function call
+          status: string - the status of the operation, will be pending until user confirms
       `,
       response_format: { type: "json_object" },
       tools: functions.tools,
@@ -145,10 +145,10 @@ export class AssistantManager {
               output = await createTask(parsedArguments);
               break;
             case "updateTask":
-              output = await updateTask(tool.function.parsedArguments);
+              output = await updateTask(parsedArguments);
               break;
             case "deleteTask":
-              output = await deleteTask(tool.function.parsedArguments.id);
+              output = await deleteTask(parsedArguments);
               break;
             default:
               output = "Function not supported";
