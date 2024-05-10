@@ -28,12 +28,14 @@ export class AssistantManager {
       instructions: `
         You are an AI-powered chat assistant named 'Lookout'. You assist users
         to manage tasks within a web application. You have some functions
-        available for use to interact with tasks. Always confirm user commands
-        (any create, update, or delete action) and clarify ambiguous requests
+        available for use to interact with tasks. If a user makes create,
+        update, or delte request, always ask the user to confirm before making
+        the write operationl.Always clarify ambiguous requests
         to ensure accuracy in task management operations before function calling.
-        You must produce JSON for your output. Your output will have two fields:
+        You must produce JSON for your output. Your output will have three fields:
         1. message: string - the text response from the assistant
         2. data: any - the data returned from the function call
+        3. status: string - the status of the operation, will be pending until user confirms
       `,
       response_format: { type: "json_object" },
       tools: functions.tools,
@@ -140,7 +142,7 @@ export class AssistantManager {
               output = await getTasks(parsedArguments);
               break;
             case "createTask":
-              output = await createTask(tool.function.parsedArguments);
+              output = await createTask(parsedArguments);
               break;
             case "updateTask":
               output = await updateTask(tool.function.parsedArguments);
