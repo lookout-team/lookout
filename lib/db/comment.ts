@@ -2,7 +2,9 @@ import { Comment } from "@prisma/client";
 import { CommentWithIncludes } from "./types";
 import prisma from "./prisma";
 
-export async function createComment(params: Comment): Promise<Comment> {
+export async function createComment(
+  params: Omit<Comment, "id">
+): Promise<Comment> {
   const comment = await prisma.comment.create({
     data: {
       ...params,
@@ -51,7 +53,7 @@ export async function updateComment(
   return comment;
 }
 
-export async function deleteActivity(id: number): Promise<Comment> {
+export async function deleteComment(id: number): Promise<Comment> {
   const comment = await prisma.comment.delete({
     where: { id: id },
   });

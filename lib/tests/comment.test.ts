@@ -1,10 +1,10 @@
 import {
-  createActivity,
-  getActivity,
-  getActivities,
-  updateActivity,
-  deleteActivity,
-} from "../db/activity";
+  createComment,
+  getComment,
+  getComments,
+  updateComment,
+  deleteComment,
+} from "../db/comment";
 import { createProject, deleteProject } from "../db/project";
 import { createSprint, deleteSprint } from "../db/sprint";
 import { createStatus, deleteStatus } from "../db/status";
@@ -18,7 +18,7 @@ let statusId: number;
 let sprintId: number;
 let projectId: number;
 let priorityId: number;
-let activityIds: number[] = [];
+let commentIds: number[] = [];
 
 beforeAll(async () => {
   const statusData = await createStatus(
@@ -61,51 +61,51 @@ beforeAll(async () => {
   userId = user.id;
 });
 
-describe("Activity tests", () => {
-  test("Create 3 activities", async () => {
+describe("Comment tests", () => {
+  test("Create 3 comments", async () => {
     for (let i = 1; i < 4; i++) {
-      const activity = {
-        description: `Sample activity #${i}`,
-        timestamp: new Date("2024-05-08T08:00:00Z"),
+      const comment = {
+        text: `Sample comment #${i}`,
+        last_modified: new Date("2024-05-08T08:00:00Z"),
         user_id: userId,
         task_id: taskId,
       };
-      const data = await createActivity(activity);
-      expect(data).toMatchObject(activity);
-      activityIds.push(data.id);
+      const data = await createComment(comment);
+      expect(data).toMatchObject(comment);
+      commentIds.push(data.id);
     }
   });
 
-  test("Retrieve single activity", async () => {
-    const data = await getActivity({ id: activityIds[0] });
+  test("Retrieve single comment", async () => {
+    const data = await getComment({ id: commentIds[0] });
     expect(data).toMatchObject({
-      description: "Sample activity #1",
-      timestamp: new Date("2024-05-08T08:00:00Z"),
+      text: "Sample comment #1",
+      last_modified: new Date("2024-05-08T08:00:00Z"),
       user_id: userId,
       task_id: taskId,
     });
   });
 
-  test("Retrieve many activities", async () => {
-    const data = await getActivities({ task_id: taskId });
+  test("Retrieve many comments", async () => {
+    const data = await getComments({ task_id: taskId });
     expect(data).toHaveLength(3);
     expect(data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          description: "Sample activity #1",
-          timestamp: new Date("2024-05-08T08:00:00Z"),
+          text: "Sample comment #1",
+          last_modified: new Date("2024-05-08T08:00:00Z"),
           user_id: userId,
           task_id: taskId,
         }),
         expect.objectContaining({
-          description: "Sample activity #2",
-          timestamp: new Date("2024-05-08T08:00:00Z"),
+          text: "Sample comment #2",
+          last_modified: new Date("2024-05-08T08:00:00Z"),
           user_id: userId,
           task_id: taskId,
         }),
         expect.objectContaining({
-          description: "Sample activity #3",
-          timestamp: new Date("2024-05-08T08:00:00Z"),
+          text: "Sample comment #3",
+          last_modified: new Date("2024-05-08T08:00:00Z"),
           user_id: userId,
           task_id: taskId,
         }),
@@ -113,38 +113,39 @@ describe("Activity tests", () => {
     );
   });
 
-  test("Update activity", async () => {
-    const data = await updateActivity({
-      id: activityIds[2],
-      description: "Get plenty of sleep",
+  test("Update comment", async () => {
+    const data = await updateComment({
+      id: commentIds[2],
+      text: "mmm, whatcha say?",
+      last_modified: new Date("2024-05-09T08:00:00Z"),
     });
     expect(data).toMatchObject({
-      description: "Get plenty of sleep",
-      timestamp: new Date("2024-05-08T08:00:00Z"),
+      text: "mmm, whatcha say?",
+      last_modified: new Date("2024-05-09T08:00:00Z"),
       user_id: userId,
       task_id: taskId,
     });
   });
 
-  test("Delete activity", async () => {
-    const data = await deleteActivity(activityIds[2]);
+  test("Delete comment", async () => {
+    const data = await deleteComment(commentIds[2]);
     expect(data).toMatchObject({
-      description: "Get plenty of sleep",
-      timestamp: new Date("2024-05-08T08:00:00Z"),
+      text: "mmm, whatcha say?",
+      last_modified: new Date("2024-05-09T08:00:00Z"),
       user_id: userId,
       task_id: taskId,
     });
   });
 
-  test("Attempt to get nonexistent activity", async () => {
-    const data = await getActivity({ id: activityIds[2] });
+  test("Attempt to get nonexistent comment", async () => {
+    const data = await getComment({ id: commentIds[2] });
     expect(data).toBe(null);
   });
 });
 
 afterAll(async () => {
-  await deleteActivity(activityIds[1]);
-  await deleteActivity(activityIds[0]);
+  await deleteComment(commentIds[1]);
+  await deleteComment(commentIds[0]);
   await deleteTask(taskId);
   await deleteSprint(sprintId);
   await deleteProject(projectId);

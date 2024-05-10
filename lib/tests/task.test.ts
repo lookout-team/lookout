@@ -16,6 +16,7 @@ let priorityId: number;
 let statusId: number;
 let sprintIds: number[] = [];
 let taskIds: number[] = [];
+let deletedTaskId: number;
 
 const startDate = new Date("2024-05-01T08:00:00Z");
 const endDate = new Date("2024-05-07T17:00:00Z");
@@ -128,7 +129,7 @@ describe("Task tests", () => {
     });
     expect(data).toMatchObject({
       id: taskIds[1],
-      title: "AuthError defect with login page",
+      title: "Set up database and ORM",
       description: "Sample task description",
       category: "Feature",
       requirements: "minimal",
@@ -143,31 +144,32 @@ describe("Task tests", () => {
   test("Delete task", async () => {
     const taskDetails = {
       title: "DELETE ME!",
-      sprint_id: sprintIds[2],
+      sprint_id: sprintIds[0],
       status_id: statusId,
       priority_id: priorityId,
     };
     const newTask = await createTask(taskDetails);
     const data = await deleteTask(newTask.id);
     expect(data).toMatchObject(taskDetails);
-    taskIds.push(newTask.id);
+    deletedTaskId = newTask.id;
   });
 
   test("Attempt to retrieve deleted task", async () => {
-    const data = await getTask({ id: taskIds[4] });
+    const data = await getTask({ id: deletedTaskId });
     expect(data).toBe(null);
   });
 });
 
 afterAll(async () => {
-  for (let task in taskIds) {
-    await deleteTask(parseInt(task));
-  }
-  for (let sprint in sprintIds) {
-    await deleteSprint(parseInt(sprint));
-  }
-  await deleteProject(1);
-  await deletePriority(1);
-  await deleteStatus(1);
+  await deleteTask(taskIds[0]);
+  await deleteTask(taskIds[1]);
+  await deleteTask(taskIds[2]);
+  await deleteTask(taskIds[3]);
+  await deleteSprint(sprintIds[0]);
+  await deleteSprint(sprintIds[1]);
+  await deleteSprint(sprintIds[2]);
+  await deleteProject(projectId);
+  await deletePriority(priorityId);
+  await deleteStatus(statusId);
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
 });

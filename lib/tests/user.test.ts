@@ -7,6 +7,8 @@ import {
 } from "../db/user";
 import prisma from "../db/prisma";
 
+let userIds: number[] = [];
+
 describe("User tests", () => {
   test("Create 3 users", async () => {
     for (let i = 1; i < 4; i++) {
@@ -18,12 +20,13 @@ describe("User tests", () => {
       };
       const data = await createUser(user);
       expect(data).toMatchObject(user);
+      userIds.push(data.id);
     }
   });
 
   test("Retrieve single user", async () => {
     const data = await getUser({
-      id: 1,
+      id: userIds[0],
     });
     expect(data).toMatchObject({
       username: "Username #1",
@@ -62,7 +65,7 @@ describe("User tests", () => {
 
   test("Update user", async () => {
     const data = await updateUser({
-      id: 1,
+      id: userIds[0],
       first_name: "My name",
       last_name: "...is Jeff",
     });
@@ -75,7 +78,7 @@ describe("User tests", () => {
   });
 
   test("Delete user", async () => {
-    const data = await deleteUser(1);
+    const data = await deleteUser(userIds[0]);
     expect(data).toMatchObject({
       username: "Username #1",
       email: "email#1@gmail.com",
@@ -86,14 +89,14 @@ describe("User tests", () => {
 
   test("Attempt to retrieve nonexistent user", async () => {
     const data = await getUser({
-      id: 1,
+      id: userIds[0],
     });
     expect(data).toBe(null);
   });
 });
 
 afterAll(async () => {
-  await deleteUser(1);
-  await deleteUser(2);
+  await deleteUser(userIds[1]);
+  await deleteUser(userIds[2]);
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
 });

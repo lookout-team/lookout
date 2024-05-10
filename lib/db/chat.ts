@@ -2,7 +2,7 @@ import { Chat } from "@prisma/client";
 import { ChatWithIncludes, deleteConversationHistoryResult } from "./types";
 import prisma from "./prisma";
 
-export async function createChat(params: Chat): Promise<Chat> {
+export async function createChat(params: Omit<Chat, "id">): Promise<Chat> {
   const chat = await prisma.chat.create({
     data: {
       ...params,
@@ -66,11 +66,11 @@ export async function updateChatStatus(
 }
 
 export async function deleteConversationHistory(
-  id: number
+  userId: number
 ): Promise<deleteConversationHistoryResult> {
   const deleteChats = await prisma.chat.deleteMany({
     where: {
-      user_id: id,
+      user_id: userId,
     },
   });
   return deleteChats;

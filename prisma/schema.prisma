@@ -111,7 +111,7 @@ model Priority {
 model Chat {
     id           Int     @id @default(autoincrement())
     user         User    @relation(fields: [user_id], references: [id])
-    user_id      Int     @unique
+    user_id      Int     
     timestamp    DateTime
     message      String
     response     String

@@ -9,6 +9,7 @@ import { createProject, deleteProject } from "../db/project";
 import prisma from "../db/prisma";
 
 let projectId: number;
+let sprintIds: number[] = [];
 const startDate = new Date("2024-05-01T08:00:00Z");
 const endDate = new Date("2024-05-07T17:00:00Z");
 
@@ -33,15 +34,16 @@ describe("Sprint Tests", () => {
       };
       const data = await createSprint(sprint);
       expect(data).toMatchObject(sprint);
+      sprintIds.push(data.id);
     }
   });
 
   test("Retrieve single sprint", async () => {
     const data = await getSprint({
-      id: 1,
+      id: sprintIds[0],
     });
     expect(data).toMatchObject({
-      id: 1,
+      id: sprintIds[0],
       title: "Sprint 1",
       project_id: projectId,
       start_date: startDate,
@@ -84,12 +86,12 @@ describe("Sprint Tests", () => {
 
   test("Update sprint details", async () => {
     const data = await updateSprint({
-      id: 1,
+      id: sprintIds[0],
       end_date: null,
       planned_capacity: 30,
     });
     expect(data).toMatchObject({
-      id: 1,
+      id: sprintIds[0],
       title: "Sprint 1",
       project_id: projectId,
       start_date: startDate,
@@ -99,9 +101,9 @@ describe("Sprint Tests", () => {
   });
 
   test("Delete sprint", async () => {
-    const data = await deleteSprint(3);
+    const data = await deleteSprint(sprintIds[2]);
     expect(data).toMatchObject({
-      id: 3,
+      id: sprintIds[2],
       title: "Sprint 3",
       project_id: projectId,
       start_date: startDate,
@@ -112,15 +114,15 @@ describe("Sprint Tests", () => {
 
   test("Attempt to retrieve nonexist sprint", async () => {
     const data = await getSprint({
-      id: 3,
+      id: sprintIds[2],
     });
     expect(data).toBe(null);
   });
 });
 
 afterAll(async () => {
-  await deleteSprint(1);
-  await deleteSprint(2);
-  await deleteProject(1);
-  await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`
+  await deleteSprint(sprintIds[0]);
+  await deleteSprint(sprintIds[1]);
+  await deleteProject(projectId);
+  await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
 });
