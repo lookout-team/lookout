@@ -5,11 +5,8 @@ import { TaskWithIncludes } from "./types";
 /**
  * Retrieves a single task based on provided parameters.
  *
- * @export
- * @async
- * @param {Partial<Task>} params Information about the task.
- * @returns {Promise<TaskWithIncludes | null>}
- *} The retrieved task object.
+ * @param {Partial<Task>} params - Task details
+ * @returns {Promise<TaskWithIncludes | null>} - Task, if found
  */
 export async function getTask(
   params: Partial<Task>
@@ -33,10 +30,8 @@ export async function getTask(
 /**
  * Retrieves multiple tasks based on provided parameters.
  *
- * @export
- * @async
- * @param {Partial<Task>} params Information about the tasks to retrieve.
- * @returns {Promise<TaskWithIncludes[]>} An array of retrieved task objects.
+ * @param {Partial<Task>} params - Task details
+ * @returns {Promise<TaskWithIncludes[]>} - Task array
  */
 export async function getTasks(
   params?: Partial<Task>
