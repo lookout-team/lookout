@@ -1,7 +1,4 @@
-import {
-  createActivityLog,
-  getActivityLogs,
-} from "../db/activity";
+import { createActivityLog, getActivityLogs } from "../db/activity";
 import { createProject } from "../db/project";
 import { createSprint } from "../db/sprint";
 import { createStatus } from "../db/status";
@@ -14,46 +11,31 @@ let userId: number;
 let taskId: number;
 let statusId: number;
 let sprintId: number;
+let priorityId: number;
 let projectId: number;
 let activityIds = [];
 
 beforeAll(async () => {
-  const statusData = await createStatus(
-    "To Do",
-    "On the list of things to-do..."
-  );
-  statusId = statusData.id;
+  const status = await createStatus("To Do", "On the list of things to-do...");
+  statusId = status.id;
 
-  const priorityData = await createPriority("High", "Get this shit done now!");
+  const priority = await createPriority("High", "Get this shit done now!");
+  priorityId = priority.id;
 
-  const projectData = await createProject({
+  const project = await createProject({
     title: "Project Z",
     description: "This project is classified!",
   });
-  projectId = projectData.id;
+  projectId = project.id;
 
-  const data = await createSprint({
+  const sprint = await createSprint({
     title: "Test Sprint",
     project_id: projectId,
     start_date: new Date("2024-05-08T08:00:00Z"),
     end_date: new Date("2024-05-09T08:00:00Z"),
     planned_capacity: 1,
   });
-  sprintId = data.id;
-
-  const task = await createTask({
-    title: "",
-    description: "Description",
-    requirements: null,
-    acceptance_criteria: null,
-    points: 5,
-    category: "Feature",
-    assigned_to: 1,
-    sprint_id: sprintId,
-    status_id: statusId,
-    priority_id: projectId,
-  });
-  taskId = task.id;
+  sprintId = sprint.id;
 
   const user = await createUser({
     username: "TestUser",
@@ -62,6 +44,20 @@ beforeAll(async () => {
     last_name: "User",
   });
   userId = user.id;
+
+  const task = await createTask({
+    title: "Title",
+    description: "Description",
+    requirements: null,
+    acceptance_criteria: null,
+    points: 5,
+    category: "Feature",
+    assigned_to: userId,
+    sprint_id: sprintId,
+    status_id: statusId,
+    priority_id: priorityId,
+  });
+  taskId = task.id;
 });
 
 describe("Activity tests", () => {

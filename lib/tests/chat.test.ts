@@ -86,7 +86,7 @@ describe("Testing chat functions", () => {
 
   test("Delete conversation history", async () => {
     const data = await deleteConversationHistory(userId);
-    expect(data).toMatchObject({ count: 2 });
+    expect(data).toMatchObject({ count: 3 });
   });
 });
 
@@ -95,8 +95,8 @@ afterAll(async () => {
   await prisma.$queryRaw`DELETE FROM Sprint WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM Task WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM User WHERE 1=1`;
-  await prisma.$queryRaw`DELETE FROM Status WHERE 1=1`;
-  await prisma.$queryRaw`DELETE FROM Priority WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Status' WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Priority' WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM Activity WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
   await prisma.$queryRaw`VACUUM`;

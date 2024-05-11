@@ -1,5 +1,5 @@
-import { createSprint, deleteSprint } from "../db/sprint";
-import { createProject, deleteProject } from "../db/project";
+import { createSprint } from "../db/sprint";
+import { createProject } from "../db/project";
 import {
   createTask,
   getTask,
@@ -7,11 +7,13 @@ import {
   updateTask,
   deleteTask,
 } from "../db/task";
-import { createPriority, deletePriority } from "../db/priority";
-import { createStatus, deleteStatus } from "../db/status";
+import { createPriority } from "../db/priority";
+import { createStatus } from "../db/status";
 import prisma from "../db/prisma";
+import { createUser } from "../db/user";
 
 let projectId: number;
+let userId: number;
 let priorityId: number;
 let statusId: number;
 let sprintIds: number[] = [];
@@ -22,6 +24,14 @@ const startDate = new Date("2024-05-01T08:00:00Z");
 const endDate = new Date("2024-05-07T17:00:00Z");
 
 beforeAll(async () => {
+  const user = await createUser({
+    username: "John Doe",
+    email: "johndoe@gmail.com",
+    first_name: "John",
+    last_name: "Doe",
+  });
+  userId = user.id;
+
   const projectData = await createProject({
     title: "Project Z",
     description: "This project is classified!",
@@ -155,7 +165,7 @@ describe("Task tests", () => {
       acceptance_criteria: null,
       points: 5,
       category: "Feature",
-      assigned_to: 1,
+      assigned_to: userId,
       sprint_id: sprintIds[0],
       status_id: statusId,
       priority_id: priorityId,
@@ -173,15 +183,12 @@ describe("Task tests", () => {
 });
 
 afterAll(async () => {
-  await deleteTask(taskIds[0]);
-  await deleteTask(taskIds[1]);
-  await deleteTask(taskIds[2]);
-  await deleteTask(taskIds[3]);
-  await deleteSprint(sprintIds[0]);
-  await deleteSprint(sprintIds[1]);
-  await deleteSprint(sprintIds[2]);
-  await deleteProject(projectId);
-  await deletePriority(priorityId);
-  await deleteStatus(statusId);
+  await prisma.$queryRaw`DELETE FROM Project WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Sprint WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Task WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Status' WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Priority' WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Priority' WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
+  await prisma.$queryRaw`VACUUM`;
 });

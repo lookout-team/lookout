@@ -45,20 +45,6 @@ beforeAll(async () => {
   });
   sprintId = data.id;
 
-  const task = await createTask({
-    title: "Title",
-    description: "Description",
-    requirements: null,
-    acceptance_criteria: null,
-    points: 5,
-    category: "Feature",
-    assigned_to: 1,
-    sprint_id: sprintId,
-    status_id: statusId,
-    priority_id: priorityId,
-  });
-  taskId = task.id;
-
   const user = await createUser({
     username: "TestUser",
     email: "TestUser@gmail.com",
@@ -66,6 +52,20 @@ beforeAll(async () => {
     last_name: "User",
   });
   userId = user.id;
+
+  const task = await createTask({
+    title: "Title",
+    description: "Description",
+    requirements: null,
+    acceptance_criteria: null,
+    points: 5,
+    category: "Feature",
+    assigned_to: userId,
+    sprint_id: sprintId,
+    status_id: statusId,
+    priority_id: priorityId,
+  });
+  taskId = task.id;
 });
 
 describe("Comment tests", () => {
@@ -140,8 +140,9 @@ afterAll(async () => {
   await prisma.$queryRaw`DELETE FROM Sprint WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM Task WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM User WHERE 1=1`;
-  await prisma.$queryRaw`DELETE FROM Status WHERE 1=1`;
-  await prisma.$queryRaw`DELETE FROM Priority WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Comment WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Status' WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM 'Priority' WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM Activity WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
   await prisma.$queryRaw`VACUUM`;
