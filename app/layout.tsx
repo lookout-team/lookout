@@ -2,7 +2,7 @@ import "@/app/globals.css";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
-import AppNavbar from "./ui/navbar";
+import AppNavbar from "./ui/core/navbar";
 
 export const inter = Inter({ subsets: ["latin"] });
 
@@ -16,14 +16,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en" className="light">
-      <body className={`${inter.className} antialiased`}>
-        <Providers>
-          <AppNavbar />
-          {children}
-        </Providers>
-      </body>
-    </html>
-  );
+    return (
+      <html lang="en" className="light">
+        <body className={`${inter.className} antialiased`}>
+          <Providers>
+            <AppNavbar />
+            {children}
+          </Providers>
+        </body>
+      </html>
+    );
 }
