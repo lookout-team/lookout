@@ -79,7 +79,7 @@ model Comment {
   id            Int       @id @default(autoincrement())
   text          String
   last_modified DateTime?
-  task          Task      @relation(fields: [task_id], references: [id])
+  task          Task      @relation(fields: [task_id], references: [id], onDelete: Cascade)
   task_id       Int
   user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id       Int
@@ -89,7 +89,7 @@ model Role {
   id          Int    @id @default(autoincrement())
   name        String
   description String
-  user        User   @relation(fields: [user_id], references: [id])
+  user        User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id     Int    @unique
 }
 
