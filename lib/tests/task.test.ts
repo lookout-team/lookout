@@ -63,6 +63,12 @@ describe("Task tests", () => {
     for (const item of items) {
       const task = {
         title: item,
+        description: "Description",
+        requirements: null,
+        acceptance_criteria: null,
+        points: 5,
+        category: "Feature",
+        assigned_to: 1,
         sprint_id: sprintIds[0],
         status_id: statusId,
         priority_id: priorityId,
@@ -144,6 +150,12 @@ describe("Task tests", () => {
   test("Delete task", async () => {
     const taskDetails = {
       title: "DELETE ME!",
+      description: "Description",
+      requirements: null,
+      acceptance_criteria: null,
+      points: 5,
+      category: "Feature",
+      assigned_to: 1,
       sprint_id: sprintIds[0],
       status_id: statusId,
       priority_id: priorityId,

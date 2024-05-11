@@ -5,7 +5,7 @@ import {
   updateSprint,
   deleteSprint,
 } from "../db/sprint";
-import { createProject, deleteProject } from "../db/project";
+import { createProject } from "../db/project";
 import prisma from "../db/prisma";
 
 let projectId: number;
@@ -121,8 +121,8 @@ describe("Sprint Tests", () => {
 });
 
 afterAll(async () => {
-  await deleteSprint(sprintIds[0]);
-  await deleteSprint(sprintIds[1]);
-  await deleteProject(projectId);
+  await prisma.$queryRaw`DELETE FROM Project WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Sprint WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
+  await prisma.$queryRaw`VACUUM`;
 });

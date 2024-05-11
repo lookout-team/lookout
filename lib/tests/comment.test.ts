@@ -1,16 +1,16 @@
 import {
   createComment,
-  getComment,
-  getComments,
+  getTaskComments,
   updateComment,
   deleteComment,
 } from "../db/comment";
-import { createProject, deleteProject } from "../db/project";
-import { createSprint, deleteSprint } from "../db/sprint";
-import { createStatus, deleteStatus } from "../db/status";
-import { createTask, deleteTask } from "../db/task";
-import { createUser, deleteUser } from "../db/user";
-import { createPriority, deletePriority } from "../db/priority";
+import { createProject } from "../db/project";
+import { createSprint } from "../db/sprint";
+import { createStatus } from "../db/status";
+import { createTask } from "../db/task";
+import { createUser } from "../db/user";
+import { createPriority } from "../db/priority";
+import prisma from "../db/prisma";
 
 let userId: number;
 let taskId: number;
@@ -46,9 +46,16 @@ beforeAll(async () => {
   sprintId = data.id;
 
   const task = await createTask({
+    title: "Title",
+    description: "Description",
+    requirements: null,
+    acceptance_criteria: null,
+    points: 5,
+    category: "Feature",
+    assigned_to: 1,
     sprint_id: sprintId,
     status_id: statusId,
-    priority_id: projectId,
+    priority_id: priorityId,
   });
   taskId = task.id;
 
@@ -76,18 +83,8 @@ describe("Comment tests", () => {
     }
   });
 
-  test("Retrieve single comment", async () => {
-    const data = await getComment({ id: commentIds[0] });
-    expect(data).toMatchObject({
-      text: "Sample comment #1",
-      last_modified: new Date("2024-05-08T08:00:00Z"),
-      user_id: userId,
-      task_id: taskId,
-    });
-  });
-
   test("Retrieve many comments", async () => {
-    const data = await getComments({ task_id: taskId });
+    const data = await getTaskComments(taskId);
     expect(data).toHaveLength(3);
     expect(data).toEqual(
       expect.arrayContaining([
@@ -136,20 +133,16 @@ describe("Comment tests", () => {
       task_id: taskId,
     });
   });
-
-  test("Attempt to get nonexistent comment", async () => {
-    const data = await getComment({ id: commentIds[2] });
-    expect(data).toBe(null);
-  });
 });
 
 afterAll(async () => {
-  await deleteComment(commentIds[1]);
-  await deleteComment(commentIds[0]);
-  await deleteTask(taskId);
-  await deleteSprint(sprintId);
-  await deleteProject(projectId);
-  await deleteUser(userId);
-  await deleteStatus(statusId);
-  await deletePriority(priorityId);
+  await prisma.$queryRaw`DELETE FROM Project WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Sprint WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Task WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM User WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Status WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Priority WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Activity WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
+  await prisma.$queryRaw`VACUUM`;
 });

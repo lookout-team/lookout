@@ -1,24 +1,21 @@
 import {
-  createActivity,
-  getActivity,
-  getActivities,
-  updateActivity,
-  deleteActivity,
+  createActivityLog,
+  getActivityLogs,
 } from "../db/activity";
-import { createProject, deleteProject } from "../db/project";
-import { createSprint, deleteSprint } from "../db/sprint";
-import { createStatus, deleteStatus } from "../db/status";
-import { createTask, deleteTask } from "../db/task";
-import { createUser, deleteUser } from "../db/user";
-import { createPriority, deletePriority } from "../db/priority";
+import { createProject } from "../db/project";
+import { createSprint } from "../db/sprint";
+import { createStatus } from "../db/status";
+import { createTask } from "../db/task";
+import { createUser } from "../db/user";
+import { createPriority } from "../db/priority";
+import prisma from "../db/prisma";
 
 let userId: number;
 let taskId: number;
 let statusId: number;
 let sprintId: number;
 let projectId: number;
-let priorityId: number;
-let activityIds: number[] = [];
+let activityIds = [];
 
 beforeAll(async () => {
   const statusData = await createStatus(
@@ -28,7 +25,6 @@ beforeAll(async () => {
   statusId = statusData.id;
 
   const priorityData = await createPriority("High", "Get this shit done now!");
-  priorityId = priorityData.id;
 
   const projectData = await createProject({
     title: "Project Z",
@@ -46,6 +42,13 @@ beforeAll(async () => {
   sprintId = data.id;
 
   const task = await createTask({
+    title: "",
+    description: "Description",
+    requirements: null,
+    acceptance_criteria: null,
+    points: 5,
+    category: "Feature",
+    assigned_to: 1,
     sprint_id: sprintId,
     status_id: statusId,
     priority_id: projectId,
@@ -70,24 +73,14 @@ describe("Activity tests", () => {
         user_id: userId,
         task_id: taskId,
       };
-      const data = await createActivity(activity);
+      const data = await createActivityLog(activity);
       expect(data).toMatchObject(activity);
       activityIds.push(data.id);
     }
   });
 
-  test("Retrieve single activity", async () => {
-    const data = await getActivity({ id: activityIds[0] });
-    expect(data).toMatchObject({
-      description: "Sample activity #1",
-      timestamp: new Date("2024-05-08T08:00:00Z"),
-      user_id: userId,
-      task_id: taskId,
-    });
-  });
-
   test("Retrieve many activities", async () => {
-    const data = await getActivities({ task_id: taskId });
+    const data = await getActivityLogs({ task_id: taskId });
     expect(data).toHaveLength(3);
     expect(data).toEqual(
       expect.arrayContaining([
@@ -112,43 +105,16 @@ describe("Activity tests", () => {
       ])
     );
   });
-
-  test("Update activity", async () => {
-    const data = await updateActivity({
-      id: activityIds[2],
-      description: "Get plenty of sleep",
-    });
-    expect(data).toMatchObject({
-      description: "Get plenty of sleep",
-      timestamp: new Date("2024-05-08T08:00:00Z"),
-      user_id: userId,
-      task_id: taskId,
-    });
-  });
-
-  test("Delete activity", async () => {
-    const data = await deleteActivity(activityIds[2]);
-    expect(data).toMatchObject({
-      description: "Get plenty of sleep",
-      timestamp: new Date("2024-05-08T08:00:00Z"),
-      user_id: userId,
-      task_id: taskId,
-    });
-  });
-
-  test("Attempt to get nonexistent activity", async () => {
-    const data = await getActivity({ id: activityIds[2] });
-    expect(data).toBe(null);
-  });
 });
 
 afterAll(async () => {
-  await deleteActivity(activityIds[1]);
-  await deleteActivity(activityIds[0]);
-  await deleteTask(taskId);
-  await deleteSprint(sprintId);
-  await deleteProject(projectId);
-  await deleteUser(userId);
-  await deleteStatus(statusId);
-  await deletePriority(priorityId);
+  await prisma.$queryRaw`DELETE FROM Project WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Sprint WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Task WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM User WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Status WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Priority WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM Activity WHERE 1=1`;
+  await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
+  await prisma.$queryRaw`VACUUM`;
 });

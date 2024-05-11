@@ -2,13 +2,26 @@ import { Priority } from "@prisma/client";
 import prisma from "./prisma";
 
 /**
+ * Retrieves priorities.
+ *
+ * @param {Partial<Priority>} params - Priority parameters
+ * @returns {Promise<Priority[]>} - Array of priorities
+ */
+export async function getPriorities(
+  params?: Partial<Priority>
+): Promise<Priority[]> {
+  const priorities = await prisma.priority.findMany({
+    where: { ...params },
+  });
+  return priorities;
+}
+
+/**
  * Creates a new priority.
  *
- * @export
- * @async
- * @param {string} name The name of the priority.
- * @param {string} description The description of the priority.
- * @returns {Promise<Priority>} The created priority object.
+ * @param {string} name - Priority name
+ * @param {string} description - Priority description
+ * @returns {Promise<Priority>} - The created priority
  */
 export async function createPriority(
   name: string,
@@ -26,10 +39,8 @@ export async function createPriority(
 /**
  * Deletes a priority.
  *
- * @export
- * @async
- * @param {number} id The ID of the priority to delete.
- * @returns {Promise<Priority>} The deleted priority object.
+ * @param {number} id - Priority ID
+ * @returns {Promise<Priority>} - The deleted priority
  */
 export async function deletePriority(id: number): Promise<Priority> {
   const priority = await prisma.priority.delete({

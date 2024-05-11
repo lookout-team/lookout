@@ -15,6 +15,7 @@ export type TaskWithIncludes = Prisma.TaskGetPayload<typeof TaskWithIncludes>;
 
 const SprintWithIncludes = Prisma.validator<Prisma.SprintDefaultArgs>()({
   include: {
+    project: true,
     tasks: true,
   },
 });
@@ -26,7 +27,7 @@ export type SprintWithIncludes = Prisma.SprintGetPayload<
 const UserWithIncludes = Prisma.validator<Prisma.UserDefaultArgs>()({
   include: {
     task: true,
-    activity: true,
+    activities: true,
     role: true,
     projects: true,
     comments: true,
@@ -50,22 +51,9 @@ export type ActivityWithIncludes = Prisma.ActivityGetPayload<
 const CommentWithIncludes = Prisma.validator<Prisma.CommentDefaultArgs>()({
   include: {
     user: true,
-    task: true,
   },
 });
 
 export type CommentWithIncludes = Prisma.CommentGetPayload<
   typeof CommentWithIncludes
 >;
-
-const ChatWithIncludes = Prisma.validator<Prisma.ChatDefaultArgs>()({
-  include: {
-    user: true,
-  },
-});
-
-export type ChatWithIncludes = Prisma.ChatGetPayload<typeof ChatWithIncludes>;
-
-export interface deleteConversationHistoryResult {
-  count: number;
-}

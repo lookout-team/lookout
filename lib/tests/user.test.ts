@@ -96,7 +96,7 @@ describe("User tests", () => {
 });
 
 afterAll(async () => {
-  await deleteUser(userIds[1]);
-  await deleteUser(userIds[2]);
+  await prisma.$queryRaw`DELETE FROM User WHERE 1=1`;
   await prisma.$queryRaw`DELETE FROM sqlite_sequence WHERE 1=1`;
+  await prisma.$queryRaw`VACUUM`;
 });

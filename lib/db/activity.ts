@@ -2,7 +2,13 @@ import { Activity } from "@prisma/client";
 import { ActivityWithIncludes } from "./types";
 import prisma from "./prisma";
 
-export async function createActivity(
+/**
+ * Creates an activity log entry.
+ *
+ * @param {Omit<Activity, "id">} params - Activity log details
+ * @returns {Promise<Activity>} - Created activity log entry
+ */
+export async function createActivityLog(
   params: Omit<Activity, "id">
 ): Promise<Activity> {
   const activity = await prisma.activity.create({
@@ -13,7 +19,13 @@ export async function createActivity(
   return activity;
 }
 
-export async function getActivity(
+/**
+ * Retrieves an activity log entry.
+ *
+ * @param {Partial<Activity>} params - Activity log details
+ * @returns {Promise<ActivityWithIncludes | null>} - Activity log entry, if found
+ */
+export async function getActivityLogEntry(
   params: Partial<Activity>
 ): Promise<ActivityWithIncludes | null> {
   const activity = await prisma.activity.findFirst({
@@ -28,10 +40,16 @@ export async function getActivity(
   return activity;
 }
 
-export async function getActivities(
-  params: Partial<Activity>
+/**
+ * Retrieves activity log entries
+ *
+ * @param {Partial<Activity>} params - Activity log parameters
+ * @returns {Promise<ActivityWithIncludes[]>} - Array of activity log entries, if found
+ */
+export async function getActivityLogs(
+  params?: Partial<Activity>
 ): Promise<ActivityWithIncludes[]> {
-  const activity = await prisma.activity.findMany({
+  const activityLogs = await prisma.activity.findMany({
     where: {
       ...params,
     },
@@ -40,22 +58,5 @@ export async function getActivities(
       task: true,
     },
   });
-  return activity;
-}
-
-export async function updateActivity(
-  params: Partial<Activity>
-): Promise<Activity> {
-  const activity = await prisma.activity.update({
-    where: { id: params.id },
-    data: { ...params },
-  });
-  return activity;
-}
-
-export async function deleteActivity(id: number): Promise<Activity> {
-  const activity = await prisma.activity.delete({
-    where: { id: id },
-  });
-  return activity;
+  return activityLogs;
 }

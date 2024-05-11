@@ -1,16 +1,12 @@
-import { start } from "repl";
 import prisma from "./prisma";
-import { Prisma, Task } from "@prisma/client";
+import { Task } from "@prisma/client";
 import { TaskWithIncludes } from "./types";
 
 /**
  * Retrieves a single task based on provided parameters.
  *
- * @export
- * @async
- * @param {Partial<Task>} params Information about the task.
- * @returns {Promise<TaskWithIncludes | null>}
- *} The retrieved task object.
+ * @param {Partial<Task>} params - Task details
+ * @returns {Promise<TaskWithIncludes | null>} - Task, if found
  */
 export async function getTask(
   params: Partial<Task>
@@ -34,10 +30,8 @@ export async function getTask(
 /**
  * Retrieves multiple tasks based on provided parameters.
  *
- * @export
- * @async
- * @param {Partial<Task>} params Information about the tasks to retrieve.
- * @returns {Promise<TaskWithIncludes[]>} An array of retrieved task objects.
+ * @param {Partial<Task>} params - Task details
+ * @returns {Promise<TaskWithIncludes[]>} - Task array
  */
 export async function getTasks(
   params?: Partial<Task>
@@ -58,21 +52,17 @@ export async function getTasks(
   return task;
 }
 
-type TaskCreationParams = {
-  [K in keyof Omit<Task, "id"> as Exclude<K, "id">]?: Task[K];
-};
-
 /**
  * Creates a new task.
  *
- * @export
- * @async
- * @param {Partial<Task>} params Information about the task to create.
- * @returns {Promise<Task>} The created task object.
+ * @param {Omit<Task, "id">} params - Task details
+ * @returns {Promise<Task>} - The created task
  */
-export async function createTask(params: any): Promise<Task> {
+export async function createTask(params: Omit<Task, "id">): Promise<Task> {
   const task = await prisma.task.create({
-    data: { ...params },
+    data: {
+      ...params,
+    },
   });
   return task;
 }
@@ -80,12 +70,14 @@ export async function createTask(params: any): Promise<Task> {
 /**
  * Updates an existing task.
  *
- * @export
- * @async
- * @param {Partial<Task>} params Information about the task to update.
- * @returns {Promise<Task>} The updated task object.
+ * @param {Partial<Task>} params - Task details
+ * @returns {Promise<Task>} - The updated task
  */
 export async function updateTask(params: Partial<Task>): Promise<Task> {
+  if (typeof params.id === "string") {
+    params.id = +params.id;
+  }
+  
   const task = await prisma.task.update({
     where: { id: params.id },
     data: {
@@ -99,10 +91,8 @@ export async function updateTask(params: Partial<Task>): Promise<Task> {
 /**
  * Deletes a task.
  *
- * @export
- * @async
- * @param {number} id The ID of the task to delete.
- * @returns {Promise<Task>} The deleted task object.
+ * @param {number} id - Task ID
+ * @returns {Promise<Task>} - The deleted task
  */
 export async function deleteTask(id: number): Promise<Task> {
   const task = await prisma.task.delete({

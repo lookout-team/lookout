@@ -2,6 +2,12 @@ import { Comment } from "@prisma/client";
 import { CommentWithIncludes } from "./types";
 import prisma from "./prisma";
 
+/**
+ * Adds comment to a task.
+ * 
+ * @param {Omit<Comment, "id">}params - Comment details
+ * @returns {Promise<Comment>} - New comment
+ */
 export async function createComment(
   params: Omit<Comment, "id">
 ): Promise<Comment> {
@@ -13,36 +19,28 @@ export async function createComment(
   return comment;
 }
 
-export async function getComment(
-  params: Partial<Comment>
-): Promise<CommentWithIncludes | null> {
-  const comment = await prisma.comment.findFirst({
-    where: {
-      ...params,
-    },
-    include: {
-      user: true,
-      task: true,
-    },
-  });
-  return comment;
-}
-
-export async function getComments(
-  params: Partial<Comment>
+/**
+ * Retrieves all comments for given task.
+ * 
+ * @param {number} taskId - Task ID
+ * @returns - Task comments
+ */
+export async function getTaskComments(
+  taskId: number
 ): Promise<CommentWithIncludes[]> {
-  const comment = await prisma.comment.findMany({
-    where: {
-      ...params,
-    },
-    include: {
-      user: true,
-      task: true,
-    },
+  const comments = await prisma.comment.findMany({
+    where: { task_id: taskId },
+    include: { user: true },
   });
-  return comment;
+  return comments;
 }
 
+/**
+ * Updates comment.
+ *
+ * @param {Partial<Comment>} params - Comment details
+ * @returns {Promise<Comment>} - Updated comment
+ */
 export async function updateComment(
   params: Partial<Comment>
 ): Promise<Comment> {
@@ -53,6 +51,12 @@ export async function updateComment(
   return comment;
 }
 
+/**
+ * Deletes comment.
+ *
+ * @param {number} id - Comment ID
+ * @returns {Promise<Comment>} - Deleted comment
+ */
 export async function deleteComment(id: number): Promise<Comment> {
   const comment = await prisma.comment.delete({
     where: { id: id },
