@@ -38,9 +38,9 @@ model Activity {
   id          Int      @id @default(autoincrement())
   description String
   timestamp   DateTime
-  user        User     @relation(fields: [user_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id     Int
-  task        Task     @relation(fields: [task_id], references: [id])
+  task        Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
   task_id     Int
 }
 
@@ -81,7 +81,7 @@ model Comment {
   last_modified DateTime?
   task          Task      @relation(fields: [task_id], references: [id])
   task_id       Int
-  user          User      @relation(fields: [user_id], references: [id])
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id       Int
 }
 
@@ -109,7 +109,7 @@ model Priority {
 
 model Chat {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [user_id], references: [id])
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id   Int
   timestamp DateTime
   message   String
