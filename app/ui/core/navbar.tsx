@@ -23,7 +23,7 @@ export default function AppNavbar() {
     const underline = isActive ? "active" : undefined;
 
     navbarItems.push(
-      <NavbarItem>
+      <NavbarItem key={link}>
         <Link color={color} underline={underline} href={link}>
           {page}
         </Link>
