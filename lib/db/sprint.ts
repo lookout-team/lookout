@@ -5,10 +5,8 @@ import { SprintWithIncludes } from "./types";
 /**
  * Retrieves a single sprint based on provided parameters.
  *
- * @export
- * @async
- * @param {Sprint} params
- * @returns {Promise<SprintWithIncludes | null>} The retrieved sprint object or null
+ * @param {Sprint} params - Sprint details
+ * @returns {Promise<SprintWithIncludes | null>} - Sprint, if found
  */
 export async function getSprint(
   params: Partial<Sprint>
@@ -17,7 +15,7 @@ export async function getSprint(
     where: {
       ...params,
     },
-    include: { tasks: true },
+    include: { tasks: true, project: true },
   });
   return sprint;
 }
@@ -25,10 +23,8 @@ export async function getSprint(
 /**
  * Retrieves multiple sprints based on provided parameters.
  *
- * @export
- * @async
- * @param {Sprint} params
- * @returns {Promise<SprintWithIncludes[]>} An array of retrieved sprint objects.
+ * @param {Sprint} params - Sprint details
+ * @returns {Promise<SprintWithIncludes[]>} - Sprint array
  */
 export async function getSprints(
   params?: Partial<Sprint>
@@ -37,43 +33,21 @@ export async function getSprints(
     where: {
       ...params,
     },
-    include: { tasks: true },
+    include: { tasks: true, project: true },
   });
   return sprints;
 }
 
 /**
- * Creates a new sprint.
+ * Creates new sprint.
  *
- * @export
- * @async
- * @param {Sprint} params Information about the sprint to create.
- * @returns {Promise<Sprint>} The created sprint object.
+ * @param {Sprint} params - Sprint details
+ * @returns {Promise<Sprint>} - The created sprint
  */
-export async function createSprint(params: Partial<Sprint>): Promise<Sprint> {
+export async function createSprint(
+  params: Omit<Sprint, "id">
+): Promise<Sprint> {
   const sprint = await prisma.sprint.create({
-    data: {
-      project: { connect: { id: params.project_id } },
-      title: params.title,
-      start_date: params.start_date,
-      end_date: params.end_date,
-      planned_capacity: params.planned_capacity,
-    },
-  });
-  return sprint;
-}
-
-/**
- * Updates an existing sprint.
- *
- * @export
- * @async
- * @param {Sprint} params Information about the sprint to update.
- * @returns {Promise<Sprint>} The updated sprint object.
- */
-export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
-  const sprint = await prisma.sprint.update({
-    where: { id: params.id },
     data: {
       ...params,
     },
@@ -82,12 +56,31 @@ export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
 }
 
 /**
- * Deletes a sprint.
+ * Updates given sprint.
  *
- * @export
- * @async
- * @param {number} id The ID of the sprint to delete.
- * @returns {Promise<Sprint>} The deleted sprint object.
+ * @param {Sprint} params - Sprint details
+ * @returns {Promise<Sprint>} - The updated sprint
+ */
+export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
+  if (typeof params.id === "string") {
+    params.id = +params.id;
+  }
+
+  const sprint = await prisma.sprint.update({
+    where: { id: params.id },
+    data: {
+      ...params,
+    },
+  });
+
+  return sprint;
+}
+
+/**
+ * Deletes sprint.
+ *
+ * @param {number} id - Sprint ID
+ * @returns {Promise<Sprint>} - The deleted sprint
  */
 export async function deleteSprint(id: number): Promise<Sprint> {
   const sprint = await prisma.sprint.delete({
