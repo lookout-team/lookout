@@ -77,10 +77,10 @@ export async function updateProject(
  * @param {number} id - Project ID
  * @returns {Promise<Project>} - The deleted project
  */
-export async function deleteProject(id: number): Promise<Project> {
+export async function deleteProject(params: Partial<Project>): Promise<Project> {
   const project = await prisma.project.delete({
     where: {
-      id: id,
+      id: params.id,
     },
   });
   return project;
