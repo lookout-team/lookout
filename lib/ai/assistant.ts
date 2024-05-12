@@ -13,9 +13,11 @@ export class AssistantManager {
   assistantId: any;
   thread: any;
   run: any;
+  currentStatus: string;
 
   constructor() {
     this.openai = new OpenAI();
+    this.currentStatus = "pending";
   }
 
   /**
@@ -28,14 +30,15 @@ export class AssistantManager {
       instructions: `
         You are an AI-powered chat assistant named 'Lookout'. You assist users
         to manage tasks within a web application. Here are your guidelines:
-        1. You have some functions available for use to interact with tasks.
-        2. If a user makes a create, update, or delete request, your reponse
-        'message' should be "Confirm?", and if the user confirms, change 'status' to "Confirmed".
-        3. Always clarify ambiguous requests. If a user does not give the 'required' field, ask for it.
-        4. You must produce JSON for your output. Your output will have three fields:
+        1. NEVER call a function unless the user SPECIFICALLY ask to search, create, update, or delete. They must provide you with all fields necessary. Otherwise, just respond!
+        3. Always clarify ambiguous requests. You are NEVER allowed to make up data for a variable. Let the user know what they need to provide you.
+        4. If the user requests for a create, update, or delete operation, ask the user to provide any required fields for the operation. Then, ask the user if they want to confirm the operation. By default, the status will be "pending" until the user confirms or cancels the write operation.
+        5. You must produce JSON for your output. This JSON will have three fields:
           message: string - the text response from the assistant
-          data: any - the data returned from the function call
-          status: string - the status of the operation, will be pending until user confirms
+          data: any - the data returned from the function call.
+          status: string - The status of the user request. Can be "pending", "confirmed", "canceled". 
+        6. For a read operation (any get request), status will default to "confirmed". For a write operation - which is any create, update, or delete request - status will default to "pending". If the user confirms that the write request can be carried out, change this to "confirmed". If the user cancels their request, change this to "canceled". 
+        Do NOT change this status without the user's explicit confirmation or cancelation. It should always be pending until the user confirms the write operation."
       `,
       response_format: { type: "json_object" },
       tools: functions.tools,
@@ -60,6 +63,12 @@ export class AssistantManager {
       }
     );
 
+    // Directly check for confirmation in the userInput
+    if (userInput.toLowerCase().includes("confirm")) {
+      this.currentStatus = "confirmed"; // Set status to confirmed immediately upon user confirmation
+      console.log("Status was set to confirmed. My system.")
+    }
+
     await this.createRun();
 
     const messages = await this.openai.beta.threads.messages.list(
@@ -69,6 +78,7 @@ export class AssistantManager {
     const firstMessageContent = messages.data[0].content[0].text.value;
     const parsedContent = JSON.parse(firstMessageContent);
     let { message, data, status } = parsedContent;
+    this.currentStatus = status;
 
     // Ensure data is always an array if not null
     let componentType: ComponentType = null;
@@ -130,31 +140,37 @@ export class AssistantManager {
             tool.function.arguments
           );
           console.log("Arguments as Object: " + parsedArguments);
+          console.log(this.run.status);
 
           // Handle function execution based on the function name and arguments.
           let output;
-
-          switch (tool.function.name) {
-            case "getTask":
-              output = await getTask(parsedArguments);
-              break;
-            case "getTasks":
-              output = await getTasks(parsedArguments);
-              break;
-            case "createTask":
-              output = await createTask(parsedArguments);
-              break;
-            case "updateTask":
-              output = await updateTask(parsedArguments);
-              break;
-            case "deleteTask":
-              output = await deleteTask(parsedArguments);
-              break;
-            default:
-              output = "Function not supported";
-              break;
-          }
           
+          // Check if the tool function requires confirmation and if it's confirmed based on the currentStatus
+          if ((tool.function.name === "createTask" || tool.function.name === "updateTask" || tool.function.name === "deleteTask") && this.currentStatus !== "confirmed") {
+            output = "Action requires confirmation.";
+          } else {
+            switch (tool.function.name) {
+              case "getTask":
+                output = await getTask(parsedArguments);
+                break;
+              case "getTasks":
+                output = await getTasks(parsedArguments);
+                break;
+              case "createTask":
+                output = await createTask(parsedArguments);
+                break;
+              case "updateTask":
+                output = await updateTask(parsedArguments);
+                break;
+              case "deleteTask":
+                output = await deleteTask(parsedArguments);
+                break;
+              default:
+                output = "Function not supported";
+                break;
+            }
+          }
+          console.log("Output: " + JSON.stringify(output));
           return {
             tool_call_id: tool.id,
             output: JSON.stringify(output),
