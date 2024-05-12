@@ -1,7 +1,8 @@
 import { OpenAI } from "openai";
 const functions = require("./functions.json");
-import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
 import { getProject, getProjects, createProject, updateProject, deleteProject  } from "../db/project";
+import { getSprint, getSprints, createSprint, updateSprint, deleteSprint  } from "../db/sprint";
+import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
 import { AssistantResponse, ComponentType } from "./types";
 require("dotenv").config();
 
@@ -81,7 +82,8 @@ export class AssistantManager {
 
     // Parse the first message content to extract the assistant response
     const firstMessageContent = messages.data[0].content[0].text.value;
-    console.log(messages.data[0].content[0].text.value);
+    // console.log("Raw first message content:", firstMessageContent);
+    // console.log(messages.data[0].content[0].text.value);
     const parsedContent = JSON.parse(firstMessageContent);
     let { message, data, status } = parsedContent;
     this.currentStatus = status;
@@ -151,7 +153,7 @@ export class AssistantManager {
           let output;
           
           // Check if the tool function requires confirmation and if it's confirmed based on the currentStatus
-          const allowedFunctions = ["createTask", "updateTask", "deleteTask", "createProject", "updateProject", "deleteProject"];
+          const allowedFunctions = ["createTask", "updateTask", "deleteTask", "createProject", "updateProject", "deleteProject, createSprint", "updateSprint", "deleteSprint"];
           if (allowedFunctions.includes(tool.function.name) && this.currentStatus !== "confirmed") { 
             output = "Action requires confirmation.";
           } else {
@@ -185,6 +187,21 @@ export class AssistantManager {
                 break;
               case "deleteProject":
                 output = await deleteProject(parsedArguments);
+                break;
+              case "getSprint":
+                output = await getSprint(parsedArguments);
+                break;
+              case "getSprints":
+                output = await getSprints(parsedArguments);
+                break;
+              case "createSprint":
+                output = await createSprint(parsedArguments);
+                break;
+              case "updateSprint":
+                output = await updateSprint(parsedArguments);
+                break;
+              case "deleteSprint":
+                output = await deleteSprint(parsedArguments);
                 break;
               default:
                 output = "Function not supported";
