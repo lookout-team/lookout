@@ -236,7 +236,7 @@
           "properties": {
             "id": {
               "type": "number",
-              "description": "The ID of the task to delete."
+              "description": "The unique identifier of the task."
             }
           },
           "required": ["id"]
