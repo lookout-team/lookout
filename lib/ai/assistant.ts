@@ -1,6 +1,7 @@
 import { OpenAI } from "openai";
 const functions = require("./functions.json");
 import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
+import { getProject, getProjects, createProject, updateProject, deleteProject  } from "../db/project";
 import { AssistantResponse, ComponentType } from "./types";
 require("dotenv").config();
 
@@ -147,7 +148,8 @@ export class AssistantManager {
           let output;
           
           // Check if the tool function requires confirmation and if it's confirmed based on the currentStatus
-          if ((tool.function.name === "createTask" || tool.function.name === "updateTask" || tool.function.name === "deleteTask") && this.currentStatus !== "confirmed") {
+          const allowedFunctions = ["createTask", "updateTask", "deleteTask", "createProject", "updateProject", "deleteProject"];
+          if (allowedFunctions.includes(tool.function.name) && this.currentStatus !== "confirmed") { 
             output = "Action requires confirmation.";
           } else {
             switch (tool.function.name) {
@@ -165,6 +167,21 @@ export class AssistantManager {
                 break;
               case "deleteTask":
                 output = await deleteTask(parsedArguments);
+                break;
+              case "getProject":
+                output = await getProject(parsedArguments);
+                break;
+              case "getProjects":
+                output = await getProjects(parsedArguments);
+                break;
+              case "createProject":
+                output = await createProject(parsedArguments);
+                break;
+              case "updateProject":
+                output = await updateProject(parsedArguments);
+                break;
+              case "deleteProject":
+                output = await deleteProject(parsedArguments);
                 break;
               default:
                 output = "Function not supported";

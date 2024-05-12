@@ -242,6 +242,151 @@
           "required": ["id"]
         }
       }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getProject",
+        "description": "Retrieve a specific project based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the project."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the project."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the project."
+            },
+            "last_updated": {
+              "type": "string",
+              "description": "Last updated date of the project."
+            },
+            "current_sprint_id": {
+              "type": "number",
+              "description": "Current sprint ID of the project."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getProjects",
+        "description": "Retrieve projects based on given parameters only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the project."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the project."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the project."
+            },
+            "last_updated": {
+              "type": "string",
+              "description": "Last updated date of the project."
+            },
+            "current_sprint_id": {
+              "type": "number",
+              "description": "Current sprint ID of the project."
+            }
+          }
+        }
+      }
+    },    
+    {
+      "type": "function",
+      "function": {
+        "name": "createProject",
+        "description": "Create a new project based on given parameters only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the project."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the project."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the project."
+            },
+            "last_updated": {
+              "type": "string",
+              "description": "Last updated date of the project."
+            },
+            "current_sprint_id": {
+              "type": "number",
+              "description": "Current sprint ID of the project."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "updateProject",
+        "description": "Update an existing project only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the project."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the project."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the project."
+            },
+            "last_updated": {
+              "type": "string",
+              "description": "Last updated date of the project."
+            },
+            "current_sprint_id": {
+              "type": "number",
+              "description": "Current sprint ID of the project."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "deleteProject",
+        "description": "Delete an existing project",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the project."
+            }
+          },
+          "required": ["id"]
+        }
+      }
     }
   ]
 }
