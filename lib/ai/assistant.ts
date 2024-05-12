@@ -43,6 +43,124 @@ export class AssistantManager {
         6. For a read operation (any get request), status will default to "confirmed". For a write operation - which is any create, update, or delete request - status will default to "pending". If the user confirms that the write request can be carried out, change this to "confirmed". If the user cancels their request, change this to "canceled". 
         Do NOT change this status without the user's explicit confirmation or cancelation. It should always be pending until the user confirms the write operation."
         7. If a tool output tells you "Action requires confirmation", ask the user if they want to confirm the action. If they confirm, call the function again.
+        8. Below is the schema of our database, schema.prisma:
+        generator client {
+          provider = "prisma-client-js"
+        }
+        
+        datasource db {
+          provider = "sqlite"
+          url      = "file:./dev.db"
+        }
+        
+        model User {
+          id         Int        @id @default(autoincrement())
+          username   String     @unique
+          email      String     @unique
+          first_name String
+          last_name  String
+          task       Task[]
+          activities Activity[]
+          role       Role?
+          projects   Project[]
+          comments   Comment[]
+          chats      Chat[]
+        }
+        
+        model Project {
+          id                Int       @id @default(autoincrement())
+          title             String?
+          description       String?
+          last_updated      DateTime?
+          current_sprint_id Int?
+          users             User[]
+          sprints           Sprint[]
+        }
+        
+        model Activity {
+          id          Int      @id @default(autoincrement())
+          description String
+          timestamp   DateTime
+          user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+          user_id     Int
+          task        Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
+          task_id     Int
+        }
+        
+        model Sprint {
+          id               Int       @id @default(autoincrement())
+          title            String?
+          start_date       DateTime?
+          end_date         DateTime?
+          planned_capacity Int?
+          project          Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+          project_id       Int
+          tasks            Task[]
+        }
+        
+        model Task {
+          id                  Int        @id @default(autoincrement())
+          title               String?
+          description         String?
+          category            String?
+          requirements        String?
+          acceptance_criteria String?
+          points              Int?
+          user                User?      @relation(fields: [assigned_to], references: [id])
+          assigned_to         Int?
+          sprint              Sprint     @relation(fields: [sprint_id], references: [id], onDelete: Cascade)
+          sprint_id           Int
+          status              Status     @relation(fields: [status_id], references: [id])
+          status_id           Int
+          priority            Priority   @relation(fields: [priority_id], references: [id])
+          priority_id         Int
+          comments            Comment[]
+          activities          Activity[]
+        }
+        
+        model Comment {
+          id            Int       @id @default(autoincrement())
+          text          String
+          last_modified DateTime?
+          task          Task      @relation(fields: [task_id], references: [id], onDelete: Cascade)
+          task_id       Int
+          user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+          user_id       Int
+        }
+        
+        model Role {
+          id          Int    @id @default(autoincrement())
+          name        String
+          description String
+          user        User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+          user_id     Int    @unique
+        }
+        
+        model Status {
+          id          Int    @id @default(autoincrement())
+          name        String
+          description String
+          tasks       Task[]
+        }
+        
+        model Priority {
+          id          Int    @id @default(autoincrement())
+          name        String
+          description String
+          tasks       Task[]
+        }
+        
+        model Chat {
+          id        Int      @id @default(autoincrement())
+          user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+          user_id   Int
+          timestamp DateTime
+          message   String
+          response  String
+          type      String
+          data      String
+          status    String
+        }
       `,
       response_format: { type: "json_object" },
       tools: functions.tools,
