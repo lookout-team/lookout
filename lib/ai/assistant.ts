@@ -55,6 +55,7 @@ export class AssistantManager {
    * containing the message, data, and type of component to render.
    */
   async processUserInput(userInput: string): Promise<AssistantResponse> {
+    // Add the user input to the conversation thread
     await this.openai.beta.threads.messages.create(
       this.thread.id,
       {
@@ -66,7 +67,7 @@ export class AssistantManager {
     // Directly check for confirmation in the userInput
     if (userInput.toLowerCase().includes("confirm")) {
       this.currentStatus = "confirmed"; // Set status to confirmed immediately upon user confirmation
-      console.log("Status was set to confirmed. My system.")
+      console.log("Status manually set to " + this.currentStatus);
     }
 
     await this.createRun();
@@ -75,6 +76,7 @@ export class AssistantManager {
       this.thread.id
     );
 
+    // Parse the first message content to extract the assistant response
     const firstMessageContent = messages.data[0].content[0].text.value;
     const parsedContent = JSON.parse(firstMessageContent);
     let { message, data, status } = parsedContent;
@@ -82,7 +84,7 @@ export class AssistantManager {
 
     // Ensure data is always an array if not null
     let componentType: ComponentType = null;
-
+    
     if (data !== null) {
       if (!Array.isArray(data)) {
         data = [data];
@@ -139,8 +141,7 @@ export class AssistantManager {
             `Arguments for ${tool.function.name}:`,
             tool.function.arguments
           );
-          console.log("Arguments as Object: " + parsedArguments);
-          console.log(this.run.status);
+          console.log('Run status: ' + this.run.status);
 
           // Handle function execution based on the function name and arguments.
           let output;
@@ -170,7 +171,7 @@ export class AssistantManager {
                 break;
             }
           }
-          console.log("Output: " + JSON.stringify(output));
+          console.log("Tool output: " + JSON.stringify(output));
           return {
             tool_call_id: tool.id,
             output: JSON.stringify(output),
