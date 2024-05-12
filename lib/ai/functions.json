@@ -60,7 +60,7 @@
       "type": "function",
       "function": {
         "name": "getTasks",
-        "description": "Retrieve tasks based on given parameters",
+        "description": "Retrieve tasks based on given parameters only if a user has provided some detail.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -116,7 +116,7 @@
       "type": "function",
       "function": {
         "name": "createTask",
-        "description": "Create a new task based on given parameters",
+        "description": "Create a new task based on given parameters only if a user has provided some detail.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -173,7 +173,7 @@
       "type": "function",
       "function": {
         "name": "updateTask",
-        "description": "Update an existing task",
+        "description": "Update an existing task only if a user has provided some detail.",
         "parameters": {
           "type": "object",
           "properties": {
