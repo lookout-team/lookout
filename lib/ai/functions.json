@@ -387,6 +387,176 @@
           "required": ["id"]
         }
       }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getSprint",
+        "description": "Retrieve a specific sprint based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the sprint."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the sprint."
+            },
+            "start_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The start date of the sprint."
+            },
+            "end_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The end date of the sprint."
+            },
+            "planned_capacity": {
+              "type": "number",
+              "description": "Planned capacity of the sprint."
+            },
+            "project_id": {
+              "type": "number",
+              "description": "Unique identifier for the project the sprint will be assigned to."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getSprints",
+        "description": "Retrieve sprints based on given parameters only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the sprint."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the sprint."
+            },
+            "start_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The start date of the sprint."
+            },
+            "end_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The end date of the sprint."
+            },
+            "planned_capacity": {
+              "type": "number",
+              "description": "Planned capacity of the sprint."
+            },
+            "project_id": {
+              "type": "number",
+              "description": "Unique identifier for the project the sprint will be assigned to."
+            }
+          }
+        }
+      }
+    },    
+    {
+      "type": "function",
+      "function": {
+        "name": "createSprint",
+        "description": "Create a new sprint based on given parameters only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the sprint."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the sprint."
+            },
+            "start_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The start date of the sprint."
+            },
+            "end_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The end date of the sprint."
+            },
+            "planned_capacity": {
+              "type": "number",
+              "description": "Planned capacity of the sprint."
+            },
+            "project_id": {
+              "type": "number",
+              "description": "Unique identifier for the project the sprint will be assigned to."
+            }
+          },
+          "required": ["project_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "updateSprint",
+        "description": "Update an existing sprint only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the sprint."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the sprint."
+            },
+            "start_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The start date of the sprint."
+            },
+            "end_date": {
+              "type": "string",
+              "format": "date",
+              "description": "The end date of the sprint."
+            },
+            "planned_capacity": {
+              "type": "number",
+              "description": "Planned capacity of the sprint."
+            },
+            "project_id": {
+              "type": "number",
+              "description": "Unique identifier for the project the sprint will be assigned to."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "deleteSprint",
+        "description": "Delete an existing sprint",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "Unique identifier for the project the sprint will be assigned to."
+            }
+          },
+          "required": ["id"]
+        }
+      }
     }
   ]
 }
