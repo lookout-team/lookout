@@ -3,6 +3,7 @@ const functions = require("./functions.json");
 import { getProject, getProjects, createProject, updateProject, deleteProject  } from "../db/project";
 import { getSprint, getSprints, createSprint, updateSprint, deleteSprint  } from "../db/sprint";
 import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
+import { getStatuses, createStatus, deleteStatus } from "../db/status";
 import { AssistantResponse, ComponentType } from "./types";
 require("dotenv").config();
 
@@ -320,6 +321,15 @@ export class AssistantManager {
                 break;
               case "deleteSprint":
                 output = await deleteSprint(parsedArguments);
+                break;
+              case "getStatuses":
+                output = await getStatuses(parsedArguments);
+                break;
+              case "createStatus":
+                output = await createStatus(parsedArguments);
+                break;
+              case "deleteStatus":
+                output = await deleteStatus(parsedArguments);
                 break;
               default:
                 output = "Function not supported";

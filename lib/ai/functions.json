@@ -557,6 +557,72 @@
           "required": ["id"]
         }
       }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getStatuses",
+        "description": "Retrieve statuses based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the status."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the status."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the status."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "createStatus",
+        "description": "Create a new status based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the status."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the status."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the status."
+            }
+          },
+          "required": ["name", "description"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "deleteStatus",
+        "description": "Delete an existing status",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the status."
+            }
+          },
+          "required": ["id"]
+        }
+      }
     }
   ]
 }
