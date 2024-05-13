@@ -3,249 +3,6 @@
     {
       "type": "function",
       "function": {
-        "name": "getTask",
-        "description": "Retrieve a specific task based on given parameters",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number",
-              "description": "The unique identifier of the task."
-            },
-            "title": {
-              "type": "string",
-              "description": "The title of the task."
-            },
-            "description": {
-              "type": "string",
-              "description": "Detailed description of the task."
-            },
-            "category": {
-              "type": "string",
-              "description": "Category of the task."
-            },
-            "requirements": {
-              "type": "string",
-              "description": "Specific requirements needed for the task."
-            },
-            "acceptance_criteria": {
-              "type": "string",
-              "description": "Criteria that determine when the task is considered completed."
-            },
-            "points": {
-              "type": "number",
-              "description": "Effort estimation points of the task."
-            },
-            "assigned_to": {
-              "type": "number",
-              "description": "User ID the task is assigned to."
-            },
-            "sprint_id": {
-              "type": "number",
-              "description": "Sprint ID the task is associated with."
-            },
-            "status_id": {
-              "type": "number",
-              "description": "Status ID of the task."
-            },
-            "priority_id": {
-              "type": "number",
-              "description": "Priority ID to filter tasks by."
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "getTasks",
-        "description": "Retrieve tasks based on given parameters only if a user has provided some detail.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number",
-              "description": "The unique identifier of the task."
-            },
-            "title": {
-              "type": "string",
-              "description": "The title of the task."
-            },
-            "description": {
-              "type": "string",
-              "description": "Detailed description of the task."
-            },
-            "category": {
-              "type": "string",
-              "description": "Category of the task."
-            },
-            "requirements": {
-              "type": "string",
-              "description": "Specific requirements needed for the task."
-            },
-            "acceptance_criteria": {
-              "type": "string",
-              "description": "Criteria that determine when the task is considered completed."
-            },
-            "points": {
-              "type": "number",
-              "description": "Effort estimation points of the task."
-            },
-            "assigned_to": {
-              "type": "number",
-              "description": "User ID the task is assigned to."
-            },
-            "sprint_id": {
-              "type": "number",
-              "description": "Sprint ID the task is associated with."
-            },
-            "status_id": {
-              "type": "number",
-              "description": "Status ID of the task."
-            },
-            "priority_id": {
-              "type": "number",
-              "description": "Priority ID to filter tasks by."
-            }
-          }
-        }
-      }
-    },    
-    {
-      "type": "function",
-      "function": {
-        "name": "createTask",
-        "description": "Create a new task based on given parameters only if a user has provided some detail.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number",
-              "description": "The unique identifier of the task."
-            },
-            "title": {
-              "type": "string",
-              "description": "The title of the task."
-            },
-            "description": {
-              "type": "string",
-              "description": "Detailed description of the task."
-            },
-            "category": {
-              "type": "string",
-              "description": "Category of the task."
-            },
-            "requirements": {
-              "type": "string",
-              "description": "Specific requirements needed for the task."
-            },
-            "acceptance_criteria": {
-              "type": "string",
-              "description": "Criteria that determine when the task is considered completed."
-            },
-            "points": {
-              "type": "number",
-              "description": "Effort estimation points of the task."
-            },
-            "assigned_to": {
-              "type": "number",
-              "description": "User ID the task is assigned to."
-            },
-            "sprint_id": {
-              "type": "number",
-              "description": "Sprint ID the task is associated with."
-            },
-            "status_id": {
-              "type": "number",
-              "description": "Status ID of the task."
-            },
-            "priority_id": {
-              "type": "number",
-              "description": "Priority ID to filter tasks by."
-            }
-          },
-          "required": ["sprint_id", "status_id", "priority_id"]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "updateTask",
-        "description": "Update an existing task only if a user has provided some detail.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number",
-              "description": "The unique identifier of the task."
-            },
-            "title": {
-              "type": "string",
-              "description": "The title of the task."
-            },
-            "description": {
-              "type": "string",
-              "description": "Detailed description of the task."
-            },
-            "category": {
-              "type": "string",
-              "description": "Category of the task."
-            },
-            "requirements": {
-              "type": "string",
-              "description": "Specific requirements needed for the task."
-            },
-            "acceptance_criteria": {
-              "type": "string",
-              "description": "Criteria that determine when the task is considered completed."
-            },
-            "points": {
-              "type": "number",
-              "description": "Effort estimation points of the task."
-            },
-            "assigned_to": {
-              "type": "number",
-              "description": "User ID the task is assigned to."
-            },
-            "sprint_id": {
-              "type": "number",
-              "description": "Sprint ID the task is associated with."
-            },
-            "status_id": {
-              "type": "number",
-              "description": "Status ID of the task."
-            },
-            "priority_id": {
-              "type": "number",
-              "description": "Priority ID to filter tasks by."
-            }
-          },
-          "required": ["id"]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "deleteTask",
-        "description": "Delete an existing task",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number",
-              "description": "The unique identifier of the task."
-            }
-          },
-          "required": ["id"]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
         "name": "getProject",
         "description": "Retrieve a specific project based on given parameters",
         "parameters": {
@@ -552,6 +309,249 @@
             "id": {
               "type": "number",
               "description": "Unique identifier for the project the sprint will be assigned to."
+            }
+          },
+          "required": ["id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getTask",
+        "description": "Retrieve a specific task based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the task."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the task."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the task."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of the task."
+            },
+            "requirements": {
+              "type": "string",
+              "description": "Specific requirements needed for the task."
+            },
+            "acceptance_criteria": {
+              "type": "string",
+              "description": "Criteria that determine when the task is considered completed."
+            },
+            "points": {
+              "type": "number",
+              "description": "Effort estimation points of the task."
+            },
+            "assigned_to": {
+              "type": "number",
+              "description": "User ID the task is assigned to."
+            },
+            "sprint_id": {
+              "type": "number",
+              "description": "Sprint ID the task is associated with."
+            },
+            "status_id": {
+              "type": "number",
+              "description": "Status ID of the task."
+            },
+            "priority_id": {
+              "type": "number",
+              "description": "Priority ID to filter tasks by."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getTasks",
+        "description": "Retrieve tasks based on given parameters only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the task."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the task."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the task."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of the task."
+            },
+            "requirements": {
+              "type": "string",
+              "description": "Specific requirements needed for the task."
+            },
+            "acceptance_criteria": {
+              "type": "string",
+              "description": "Criteria that determine when the task is considered completed."
+            },
+            "points": {
+              "type": "number",
+              "description": "Effort estimation points of the task."
+            },
+            "assigned_to": {
+              "type": "number",
+              "description": "User ID the task is assigned to."
+            },
+            "sprint_id": {
+              "type": "number",
+              "description": "Sprint ID the task is associated with."
+            },
+            "status_id": {
+              "type": "number",
+              "description": "Status ID of the task."
+            },
+            "priority_id": {
+              "type": "number",
+              "description": "Priority ID to filter tasks by."
+            }
+          }
+        }
+      }
+    },    
+    {
+      "type": "function",
+      "function": {
+        "name": "createTask",
+        "description": "Create a new task based on given parameters only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the task."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the task."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the task."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of the task."
+            },
+            "requirements": {
+              "type": "string",
+              "description": "Specific requirements needed for the task."
+            },
+            "acceptance_criteria": {
+              "type": "string",
+              "description": "Criteria that determine when the task is considered completed."
+            },
+            "points": {
+              "type": "number",
+              "description": "Effort estimation points of the task."
+            },
+            "assigned_to": {
+              "type": "number",
+              "description": "User ID the task is assigned to."
+            },
+            "sprint_id": {
+              "type": "number",
+              "description": "Sprint ID the task is associated with."
+            },
+            "status_id": {
+              "type": "number",
+              "description": "Status ID of the task."
+            },
+            "priority_id": {
+              "type": "number",
+              "description": "Priority ID to filter tasks by."
+            }
+          },
+          "required": ["sprint_id", "status_id", "priority_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "updateTask",
+        "description": "Update an existing task only if a user has provided some detail.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the task."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the task."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the task."
+            },
+            "category": {
+              "type": "string",
+              "description": "Category of the task."
+            },
+            "requirements": {
+              "type": "string",
+              "description": "Specific requirements needed for the task."
+            },
+            "acceptance_criteria": {
+              "type": "string",
+              "description": "Criteria that determine when the task is considered completed."
+            },
+            "points": {
+              "type": "number",
+              "description": "Effort estimation points of the task."
+            },
+            "assigned_to": {
+              "type": "number",
+              "description": "User ID the task is assigned to."
+            },
+            "sprint_id": {
+              "type": "number",
+              "description": "Sprint ID the task is associated with."
+            },
+            "status_id": {
+              "type": "number",
+              "description": "Status ID of the task."
+            },
+            "priority_id": {
+              "type": "number",
+              "description": "Priority ID to filter tasks by."
+            }
+          },
+          "required": ["id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "deleteTask",
+        "description": "Delete an existing task",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the task."
             }
           },
           "required": ["id"]
