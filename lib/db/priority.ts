@@ -23,14 +23,10 @@ export async function getPriorities(
  * @param {string} description - Priority description
  * @returns {Promise<Priority>} - The created priority
  */
-export async function createPriority(
-  name: string,
-  description: string
-): Promise<Priority> {
+export async function createPriority(params: Omit<Priority, "id">): Promise<Priority> {
   const priority = await prisma.priority.create({
     data: {
-      name: name,
-      description: description,
+      ...params,
     },
   });
   return priority;
@@ -42,10 +38,10 @@ export async function createPriority(
  * @param {number} id - Priority ID
  * @returns {Promise<Priority>} - The deleted priority
  */
-export async function deletePriority(id: number): Promise<Priority> {
+export async function deletePriority(params: Partial<Priority>): Promise<Priority> {
   const priority = await prisma.priority.delete({
     where: {
-      id: id,
+      id: params.id,
     },
   });
   return priority;

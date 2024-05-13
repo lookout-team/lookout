@@ -4,6 +4,7 @@ import { getProject, getProjects, createProject, updateProject, deleteProject  }
 import { getSprint, getSprints, createSprint, updateSprint, deleteSprint  } from "../db/sprint";
 import { getTask, getTasks, createTask, updateTask, deleteTask } from "../db/task";
 import { getStatuses, createStatus, deleteStatus } from "../db/status";
+import { getPriorities, createPriority, deletePriority } from "../db/priority";
 import { AssistantResponse, ComponentType } from "./types";
 require("dotenv").config();
 
@@ -272,7 +273,7 @@ export class AssistantManager {
           let output;
           
           // Check if the tool function requires confirmation and if it's confirmed based on the currentStatus
-          const allowedFunctions = ["createTask", "updateTask", "deleteTask", "createProject", "updateProject", "deleteProject, createSprint", "updateSprint", "deleteSprint"];
+          const allowedFunctions = ["createTask", "updateTask", "deleteTask", "createProject", "updateProject", "deleteProject, createSprint", "updateSprint", "deleteSprint, createStatus", "deleteStatus", "createPriority", "deletePriority"];
           if (allowedFunctions.includes(tool.function.name) && this.currentStatus !== "confirmed") { 
             output = "Action requires confirmation.";
           } else {
@@ -330,6 +331,15 @@ export class AssistantManager {
                 break;
               case "deleteStatus":
                 output = await deleteStatus(parsedArguments);
+                break;
+              case "getPriorities":
+                output = await getPriorities(parsedArguments);
+                break;
+              case "createPriority":
+                output = await createPriority(parsedArguments);
+                break;
+              case "deletePriority":
+                output = await deletePriority(parsedArguments);
                 break;
               default:
                 output = "Function not supported";

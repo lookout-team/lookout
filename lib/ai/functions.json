@@ -623,6 +623,72 @@
           "required": ["id"]
         }
       }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getPriorities",
+        "description": "Retrieve priorities based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the priority."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the priority."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the priority."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "createPriority",
+        "description": "Create a new priority based on given parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the priority."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the priority."
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of the priority."
+            }
+          },
+          "required": ["name", "description"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "deletePriority",
+        "description": "Delete an existing priority",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "The unique identifier of the priority."
+            }
+          },
+          "required": ["id"]
+        }
+      }
     }
   ]
 }
