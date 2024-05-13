@@ -82,10 +82,10 @@ export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
  * @param {number} id - Sprint ID
  * @returns {Promise<Sprint>} - The deleted sprint
  */
-export async function deleteSprint(params: Partial<Sprint>): Promise<Sprint> {
+export async function deleteSprint(id: number): Promise<Sprint> {
   const sprint = await prisma.sprint.delete({
     where: {
-      id: params.id,
+      id: id,
     },
   });
   return sprint;

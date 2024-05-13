@@ -23,10 +23,14 @@ export async function getStatuses(
  * @param {string} description The description of the status.
  * @returns {Promise<Status>} The created status object.
  */
-export async function createStatus(params: Omit<Status, "id">): Promise<Status> {
+export async function createStatus(
+  name: string,
+  description: string
+): Promise<Status> {
   const status = await prisma.status.create({
     data: {
-      ...params,
+      name: name,
+      description: description,
     },
   });
   return status;
@@ -38,10 +42,10 @@ export async function createStatus(params: Omit<Status, "id">): Promise<Status> 
  * @param {number} id The ID of the status to delete.
  * @returns {Promise<Status>} The deleted status object.
  */
-export async function deleteStatus(params: Partial<Status>): Promise<Status> {
+export async function deleteStatus(id: number): Promise<Status> {
   const status = await prisma.status.delete({
     where: {
-      id: params.id,
+      id: id,
     },
   });
   return status;

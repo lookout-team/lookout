@@ -94,10 +94,10 @@ export async function updateTask(params: Partial<Task>): Promise<Task> {
  * @param {number} id - Task ID
  * @returns {Promise<Task>} - The deleted task
  */
-export async function deleteTask(params: Partial<Task>): Promise<Task> {
+export async function deleteTask(id: number): Promise<Task> {
   const task = await prisma.task.delete({
     where: {
-      id: params.id,
+      id: id,
     },
   });
   return task;
