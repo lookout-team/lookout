@@ -1,7 +1,7 @@
 import readline from "readline";
-import { AssistantManager } from "./assistant";
+import { LookoutAssistant } from "./assistant";
 
-const manager = new AssistantManager();
+const manager = new LookoutAssistant();
 manager.startConversation();
 
 const rl = readline.createInterface({
