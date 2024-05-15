@@ -13,6 +13,8 @@ beforeAll(async () => {
   const user = await createUser({
     username: "TestUser",
     email: "TestUser@gmail.com",
+    password: "Test",
+    salt: "Mortons",
     first_name: "Test",
     last_name: "User",
   });
@@ -30,8 +32,8 @@ describe("Testing chat functions", () => {
         message: `Sample response #${i}`,
         data: responseData,
         componentType: null,
-        status: status
-      }
+        status: status,
+      };
 
       const expected = {
         user_id: userId,
@@ -41,7 +43,7 @@ describe("Testing chat functions", () => {
         type: "write",
         data: JSON.stringify(responseData),
         status: response.status,
-      }
+      };
 
       const data = await saveExchange(userId, message, response, "write");
       expect(data).toMatchObject(expected);
@@ -50,8 +52,8 @@ describe("Testing chat functions", () => {
   });
 
   test("Retrieve conversation history", async () => {
-      const responseData = { id: "1", title: "Title" };
-      const getData = await getConversationHistory(userId);
+    const responseData = { id: "1", title: "Title" };
+    const getData = await getConversationHistory(userId);
 
     expect(getData).toHaveLength(3);
     expect(getData).toEqual(

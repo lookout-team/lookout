@@ -40,6 +40,8 @@ beforeAll(async () => {
   const user = await createUser({
     username: "TestUser",
     email: "TestUser@gmail.com",
+    password: "Test",
+    salt: "Mortons",
     first_name: "Test",
     last_name: "User",
   });
