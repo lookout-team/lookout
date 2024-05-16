@@ -93,9 +93,10 @@ export class LookoutAssistant {
       content: userInput,
     });
 
-    const additional_instructions = `Address the user by their name. 
-    Unless the user explicitly confirms a create, update, or delete 
-    action, the 'status' in your JSON response should be 'pending'.`;
+    const additional_instructions = `Because write operations are expensive
+    and consequential, you must always ask the user to review a summary of any
+    planned write changes. You can only call create, update, or delete functions
+    once you requested and recieved explicit confirmation from the user!`;
 
     const run = await threads.runs.createAndPoll(this.threadId, {
       assistant_id: this.assistantId,
@@ -130,7 +131,7 @@ export class LookoutAssistant {
               break;
           }
 
-          const output = func(args);
+          const output = await func(args);
 
           return {
             tool_call_id: tool.id,

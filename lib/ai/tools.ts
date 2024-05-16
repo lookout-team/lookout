@@ -1,36 +1,51 @@
-import { createProject, getProject } from "../db/project";
+import { createProject, getProject, getProjects } from "../db/project";
 import { ProjectParams } from "./params";
 
 export function initializeTools() {
-  const tools = [];
+  let tools = [];
 
-  tools.push({
-    type: "function",
-    function: {
-      name: "createProject",
-      description: "Create a new project",
-      parameters: {
-        ...ProjectParams,
-        required: ["title", "description"],
+  const projectFunctions = [
+    {
+      type: "function",
+      function: {
+        name: "createProject",
+        description: "Create a new project",
+        parameters: {
+          ...ProjectParams,
+          required: ["title", "description"],
+        },
       },
     },
-  });
-
-  tools.push({
-    type: "function",
-    function: {
-      name: "getProjects",
-      description: "Retrieve a specific project based on given parameters",
-      parameters: ProjectParams,
+    {
+      type: "function",
+      function: {
+        name: "getProject",
+        description: "Retrieve a specific project based on query parameters",
+        parameters: {
+          ...ProjectParams,
+          required: ["id"],
+        },
+      },
     },
-  });
+    {
+      type: "function",
+      function: {
+        name: "getProjects",
+        description: "Retrieve an array of projects based on query parameters",
+        parameters: ProjectParams,
+      },
+    }
+  ]
 
+  tools = [...projectFunctions];
+  
   return tools;
 }
 
 export function mapFunctions() {
   const functionMap: Record<string, (...args: any) => unknown> = {
     getProject: getProject,
+    getProjects: getProjects,
     createProject: createProject,
   };
   return functionMap;
