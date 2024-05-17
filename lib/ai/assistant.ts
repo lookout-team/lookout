@@ -1,6 +1,6 @@
 import { OpenAI } from "openai";
 import { AssistantResponse, ComponentType } from "./types";
-import { initializeTools, mapFunctions } from "./tools";
+import { initializeTools, readFunctions, writeFunctions } from "./tools";
 require("dotenv").config();
 import * as fs from "fs";
 
@@ -12,12 +12,16 @@ export class LookoutAssistant {
   assistantId: any;
   threadId: any;
   tools: any;
-  functions: any;
+  readFunctions: Record<string, (...args: any) => unknown>;
+  writeFunctions: Record<string, (...args: any) => unknown>;
+  actionConfirmed: boolean;
 
   constructor() {
     this.openai = new OpenAI();
     this.tools = initializeTools();
-    this.functions = mapFunctions();
+    this.readFunctions = readFunctions();
+    this.writeFunctions = writeFunctions();
+    this.actionConfirmed = false;
   }
 
   /**
@@ -30,6 +34,7 @@ export class LookoutAssistant {
     const assistant = await this.openai.beta.assistants.create({
       model: "gpt-3.5-turbo",
       name: "Lookout Assistant",
+      temperature: 0.4,
       instructions: instructions,
       response_format: { type: "json_object" },
       tools: this.tools,
@@ -48,9 +53,12 @@ export class LookoutAssistant {
    * containing the message, data, and type of component to render
    */
   async processUserInput(userInput: string): Promise<AssistantResponse> {
+    // Check if message is a confirmation action
+    this.actionConfirmed = userInput === "Confirm action";
+
     // Send user input to assistant and destructure raw response
     const response = await this.queryAssistant(userInput);
-    let { message, data, status } = JSON.parse(response);
+    let { message, data } = JSON.parse(response);
 
     // Ensure data is always an array if not null
     let componentType: ComponentType = null;
@@ -67,6 +75,11 @@ export class LookoutAssistant {
       }
     }
 
+    // Status
+    let status: "confirmed" | "canceled" | "pending";
+    status = this.actionConfirmed ? "confirmed" : "pending";
+    status = userInput === "Cancel action" ? "canceled" : status;
+
     // Return processed response
     const assistantResponse: AssistantResponse = {
       message: message,
@@ -81,7 +94,7 @@ export class LookoutAssistant {
   /**
    * Sends user input to the AI assistant, polls for its status,
    * performs required actions (if any), and returns messages.
-   * 
+   *
    * @param {string} userInput - User input
    * @returns {string} - Raw JSON response returned by AI Assistant
    */
@@ -96,7 +109,7 @@ export class LookoutAssistant {
     const additional_instructions = `Because write operations are expensive
     and consequential, you must always ask the user to review a summary of any
     planned write changes. You can only call create, update, or delete functions
-    once you requested and recieved explicit confirmation from the user!`;
+    once you requestedh and recieved explicit confirmation from the user!`;
 
     const run = await threads.runs.createAndPoll(this.threadId, {
       assistant_id: this.assistantId,
@@ -121,8 +134,9 @@ export class LookoutAssistant {
     const toolOutputs = await Promise.all(
       run.required_action.submit_tool_outputs.tool_calls.map(
         async (tool: any) => {
+          // Parse function and arguments
+          const funcName = tool.function.name;
           const args = JSON.parse(tool.function.arguments);
-          const func = this.functions[tool.function.name];
 
           switch (tool.function.name) {
             case "createProject":
@@ -131,6 +145,24 @@ export class LookoutAssistant {
               break;
           }
 
+          // Determine if function is a read or write operation
+          const isWriteOperation = funcName in this.writeFunctions;
+
+          const func = isWriteOperation
+            ? this.writeFunctions[funcName]
+            : this.readFunctions[funcName];
+
+          // Cancel function call if no explicit user confirmation
+          if (isWriteOperation && this.actionConfirmed === false) {
+            return {
+              tool_call_id: tool.id,
+              output: JSON.stringify({
+                Error: "Cannot write data without user confirmation",
+              }),
+            };
+          }
+
+          // Call tool and return tool output
           const output = await func(args);
 
           return {
@@ -141,7 +173,7 @@ export class LookoutAssistant {
       )
     );
 
-    // Submit tool outputs
+    // Submit all tool outputs
     if (toolOutputs.length > 0) {
       await this.openai.beta.threads.runs.submitToolOutputsAndPoll(
         this.threadId,

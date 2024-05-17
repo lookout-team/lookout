@@ -42,10 +42,16 @@ export function initializeTools() {
   return tools;
 }
 
-export function mapFunctions() {
+export function readFunctions() {
   const functionMap: Record<string, (...args: any) => unknown> = {
     getProject: getProject,
     getProjects: getProjects,
+  };
+  return functionMap;
+}
+
+export function writeFunctions() {
+  const functionMap: Record<string, (...args: any) => unknown> = {
     createProject: createProject,
   };
   return functionMap;
