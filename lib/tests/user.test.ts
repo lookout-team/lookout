@@ -119,7 +119,7 @@ describe("User tests", () => {
       last_name: "Last",
     };
     const data = await signUp(user);
-    expect(compareSync("Password123", data?.password)).toBeTruthy();
+    expect(compareSync("Password123", data.password)).toBeTruthy();
   });
 });
 
