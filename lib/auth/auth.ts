@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import { ZodError } from "zod";
 import Credentials from "next-auth/providers/credentials";
-import { compareSync, hashSync } from "bcrypt-ts";
+import { compareSync } from "bcrypt-ts";
 import { getUser } from "../db/user";
 import { signInSchema } from "./zod";
 

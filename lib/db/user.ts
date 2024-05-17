@@ -89,14 +89,16 @@ export async function deleteUser(id: number): Promise<User> {
 /**
  * Signs a user up for a lookout account.
  *
- * @param {Omit<User, "id | password | salt">} params - User details
+ * @param {Omit<User, "id" | "salt">} params - User details
  * @returns {Promise<User>} - New user
  */
-export async function signUp(
-  params: Omit<User, "id | password | salt">
-): Promise<User> {
-  params.salt = genSaltSync(10);
-  params.password = hashSync(params.password, params.salt);
-  const user = await createUser(params);
+export async function signUp(params: Omit<User, "id" | "salt">): Promise<User> {
+  const userSalt = genSaltSync(10);
+  const data = {
+    ...params,
+    salt: userSalt,
+    password: hashSync(params.password, userSalt),
+  };
+  const user = createUser(data);
   return user;
 }

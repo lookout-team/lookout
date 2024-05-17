@@ -4,8 +4,10 @@ import {
   getUsers,
   updateUser,
   deleteUser,
+  signUp,
 } from "../db/user";
 import prisma from "../db/prisma";
+import { compareSync } from "bcrypt-ts/browser";
 
 let userIds: number[] = [];
 
@@ -106,6 +108,18 @@ describe("User tests", () => {
       id: userIds[0],
     });
     expect(data).toBe(null);
+  });
+
+  test("User signup generates hashed password", async () => {
+    const user = {
+      username: "Test",
+      email: "Test12345@gmail.com",
+      password: "Password123",
+      first_name: "First",
+      last_name: "Last",
+    };
+    const data = await signUp(user);
+    expect(compareSync("Password123", data?.password)).toBeTruthy();
   });
 });
 
