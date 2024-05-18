@@ -1,4 +1,10 @@
-import { createProject, getProject, getProjects } from "../db/project";
+import {
+  createProject,
+  deleteProject,
+  getProject,
+  getProjects,
+  updateProject,
+} from "../db/project";
 import { ProjectParams } from "./params";
 
 export function initializeTools() {
@@ -9,7 +15,7 @@ export function initializeTools() {
       type: "function",
       function: {
         name: "createProject",
-        description: "Create a new project",
+        description: "Create new project",
         parameters: {
           ...ProjectParams,
           required: ["title", "description"],
@@ -20,7 +26,7 @@ export function initializeTools() {
       type: "function",
       function: {
         name: "getProject",
-        description: "Retrieve a specific project based on query parameters",
+        description: "Retrieve one project",
         parameters: {
           ...ProjectParams,
           required: ["id"],
@@ -31,14 +37,36 @@ export function initializeTools() {
       type: "function",
       function: {
         name: "getProjects",
-        description: "Retrieve an array of projects based on query parameters",
+        description: "Retrive many projects",
         parameters: ProjectParams,
       },
-    }
-  ]
+    },
+    {
+      type: "function",
+      function: {
+        name: "updateProject",
+        description: "Update project details",
+        parameters: ProjectParams,
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "deleteProject",
+        description: "Update project details",
+        parameters: {
+          id: {
+            type: "number",
+            description: "Project ID",
+          },
+          required: ["id"],
+        },
+      },
+    },
+  ];
 
   tools = [...projectFunctions];
-  
+
   return tools;
 }
 
@@ -53,6 +81,8 @@ export function readFunctions() {
 export function writeFunctions() {
   const functionMap: Record<string, (...args: any) => unknown> = {
     createProject: createProject,
+    updateProject: updateProject,
+    deleteProject: deleteProject,
   };
   return functionMap;
 }

@@ -3,6 +3,7 @@ import { AssistantResponse, ComponentType } from "./types";
 import { initializeTools, readFunctions, writeFunctions } from "./tools";
 require("dotenv").config();
 import * as fs from "fs";
+import { saveExchange } from "../db/chat";
 
 /**
  * Provides an interface for the AI chat assistant.
@@ -15,6 +16,7 @@ export class LookoutAssistant {
   readFunctions: Record<string, (...args: any) => unknown>;
   writeFunctions: Record<string, (...args: any) => unknown>;
   actionConfirmed: boolean;
+  responseType: "read" | "write";
 
   constructor() {
     this.openai = new OpenAI();
@@ -22,6 +24,7 @@ export class LookoutAssistant {
     this.readFunctions = readFunctions();
     this.writeFunctions = writeFunctions();
     this.actionConfirmed = false;
+    this.responseType = "read";
   }
 
   /**
@@ -58,7 +61,21 @@ export class LookoutAssistant {
 
     // Send user input to assistant and destructure raw response
     const response = await this.queryAssistant(userInput);
-    let { message, data } = JSON.parse(response);
+    let parsedResponse = null;
+
+    try {
+      parsedResponse = JSON.parse(response);
+    } catch {
+      return {
+        message: "An error occurred, please try again.",
+        data: null,
+        componentType: null,
+        status: "canceled",
+        type: "read"
+      };
+    }
+
+    let { message, data } = parsedResponse;
 
     // Ensure data is always an array if not null
     let componentType: ComponentType = null;
@@ -80,12 +97,13 @@ export class LookoutAssistant {
     status = this.actionConfirmed ? "confirmed" : "pending";
     status = userInput === "Cancel action" ? "canceled" : status;
 
-    // Return processed response
+    // Compile response props
     const assistantResponse: AssistantResponse = {
       message: message,
       data: data,
       componentType: componentType,
       status: status,
+      type: this.responseType
     };
 
     return assistantResponse;
@@ -96,12 +114,10 @@ export class LookoutAssistant {
    * performs required actions (if any), and returns messages.
    *
    * @param {string} userInput - User input
-   * @returns {string} - Raw JSON response returned by AI Assistant
+   * @returns - Raw JSON response returned by AI Assistant
    */
   async queryAssistant(userInput: string) {
-    const threads = this.openai.beta.threads;
-
-    await threads.messages.create(this.threadId, {
+    await this.openai.beta.threads.messages.create(this.threadId, {
       role: "user",
       content: userInput,
     });
@@ -111,16 +127,21 @@ export class LookoutAssistant {
     planned write changes. You can only call create, update, or delete functions
     once you requestedh and recieved explicit confirmation from the user!`;
 
-    const run = await threads.runs.createAndPoll(this.threadId, {
-      assistant_id: this.assistantId,
-      additional_instructions: additional_instructions,
-    });
+    const run = await this.openai.beta.threads.runs.createAndPoll(
+      this.threadId,
+      {
+        assistant_id: this.assistantId,
+        additional_instructions: additional_instructions,
+      }
+    );
 
     if (run.status === "requires_action") {
       await this.handleRequiresAction(run);
     }
 
-    const messages = await threads.messages.list(this.threadId);
+    const messages = await this.openai.beta.threads.messages.list(
+      this.threadId
+    );
     const response = messages.data[0].content[0].text.value;
     return response;
   }
@@ -147,6 +168,8 @@ export class LookoutAssistant {
 
           // Determine if function is a read or write operation
           const isWriteOperation = funcName in this.writeFunctions;
+
+          this.responseType = isWriteOperation ? "write" : "read";
 
           const func = isWriteOperation
             ? this.writeFunctions[funcName]

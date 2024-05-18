@@ -12,4 +12,5 @@ export type AssistantResponse = {
   data: any;
   componentType: ComponentType;
   status: "pending" | "confirmed" | "canceled";
+  type: "read" | "write";
 };
