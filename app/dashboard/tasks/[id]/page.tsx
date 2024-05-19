@@ -2,6 +2,7 @@ import PageBreadcrumbs from "@/app/ui/core/breadcrumbs";
 import TaskDetails from "@/app/ui/tasks/task-details";
 import { getSprint, getSprints } from "@/lib/db/sprint";
 import { getTask, updateTask } from "@/lib/db/task";
+import { getUsers } from "@/lib/db/user";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 
@@ -13,6 +14,7 @@ export default async function Page({ params }: { params: { id: number } }) {
   if (!sprint) return notFound();
 
   const sprints = await getSprints({ project_id: sprint.project_id });
+  const users = await getUsers();
 
   async function updateAction(form: FormData) {
     "use server";
@@ -37,7 +39,7 @@ export default async function Page({ params }: { params: { id: number } }) {
   return (
     <>
       <PageBreadcrumbs items={breadcrumbs} />
-      <TaskDetails task={task} sprints={sprints} updateAction={updateAction} />
+      <TaskDetails task={task} sprints={sprints} users={users} updateAction={updateAction} />
     </>
   );
 }

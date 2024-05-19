@@ -1,6 +1,6 @@
 "use client";
 
-import { Sprint } from "@prisma/client";
+import { Sprint, User } from "@prisma/client";
 import { TaskWithIncludes } from "@/lib/db/types";
 import {
   Select,
@@ -15,28 +15,25 @@ import { useState } from "react";
 interface ComponentProps {
   task?: TaskWithIncludes;
   sprints: Sprint[];
+  users: User[];
 }
 
 export default function TaskForm(props: ComponentProps) {
   const task = props.task;
   const sprints = props.sprints;
-  const currentSprintId = sprints[0].id.toString();
+  const users = props.users;
+  const firstSprint = sprints[0].id.toString();
+  const firstUser = users[0].id.toString();
 
-  const [sprintId, setSprintId] = useState(currentSprintId);
+  const [sprintId, setSprintId] = useState(firstSprint);
   const [title, setTitle] = useState(task?.title);
   const [description, setDescription] = useState(task?.description);
   const [category, setCategory] = useState(task?.category);
-  const [priority, setPriority] = useState(`${task?.priority.id}`);
+  const [priority, setPriority] = useState(`${task?.priority?.id}`);
   const [requirements, setRequirements] = useState(task?.requirements);
   const [criteria, setCriteria] = useState(task?.acceptance_criteria);
   const [points, setPoints] = useState(task?.points);
-  const [assignee, setAssignee] = useState("1");
-
-  const users = [
-    { name: "Wasim Sandhu", id: 1 },
-    { name: "Winston Chan", id: 2 },
-    { name: "Joel Henningson", id: 3 },
-  ];
+  const [assignee, setAssignee] = useState(firstUser);
 
   const categories = [
     "Story",
@@ -63,8 +60,9 @@ export default function TaskForm(props: ComponentProps) {
         variant="bordered"
         name="sprint_id"
         className="w-full mb-1"
-        selectedKeys={sprintId}
-        onChange={(e) => setAssignee(e.target.value)}
+        value={sprintId}
+        selectedKeys={[sprintId]}
+        onChange={(e) => setSprintId(e.target.value)}
         isRequired={true}
       >
         {sprints.map((sprint) => (
@@ -126,13 +124,14 @@ export default function TaskForm(props: ComponentProps) {
         variant="bordered"
         className="w-full mb-1"
         name="user_id"
-        selectedKeys={assignee}
+        value={assignee}
+        selectedKeys={[assignee]}
         onChange={(e) => setAssignee(e.target.value)}
         isRequired={true}
       >
         {users.map((user) => (
           <SelectItem key={user.id} value={user.id}>
-            {user.name}
+            {`${user.first_name} ${user.last_name}`}
           </SelectItem>
         ))}
       </Select>
