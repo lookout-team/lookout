@@ -1,13 +1,6 @@
 import prisma from "./prisma";
 import { Chat } from "@prisma/client";
-
-/** TODO: Export from /lib/ai */
-type AssistantResponse = {
-  message: string;
-  data: any;
-  componentType: "table" | "card" | null;
-  status: "pending" | "confirmed" | "canceled";
-};
+import { AssistantResponse } from "../ai/types";
 
 /**
  * Saves user exchange with AI Assistant.
@@ -15,14 +8,12 @@ type AssistantResponse = {
  * @param {number} userId - User ID
  * @param {string} message - User message
  * @param {AssistantResponse} response - Assistant response
- * @param {"read" | "write"} type - Either "read" or "write"
  * @returns {Promise<Chat>} - The saved exchange
  */
 export async function saveExchange(
   userId: number,
   message: string,
   response: AssistantResponse,
-  type: "read" | "write"
 ): Promise<Chat> {
   const responseData = JSON.stringify(response.data);
 
@@ -32,7 +23,7 @@ export async function saveExchange(
       timestamp: new Date(),
       message: message,
       response: response.message,
-      type: type,
+      type: response.type,
       data: responseData,
       status: response.status,
     },

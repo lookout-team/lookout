@@ -37,6 +37,8 @@ beforeAll(async () => {
   const projectData = await createProject({
     title: "Project Z",
     description: "This project is classified!",
+    last_updated: null,
+    current_sprint_id: null
   });
   projectId = projectData.id;
 
@@ -74,7 +76,7 @@ describe("Task tests", () => {
 
     for (const item of items) {
       const task = {
-        title: item,
+        title: item!,
         description: "Description",
         requirements: null,
         acceptance_criteria: null,

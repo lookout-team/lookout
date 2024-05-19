@@ -26,6 +26,7 @@ describe("Testing chat functions", () => {
     for (let i = 1; i < 4; i++) {
       const message = `Sample message #${i}`;
       const status: "pending" | "confirmed" | "canceled" = "pending";
+      const responseType: "read" | "write" = "write";
       const responseData = { id: "1", title: "Title" };
 
       const response = {
@@ -33,19 +34,20 @@ describe("Testing chat functions", () => {
         data: responseData,
         componentType: null,
         status: status,
-      };
+        type: responseType
+      }
 
       const expected = {
         user_id: userId,
         timestamp: new Date(),
         message: message,
         response: response.message,
-        type: "write",
+        type: responseType,
         data: JSON.stringify(responseData),
         status: response.status,
       };
 
-      const data = await saveExchange(userId, message, response, "write");
+      const data = await saveExchange(userId, message, response);
       expect(data).toMatchObject(expected);
       chatIds.push(data.id);
     }

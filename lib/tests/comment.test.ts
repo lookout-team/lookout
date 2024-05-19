@@ -33,6 +33,8 @@ beforeAll(async () => {
   const projectData = await createProject({
     title: "Project Z",
     description: "This project is classified!",
+    last_updated: null,
+    current_sprint_id: null
   });
   projectId = projectData.id;
 
