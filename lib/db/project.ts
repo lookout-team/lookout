@@ -4,11 +4,11 @@ import { Project } from "@prisma/client";
 /**
  * Creates new project.
  *
- * @param {Project} params - Project details
+ * @param {Omit<Project, "id">} params - Project details
  * @returns {Promise<Project>} - The created project
  */
 export async function createProject(
-  params: Partial<Project>
+  params: Omit<Project, "id">
 ): Promise<Project> {
   const project = await prisma.project.create({
     data: {
