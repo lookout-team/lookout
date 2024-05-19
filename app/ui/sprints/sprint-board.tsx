@@ -26,7 +26,7 @@ export default function SprintBoard(props: ComponentProps) {
   for (const status of statuses) {
     const taskCards = [];
     const filteredTasks = props.tasks.filter(
-      (task) => task.status.name == status.name
+      (task) => task.status?.name == status.name
     );
 
     for (const task of filteredTasks) {
@@ -45,7 +45,7 @@ export default function SprintBoard(props: ComponentProps) {
             <div className="flex flex-row gap-2">
               <Chip className="bg-primary-200">{task.points}</Chip>
               <Chip className="bg-green-200">{task.category}</Chip>
-              <Chip className="bg-red-200">{task.priority.name}</Chip>
+              <Chip className="bg-red-200">{task.priority?.name}</Chip>
             </div>
           </CardFooter>
         </Card>

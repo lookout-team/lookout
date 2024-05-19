@@ -17,7 +17,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           let user = null;
           let { login, password } = await signInSchema.parseAsync(credentials);
-          // Validate if email or username exists.
+          // Validate if user exists
           user =
             (await getUser({ email: login })) ||
             (await getUser({ username: login }));

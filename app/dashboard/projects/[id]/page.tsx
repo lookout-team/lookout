@@ -19,6 +19,7 @@ import { CalendarPlus, SquarePen } from "lucide-react";
 import TaskForm from "@/app/ui/tasks/task-form";
 import { getStatuses } from "@/lib/db/status";
 import { getPriorities } from "@/lib/db/priority";
+import { getUsers } from "@/lib/db/user";
 
 type QueryParams = {
   view: "board" | "table";
@@ -124,6 +125,7 @@ export default async function Page({
   const sprintComponents = [];
   const sprints = await getSprints({ project_id: project?.id });
   const statuses = await getStatuses();
+  const users = await getUsers();
   const priorities = await getPriorities();
 
   for (const sprint of sprints) {
@@ -172,7 +174,7 @@ export default async function Page({
             buttonColor="primary"
             modalTitle="Create New Task"
             modalSize="2xl"
-            modalBody={<TaskForm sprints={sprints} />}
+            modalBody={<TaskForm sprints={sprints} users={users} />}
             modalScroll="outside"
             confirmText="Create Task"
             submitAction={createTaskAction}

@@ -8,9 +8,15 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
+import { User } from "@prisma/client";
+import { CircleUser, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-export default function AppNavbar() {
+interface Props {
+  user: User | null;
+}
+
+export default function AppNavbar(props: Props) {
   const pathname = usePathname();
 
   const navbarItems = [];
@@ -18,7 +24,7 @@ export default function AppNavbar() {
 
   for (const page of pages) {
     const isActive = pathname.includes(page.toLowerCase());
-    const link = `/dashboard/${page.toLowerCase()}`
+    const link = `/dashboard/${page.toLowerCase()}`;
     const color = isActive ? undefined : "foreground";
     const underline = isActive ? "active" : undefined;
 
@@ -39,16 +45,33 @@ export default function AppNavbar() {
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {navbarItems}
       </NavbarContent>
-      {/* TODO: Authentication */}
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
-            Sign Up
-          </Button>
-        </NavbarItem>
+        {props.user ? (
+          <>
+            <NavbarItem>Hi {props.user.first_name}!</NavbarItem>
+            <NavbarItem className="pt-1">
+              <Link color="foreground" href="/settings">
+                <CircleUser size={18} />
+              </Link>
+            </NavbarItem>
+            <NavbarItem className="pt-1">
+              <Link color="foreground" href="/signout">
+                <LogOut size={18} />
+              </Link>
+            </NavbarItem>
+          </>
+        ) : (
+          <>
+            <NavbarItem>
+              <Link href="/signin">Sign In</Link>
+            </NavbarItem>
+            <NavbarItem>
+              <Button as={Link} color="primary" href="/signup" variant="flat">
+                Sign Up
+              </Button>
+            </NavbarItem>
+          </>
+        )}
       </NavbarContent>
     </Navbar>
   );
