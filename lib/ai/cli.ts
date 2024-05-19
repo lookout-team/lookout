@@ -19,6 +19,7 @@ rl.on("line", async (input: string) => {
   console.log(`Data: ${JSON.stringify(response.data, null, 2)}`);
   console.log(`Component Type: ${response.componentType}`);
   console.log(`Status: ${response.status}`);
+  console.log(`Type: ${response.type}`);
   console.log("\n");
   rl.prompt();
 });
