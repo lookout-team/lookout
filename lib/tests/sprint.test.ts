@@ -15,9 +15,10 @@ const endDate = new Date("2024-05-07T17:00:00Z");
 
 beforeAll(async () => {
   const data = await createProject({
-    title: "Project X",
-    description: "Likely the greatest project humanity has ever seen",
+    title: "Project Z",
+    description: "This project is classified!",
     last_updated: new Date("2024-05-01T10:00:00Z"),
+    current_sprint_id: null
   });
   projectId = data.id;
 });
