@@ -4,8 +4,10 @@ import {
   getUsers,
   updateUser,
   deleteUser,
+  signUp,
 } from "../db/user";
 import prisma from "../db/prisma";
+import { compareSync } from "bcrypt-ts/browser";
 
 let userIds: number[] = [];
 
@@ -15,8 +17,10 @@ describe("User tests", () => {
       const user = {
         username: `Username #${i}`,
         email: `email#${i}@gmail.com`,
+        password: `Password #${i}`,
         first_name: `First name #${i}`,
         last_name: `Last name #${i}`,
+        salt: "Mortons",
       };
       const data = await createUser(user);
       expect(data).toMatchObject(user);
@@ -31,8 +35,10 @@ describe("User tests", () => {
     expect(data).toMatchObject({
       username: "Username #1",
       email: "email#1@gmail.com",
+      password: "Password #1",
       first_name: "First name #1",
       last_name: "Last name #1",
+      salt: "Mortons",
     });
   });
 
@@ -44,20 +50,26 @@ describe("User tests", () => {
         expect.objectContaining({
           username: "Username #1",
           email: "email#1@gmail.com",
+          password: "Password #1",
           first_name: "First name #1",
           last_name: "Last name #1",
+          salt: "Mortons",
         }),
         expect.objectContaining({
           username: "Username #2",
           email: "email#2@gmail.com",
+          password: "Password #2",
           first_name: "First name #2",
           last_name: "Last name #2",
+          salt: "Mortons",
         }),
         expect.objectContaining({
           username: "Username #3",
           email: "email#3@gmail.com",
+          password: "Password #3",
           first_name: "First name #3",
           last_name: "Last name #3",
+          salt: "Mortons",
         }),
       ])
     );
@@ -72,8 +84,10 @@ describe("User tests", () => {
     expect(data).toMatchObject({
       username: "Username #1",
       email: "email#1@gmail.com",
+      password: "Password #1",
       first_name: "My name",
       last_name: "...is Jeff",
+      salt: "Mortons",
     });
   });
 
@@ -82,8 +96,10 @@ describe("User tests", () => {
     expect(data).toMatchObject({
       username: "Username #1",
       email: "email#1@gmail.com",
+      password: "Password #1",
       first_name: "My name",
       last_name: "...is Jeff",
+      salt: "Mortons",
     });
   });
 
@@ -92,6 +108,18 @@ describe("User tests", () => {
       id: userIds[0],
     });
     expect(data).toBe(null);
+  });
+
+  test("User signup generates hashed password", async () => {
+    const user = {
+      username: "Test",
+      email: "Test12345@gmail.com",
+      password: "Password123",
+      first_name: "First",
+      last_name: "Last",
+    };
+    const data = await signUp(user);
+    expect(compareSync("Password123", data.password)).toBeTruthy();
   });
 });
 

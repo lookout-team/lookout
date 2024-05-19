@@ -1,6 +1,7 @@
 import prisma from "./prisma";
 import { User } from "@prisma/client";
 import { UserWithIncludes } from "./types";
+import { genSaltSync, hashSync } from "bcrypt-ts/browser";
 
 const inclusions = {
   task: true,
@@ -82,5 +83,22 @@ export async function deleteUser(id: number): Promise<User> {
   const user = await prisma.user.delete({
     where: { id: id },
   });
+  return user;
+}
+
+/**
+ * Signs a user up for a lookout account.
+ *
+ * @param {Omit<User, "id" | "salt">} params - User details
+ * @returns {Promise<User>} - New user
+ */
+export async function signUp(params: Omit<User, "id" | "salt">): Promise<User> {
+  const userSalt = genSaltSync(10);
+  const data = {
+    ...params,
+    salt: userSalt,
+    password: hashSync(params.password, userSalt),
+  };
+  const user = createUser(data);
   return user;
 }

@@ -50,8 +50,10 @@ beforeAll(async () => {
   const user = await createUser({
     username: "TestUser",
     email: "TestUser@gmail.com",
+    password: "Test",
     first_name: "Test",
     last_name: "User",
+    salt: "Mortons",
   });
   userId = user.id;
 
