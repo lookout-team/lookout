@@ -3,7 +3,6 @@ import { AssistantResponse, ComponentType } from "./types";
 import { initializeTools, readFunctions, writeFunctions } from "./tools";
 require("dotenv").config();
 import * as fs from "fs";
-import { saveExchange } from "../db/chat";
 
 /**
  * Provides an interface for the AI chat assistant.

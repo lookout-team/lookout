@@ -5,30 +5,77 @@ import {
   getProjects,
   updateProject,
 } from "../db/project";
-import { ProjectParams } from "./params";
+import {
+  createSprint,
+  deleteSprint,
+  getSprint,
+  getSprints,
+  updateSprint,
+} from "../db/sprint";
+import {
+  createTask,
+  deleteTask,
+  getTask,
+  getTasks,
+  updateTask,
+} from "../db/task";
+import { ProjectParams, SprintParams, TaskParams } from "./params";
+
+const projectRequired = ["title", "description"];
+const sprintRequired = [
+  "title",
+  "start_date",
+  "planned_capacity",
+  "project_id",
+];
+const taskRequired = [
+  "title",
+  "description",
+  "category",
+  "points",
+  "sprint_id",
+  "status_id",
+];
 
 export function initializeTools() {
   let tools = [];
 
-  const projectFunctions = [
+  const projectTools = defineModelTools(
+    "Project",
+    ProjectParams,
+    projectRequired
+  );
+  const sprintTools = defineModelTools("Sprint", SprintParams, sprintRequired);
+  const taskTools = defineModelTools("Task", TaskParams, taskRequired);
+
+  tools = [...projectTools, ...sprintTools, ...taskTools];
+  return tools;
+}
+
+function defineModelTools(
+  model: string,
+  params: any,
+  requiredParams: string[]
+): any[] {
+  return [
     {
       type: "function",
       function: {
-        name: "createProject",
-        description: "Create new project",
+        name: `create${model}`,
+        description: `Create new ${model}`,
         parameters: {
-          ...ProjectParams,
-          required: ["title", "description"],
+          ...params,
+          required: requiredParams,
         },
       },
     },
     {
       type: "function",
       function: {
-        name: "getProject",
-        description: "Retrieve one project",
+        name: `get${model}`,
+        description: `Retrieve one ${model}`,
         parameters: {
-          ...ProjectParams,
+          ...params,
           required: ["id"],
         },
       },
@@ -36,44 +83,47 @@ export function initializeTools() {
     {
       type: "function",
       function: {
-        name: "getProjects",
-        description: "Retrive many projects",
-        parameters: ProjectParams,
+        name: `get${model}s`,
+        description: `Retrieve many ${model}s`,
+        parameters: params,
       },
     },
     {
       type: "function",
       function: {
-        name: "updateProject",
-        description: "Update project details",
-        parameters: ProjectParams,
+        name: `update${model}`,
+        description: `Update ${model} details`,
+        parameters: params,
       },
     },
     {
       type: "function",
       function: {
-        name: "deleteProject",
-        description: "Update project details",
+        name: `delete${model}`,
+        description: `Delete ${model}`,
         parameters: {
-          id: {
-            type: "number",
-            description: "Project ID",
+          type: "object",
+          properties: {
+            id: {
+              type: "number",
+              description: `${model} id`,
+            },
           },
           required: ["id"],
         },
       },
     },
   ];
-
-  tools = [...projectFunctions];
-
-  return tools;
 }
 
 export function readFunctions() {
   const functionMap: Record<string, (...args: any) => unknown> = {
     getProject: getProject,
     getProjects: getProjects,
+    getSprint: getSprint,
+    getSprints: getSprints,
+    getTask: getTask,
+    getTasks: getTasks,
   };
   return functionMap;
 }
@@ -83,6 +133,12 @@ export function writeFunctions() {
     createProject: createProject,
     updateProject: updateProject,
     deleteProject: deleteProject,
+    createSprint: createSprint,
+    updateSprint: updateSprint,
+    deleteSprint: deleteSprint,
+    createTask: createTask,
+    updateTask: updateTask,
+    deleteTask: deleteTask,
   };
   return functionMap;
 }
