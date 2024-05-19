@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, Card, CardBody, Input } from "@nextui-org/react";
-import { useState } from "react";
 
 interface Props {
   action: (form: FormData) => Promise<void>;
