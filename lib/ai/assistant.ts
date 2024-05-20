@@ -28,9 +28,9 @@ export class LookoutAssistant {
   }
 
   /**
-   * Starts a new conversation thread.
+   * Initializes new assistant.
    */
-  async startConversation() {
+  async initialize() {
     const instructionsPath = `${process.cwd()}/lib/ai/instructions.txt`;
     const instructions = fs.readFileSync(instructionsPath, "utf-8");
 
@@ -42,8 +42,14 @@ export class LookoutAssistant {
       response_format: { type: "json_object" },
       tools: this.tools,
     });
-    this.assistantId = assistant.id;
 
+    this.assistantId = assistant.id;
+  }
+
+  /**
+   * Starts a new conversation thread.
+   */
+  async startConversation() {
     const thread = await this.openai.beta.threads.create();
     this.threadId = thread.id;
   }
@@ -203,7 +209,7 @@ export class LookoutAssistant {
 
   /**
    * Parses Assistant-generated arguments.
-   * 
+   *
    * @param toolName - Tool name
    * @param toolArgs - Tool arguments
    * @returns - Arguments with correct types
