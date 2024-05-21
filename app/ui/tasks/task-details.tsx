@@ -11,6 +11,7 @@ import {
 } from "@nextui-org/react";
 import { Sprint, User } from "@prisma/client";
 import { useRef, useState } from "react";
+import { handleTextAreaSubmit } from "../utils";
 
 interface ComponentProps {
   task: TaskWithIncludes;
@@ -64,15 +65,6 @@ export default function TaskDetails(props: ComponentProps) {
   const hiddenIdInput = task && (
     <input type="hidden" name="id" value={task.id} />
   );
-
-  function handleTextAreaSubmit(e: any, formRef: any) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      if (formRef && formRef.current) {
-        formRef.current.requestSubmit();
-      }
-    }
-  }
 
   return (
     <div className="mt-6 grid grid-cols-10 gap-6">

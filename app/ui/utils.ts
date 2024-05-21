@@ -19,3 +19,12 @@ export function getDuration(dateTime: Date): string {
 
   return `${duration} ${unit}`;
 }
+
+export function handleTextAreaSubmit(e: any, formRef: any) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    if (formRef && formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }
+}
