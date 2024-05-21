@@ -1,8 +1,8 @@
 import readline from "readline";
-import { LookoutAssistant } from "./assistant";
+import assistant from "./assistant";
 
-const assistant = new LookoutAssistant();
-assistant.startConversation();
+const userId = 1;
+assistant.startConversation(userId);
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -13,7 +13,7 @@ const rl = readline.createInterface({
 rl.prompt();
 
 rl.on("line", async (input: string) => {
-  const response = await assistant.processUserInput(input);
+  const response = await assistant.processUserInput(userId, input);
   console.log("\n");
   console.log(`Assistant > ${response.message}`);
   console.log(`Data: ${JSON.stringify(response.data, null, 2)}`);
