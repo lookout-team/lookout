@@ -37,7 +37,7 @@ export default async function Page() {
   }
 
   return (
-    <div className="ms-40 me-40">
+    <div className="sm:ms-10 sm:me-10 lg:ms-20 lg:me-20 xl:ms-40 xl:me-40">
       <ChatThread conversation={conversation} handler={sendMessage} />
     </div>
   );

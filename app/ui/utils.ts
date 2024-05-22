@@ -28,3 +28,7 @@ export function handleTextAreaSubmit(e: any, formRef: any) {
     }
   }
 }
+
+export function capitalize(input: string) {
+  return input.charAt(0).toUpperCase() + input.slice(1);
+}
