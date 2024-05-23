@@ -7,12 +7,12 @@ import * as fs from "fs";
 /**
  * Provides an interface for the AI chat assistant.
  */
-export class LookoutAssistant {
+class LookoutAssistant {
   openai: any;
   assistantId: any;
-  threadId: any;
-  currentRun: any;
   tools: any;
+  threads: Record<number, any>;
+  runs: Record<number, Array<any>>;
   readFunctions: Record<string, (...args: any) => unknown>;
   writeFunctions: Record<string, (...args: any) => unknown>;
   actionConfirmed: boolean;
@@ -21,16 +21,19 @@ export class LookoutAssistant {
   constructor() {
     this.openai = new OpenAI();
     this.tools = initializeTools();
+    this.threads = {};
+    this.runs = {};
     this.readFunctions = readFunctions();
     this.writeFunctions = writeFunctions();
     this.actionConfirmed = false;
     this.responseType = "read";
+    this.initialize();
   }
 
   /**
-   * Starts a new conversation thread.
+   * Initializes new assistant.
    */
-  async startConversation() {
+  async initialize() {
     const instructionsPath = `${process.cwd()}/lib/ai/instructions.txt`;
     const instructions = fs.readFileSync(instructionsPath, "utf-8");
 
@@ -42,10 +45,22 @@ export class LookoutAssistant {
       response_format: { type: "json_object" },
       tools: this.tools,
     });
+
     this.assistantId = assistant.id;
+  }
+
+  /**
+   * Starts a new conversation thread.
+   */
+  async startConversation(userId: number) {
+    const threadId = this.threads[userId];
+
+    try {
+      await this.openai.beta.threads.del(threadId);
+    } catch {}
 
     const thread = await this.openai.beta.threads.create();
-    this.threadId = thread.id;
+    this.threads[userId] = thread.id;
   }
 
   /**
@@ -55,20 +70,25 @@ export class LookoutAssistant {
    * @returns {AssistantResponse} - Response returned by the Assistant API,
    * containing the message, data, and type of component to render
    */
-  async processUserInput(userInput: string): Promise<AssistantResponse> {
+  async processUserInput(
+    userId: number,
+    userInput: string
+  ): Promise<AssistantResponse> {
     // Check if message is a confirmation action
     this.actionConfirmed = userInput === "Confirm action";
 
     // Send user input to assistant and destructure raw response
-    const response = await this.queryAssistant(userInput);
+    const response = await this.queryAssistant(userId, userInput);
     let parsedResponse = null;
 
     try {
       parsedResponse = JSON.parse(response);
     } catch {
+      const userRuns = this.runs[userId];
+      const lastRun = userRuns[userRuns.length - 1];
       return {
         message: "An error occurred, please try again.",
-        data: this.currentRun.last_error,
+        data: lastRun.last_error,
         componentType: null,
         status: "canceled",
         type: "read",
@@ -116,16 +136,16 @@ export class LookoutAssistant {
    * @param {string} userInput - User input
    * @returns - Raw JSON response returned by AI Assistant
    */
-  async queryAssistant(userInput: string) {
+  async queryAssistant(userId: number, userInput: string) {
     const threads = this.openai.beta.threads;
+    const threadId = this.threads[userId];
 
-    if (this.currentRun && this.currentRun.status !== "completed") {
-      try {
-        await threads.runs.cancel(this.threadId, this.currentRun.id);
-      } catch {}
-    }
+    try {
+      const lastRun = this.getLastRun(userId);
+      await threads.runs.cavncel(threadId, lastRun.id);
+    } catch {}
 
-    await threads.messages.create(this.threadId, {
+    await threads.messages.create(threadId, {
       role: "user",
       content: userInput,
     });
@@ -135,16 +155,16 @@ export class LookoutAssistant {
     planned write changes. You can only call create, update, or delete functions
     once you requestedh and recieved explicit confirmation from the user!`;
 
-    this.currentRun = await threads.runs.createAndPoll(this.threadId, {
+    const run = await threads.runs.createAndPoll(threadId, {
       assistant_id: this.assistantId,
       additional_instructions: additional_instructions,
     });
 
-    if (this.currentRun.status === "requires_action") {
-      await this.handleRequiresAction();
+    if (run.status === "requires_action") {
+      await this.handleRequiresAction(userId, run);
     }
 
-    const messages = await threads.messages.list(this.threadId);
+    const messages = await threads.messages.list(threadId);
     const response = messages.data[0].content[0].text.value;
     return response;
   }
@@ -152,10 +172,12 @@ export class LookoutAssistant {
   /**
    * Executes tools and submits tool outputs, if required.
    */
-  async handleRequiresAction() {
+  async handleRequiresAction(userId: number, run: any) {
+    const threadId = this.threads[userId];
+
     // Execute functions
     const toolOutputs = await Promise.all(
-      this.currentRun.required_action.submit_tool_outputs.tool_calls.map(
+      run.required_action.submit_tool_outputs.tool_calls.map(
         async (tool: any) => {
           // Parse function and arguments
           const toolName = tool.function.name;
@@ -194,8 +216,8 @@ export class LookoutAssistant {
     // Submit all tool outputs
     if (toolOutputs.length > 0) {
       await this.openai.beta.threads.runs.submitToolOutputsAndPoll(
-        this.threadId,
-        this.currentRun.id,
+        threadId,
+        run.id,
         { tool_outputs: toolOutputs }
       );
     }
@@ -203,7 +225,7 @@ export class LookoutAssistant {
 
   /**
    * Parses Assistant-generated arguments.
-   * 
+   *
    * @param toolName - Tool name
    * @param toolArgs - Tool arguments
    * @returns - Arguments with correct types
@@ -252,4 +274,34 @@ export class LookoutAssistant {
 
     return args;
   }
+
+  getLastRun(userId: number) {
+    const userRuns = this.runs[userId];
+    return userRuns[userRuns.length - 1];
+  }
 }
+
+/**
+ * Here, we instantiate a single instance of Lookout Assistant
+ * and save it on the globalThis object. Then we keep a check
+ * to only instantiate the Assistant if it's not on the globalThis
+ * object otherwise use the same instance again if already present
+ * to prevent instantiating extra LookoutAssistant instances.
+ *
+ * See: https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dev-practices
+ */
+
+const assistantSingleton = () => {
+  return new LookoutAssistant();
+};
+
+declare global {
+  var lookoutAssistant: undefined | ReturnType<typeof assistantSingleton>;
+}
+
+const assistant = globalThis.lookoutAssistant ?? assistantSingleton();
+
+export default assistant;
+
+if (process.env.NODE_ENV !== "production")
+  globalThis.lookoutAssistant = assistant;

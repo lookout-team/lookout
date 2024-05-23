@@ -19,3 +19,16 @@ export function getDuration(dateTime: Date): string {
 
   return `${duration} ${unit}`;
 }
+
+export function handleTextAreaSubmit(e: any, formRef: any) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    if (formRef && formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }
+}
+
+export function capitalize(input: string) {
+  return input.charAt(0).toUpperCase() + input.slice(1);
+}
