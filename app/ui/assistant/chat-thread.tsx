@@ -3,12 +3,12 @@
 import { Progress, Textarea } from "@nextui-org/react";
 import { Chat } from "@prisma/client";
 import { handleTextAreaSubmit } from "../utils";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DataComponent from "./data-component";
 
 interface Props {
   conversation: Chat[];
-  handler: (form: FormData) => Promise<void>;
+  sendMessageAction: (form: FormData) => Promise<void>;
 }
 
 export default function ChatThread(props: Props) {
@@ -18,16 +18,26 @@ export default function ChatThread(props: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  let i = -1;
   let messages = [];
   const conversation = props.conversation;
 
   for (const exchange of conversation) {
-    const message = (
-      <div className="mb-4" key={`Message_${exchange.id}`}>
-        <p className="text-lg font-medium">You</p>
-        <p className="text-md">{exchange.message}</p>
-      </div>
-    );
+    i++;
+
+    if (
+      exchange.message !== "Confirm action" &&
+      exchange.message !== "Cancel action"
+    ) {
+      const message = (
+        <div className="mb-4" key={`Message_${exchange.id}`}>
+          <p className="text-lg font-medium">You</p>
+          <p className="text-md">{exchange.message}</p>
+        </div>
+      );
+
+      messages.push(message);
+    }
 
     const response = (
       <div className="mb-4" key={`Response_${exchange.id}`}>
@@ -36,7 +46,6 @@ export default function ChatThread(props: Props) {
       </div>
     );
 
-    messages.push(message);
     messages.push(response);
 
     if (exchange.data === "null" || exchange.data === "[{}]") continue;
@@ -48,11 +57,32 @@ export default function ChatThread(props: Props) {
           data={data}
           status={exchange.status}
           type={exchange.type}
+          buttonAction={handleButtonAction}
+          isActionable={i === conversation.length - 1}
         />
       </div>
     );
 
     messages.push(dataComponent);
+  }
+
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+    setIsThinking(false);
+  }, [props.conversation]);
+
+  function handleButtonAction(action: string) {
+    const formData = new FormData();
+    formData.set("message", action);
+    props.sendMessageAction(formData);
+    setIsThinking(true);
+    setMessage("");
   }
 
   function handleSubmit(e: any) {
@@ -76,7 +106,7 @@ export default function ChatThread(props: Props) {
         )}
       </div>
       <div className="mb-10">
-        <form ref={formRef} action={props.handler}>
+        <form ref={formRef} action={props.sendMessageAction}>
           <Textarea
             ref={textAreaRef}
             radius="lg"
@@ -94,6 +124,7 @@ export default function ChatThread(props: Props) {
           />
         </form>
       </div>
+      <div ref={messagesEndRef} />
     </div>
   );
 }

@@ -12,11 +12,14 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { Check } from "lucide-react";
+import { useRef, useState } from "react";
 
 export interface Props {
   data: any[];
   status: string;
   type: string;
+  buttonAction: (action: string) => void;
+  isActionable: boolean;
 }
 
 export default function DataComponent(props: Props) {
@@ -76,16 +79,37 @@ export default function DataComponent(props: Props) {
     );
   }
 
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  function sendAction(action: string) {
+    props.buttonAction(action);
+    setIsDisabled(true);
+  }
+
   return (
     <div>
       {dataComponent}
-      <div className="mt-2">
-        {status === "pending" && (
+      <div className="mt-4">
+        {status === "pending" && props.isActionable && (
           <div className="flex items-row gap-2">
-            <Button color="default" fullWidth>
+            <Button
+              isDisabled={isDisabled}
+              ref={cancelRef}
+              color="default"
+              fullWidth={true}
+              onClick={() => sendAction("Cancel action")}
+            >
               Cancel
             </Button>
-            <Button color="primary" fullWidth>
+            <Button
+              isDisabled={isDisabled}
+              ref={confirmRef}
+              color="primary"
+              fullWidth={true}
+              onClick={() => sendAction("Confirm action")}
+            >
               Confirm
             </Button>
           </div>
