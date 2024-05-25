@@ -86,6 +86,5 @@ export async function deleteProject(id: number): Promise<Project> {
       id: id,
     },
   });
-  createActivityLog("Delete", "project", project.id);
   return project;
 }

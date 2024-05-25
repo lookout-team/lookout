@@ -17,10 +17,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           let user = null;
           let { login, password } = await signInSchema.parseAsync(credentials);
+          
           // Validate if user exists
           user =
             (await getUser({ email: login })) ||
             (await getUser({ username: login }));
+
           if (!user) {
             throw new Error("User not found.");
           }
@@ -29,7 +31,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!compareSync(password, user?.password)) {
             throw new Error("Invalid password.");
           }
+
           return user as any;
+
         } catch (error) {
           if (error instanceof ZodError) {
             // Return `null` to indicate that the credentials are invalid
@@ -43,6 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
+        session.user.name = token.name;
       }
       return session;
     },

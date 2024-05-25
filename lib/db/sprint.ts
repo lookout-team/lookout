@@ -90,6 +90,5 @@ export async function deleteSprint(id: number): Promise<Sprint> {
       id: id,
     },
   });
-  createActivityLog("Delete", "sprint", id);
   return sprint;
 }

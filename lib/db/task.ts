@@ -102,6 +102,5 @@ export async function deleteTask(id: number): Promise<Task> {
       id: id,
     },
   });
-  createActivityLog("Delete", "task", task.id);
   return task;
 }

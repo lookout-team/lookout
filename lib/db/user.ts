@@ -86,7 +86,6 @@ export async function deleteUser(id: number): Promise<User> {
   const user = await prisma.user.delete({
     where: { id: id },
   });
-  createActivityLog("Delete", "user", id);
   return user;
 }
 

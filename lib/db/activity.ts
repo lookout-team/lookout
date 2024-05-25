@@ -2,6 +2,15 @@ import { auth } from "../auth/auth";
 import { Activity } from "@prisma/client";
 import { ActivityWithIncludes } from "./types";
 import prisma from "./prisma";
+import { getUser } from "./user";
+
+const inclusions = {
+  project: true,
+  sprint: true,
+  task: true,
+  user: true,
+  comment: true,
+};
 
 /**
  * Creates an activity log entry.
@@ -14,26 +23,30 @@ import prisma from "./prisma";
 export async function createActivityLog(
   type: string,
   entity: string,
-  entity_id: number,
-  user_id?: number
+  entityId: number
 ): Promise<Activity> {
   const session = await auth();
 
-  if (!session || !session.user || !user_id) {
+  if (!session || !session.user || !session.user.id) {
     throw new Error("User is not authenticated");
   }
 
+  const userId = +session.user.id;
+  const user = await getUser({ id: userId });
+  const description = `@${user?.username} ${type.toLowerCase()}d a new ${entity}.`;
+
   const activity = await prisma.activity.create({
     data: {
-      description: `${
-        session?.user?.name
-      } ${type.toLowerCase()}d a new ${entity}.`,
+      description: description,
       type: type,
       timestamp: new Date(),
-      user_id: user_id ? user_id : parseInt(session.user.id!),
-      [`${entity}_id`]: entity_id,
+      user_id: userId,
+      [`${entity}_id`]: entityId,
     },
   });
+
+  console.log(activity);
+
   return activity;
 }
 
@@ -47,13 +60,8 @@ export async function getActivityLogEntry(
   params: Partial<Activity>
 ): Promise<ActivityWithIncludes | null> {
   const activity = await prisma.activity.findFirst({
-    where: {
-      ...params,
-    },
-    include: {
-      user: true,
-      task: true,
-    },
+    where: { ...params },
+    include: inclusions,
   });
   return activity;
 }
@@ -68,13 +76,8 @@ export async function getActivityLogs(
   params?: Partial<Activity>
 ): Promise<ActivityWithIncludes[]> {
   const activityLogs = await prisma.activity.findMany({
-    where: {
-      ...params,
-    },
-    include: {
-      user: true,
-      task: true,
-    },
+    where: { ...params },
+    include: inclusions,
   });
   return activityLogs;
 }

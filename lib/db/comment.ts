@@ -64,6 +64,5 @@ export async function deleteComment(id: number): Promise<Comment> {
   const comment = await prisma.comment.delete({
     where: { id: id },
   });
-  createActivityLog("Delete", "comment", comment.id);
   return comment;
 }
