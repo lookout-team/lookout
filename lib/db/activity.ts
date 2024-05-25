@@ -38,7 +38,7 @@ export async function createActivityLog(
   let description = `@${user?.username} created a new ${entity}.`;
 
   if (type === "Update") {
-    description = `@${user?.username} updated ${entity}.`;
+    description = `@${user?.username} updated a ${entity}.`;
   }
 
   const activity = await prisma.activity.create({
