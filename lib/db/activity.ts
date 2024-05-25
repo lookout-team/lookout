@@ -45,8 +45,6 @@ export async function createActivityLog(
     },
   });
 
-  console.log(activity);
-
   return activity;
 }
 
