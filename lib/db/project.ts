@@ -16,7 +16,7 @@ export async function createProject(
       ...params,
     },
   });
-  createActivityLog("Create", "project", project.id);
+  await createActivityLog("Create", "project", project.id, params);
   return project;
 }
 
@@ -70,7 +70,7 @@ export async function updateProject(
     },
   });
 
-  createActivityLog("Update", "project", project.id);
+  await createActivityLog("Update", "project", project.id, params);
   return project;
 }
 

@@ -65,7 +65,7 @@ export async function createTask(params: Omit<Task, "id">): Promise<Task> {
       ...params,
     },
   });
-  createActivityLog("Create", "task", task.id);
+  await createActivityLog("Create", "task", task.id, params);
   return task;
 }
 
@@ -86,7 +86,7 @@ export async function updateTask(params: Partial<Task>): Promise<Task> {
       ...params,
     },
   });
-  createActivityLog("Update", "task", task.id);
+  await createActivityLog("Update", "task", task.id, params);
   return task;
 }
 

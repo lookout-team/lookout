@@ -18,12 +18,14 @@ const inclusions = {
  * @param type - Type of action ("Create", "Update", or "Delete")
  * @param entity - Model that was changed
  * @param entity_id - ID of the entity that was changed
+ * @param changes - Changes
  * @returns {Promise<Activity>} - The created activity log entry
  */
 export async function createActivityLog(
   type: string,
   entity: string,
-  entityId: number
+  entityId: number,
+  changes: any
 ): Promise<Activity> {
   const session = await auth();
 
@@ -33,15 +35,20 @@ export async function createActivityLog(
 
   const userId = +session.user.id;
   const user = await getUser({ id: userId });
-  const description = `@${user?.username} ${type.toLowerCase()}d a new ${entity}.`;
+  let description = `@${user?.username} created a new ${entity}.`;
+
+  if (type === "Update") {
+    description = `@${user?.username} updated ${entity}.`;
+  }
 
   const activity = await prisma.activity.create({
     data: {
       description: description,
       type: type,
+      [`${entity}_id`]: entityId,
+      changes: JSON.stringify(changes),
       timestamp: new Date(),
       user_id: userId,
-      [`${entity}_id`]: entityId,
     },
   });
 

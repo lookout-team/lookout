@@ -14,7 +14,7 @@ model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
   email      String     @unique
-  password   String     
+  password   String
   first_name String
   last_name  String
   salt       String
@@ -27,7 +27,7 @@ model User {
 }
 
 model Project {
-  id                Int       @id @default(autoincrement())
+  id                Int        @id @default(autoincrement())
   title             String
   description       String
   last_updated      DateTime?
@@ -42,6 +42,7 @@ model Activity {
   description String
   type        String
   timestamp   DateTime
+  changes     String
   user        User     @relation(fields: [user_id], references: [id])
   user_id     Int
   task        Task?    @relation(fields: [task_id], references: [id])
@@ -55,12 +56,12 @@ model Activity {
 }
 
 model Sprint {
-  id               Int       @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   title            String
   start_date       DateTime
   end_date         DateTime?
   planned_capacity Int
-  project          Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project          Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
   project_id       Int
   tasks            Task[]
   activities       Activity[]
@@ -87,12 +88,12 @@ model Task {
 }
 
 model Comment {
-  id            Int       @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   text          String
   last_modified DateTime?
-  task          Task      @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  task          Task       @relation(fields: [task_id], references: [id], onDelete: Cascade)
   task_id       Int
-  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id       Int
   activities    Activity[]
 }

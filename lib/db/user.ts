@@ -25,7 +25,6 @@ export async function createUser(params: Omit<User, "id">): Promise<User> {
       ...params,
     },
   });
-  createActivityLog("Create", "user", user.id);
   return user;
 }
 
@@ -72,7 +71,7 @@ export async function updateUser(params: Partial<User>): Promise<User> {
     where: { id: params.id },
     data: { ...params },
   });
-  createActivityLog("Update", "user", user.id);
+  await createActivityLog("Update", "user", user.id, params);
   return user;
 }
 
@@ -102,6 +101,6 @@ export async function signUp(params: Omit<User, "id" | "salt">): Promise<User> {
     salt: userSalt,
     password: hashSync(params.password, userSalt),
   };
-  const user = createUser(data);
+  const user = await createUser(data);
   return user;
 }

@@ -17,7 +17,7 @@ export async function createComment(
       ...params,
     },
   });
-  createActivityLog("Create", "comment", comment.id);
+  await createActivityLog("Create", "comment", comment.id, params);
   return comment;
 }
 
@@ -50,7 +50,7 @@ export async function updateComment(
     where: { id: params.id },
     data: { ...params },
   });
-  createActivityLog("Update", "comment", comment.id);
+  await createActivityLog("Update", "comment", comment.id, params);
   return comment;
 }
 

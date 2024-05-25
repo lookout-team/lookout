@@ -53,7 +53,7 @@ export async function createSprint(
       ...params,
     },
   });
-  createActivityLog("Create", "sprint", sprint.id);
+  await createActivityLog("Create", "sprint", sprint.id, params);
   return sprint;
 }
 
@@ -74,7 +74,7 @@ export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
       ...params,
     },
   });
-  createActivityLog("Update", "sprint", sprint.id);
+  await createActivityLog("Update", "sprint", sprint.id, params);
   return sprint;
 }
 

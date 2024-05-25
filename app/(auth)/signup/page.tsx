@@ -2,6 +2,7 @@ import SignUpForm from "./form";
 import { signUp } from "@/lib/db/user";
 import { auth, signIn } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
+import { createActivityLog } from "@/lib/db/activity";
 
 export default async function Page() {
   const session = await auth();
@@ -26,7 +27,7 @@ export default async function Page() {
       return;
     }
 
-    const newUser = {
+    const userDetails = {
       first_name: first_name,
       last_name: last_name,
       username: username,
@@ -34,10 +35,11 @@ export default async function Page() {
       password: password,
     };
 
-    await signUp(newUser);
-
+    const newUser = await signUp(userDetails);
     const credentials = { login: newUser.email, password: newUser.password };
     await signIn("credentials", credentials);
+    await createActivityLog("Create", "user", newUser.id, userDetails);
+
     redirect("/dashboard/projects");
   }
 
