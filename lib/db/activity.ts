@@ -1,3 +1,4 @@
+import { auth } from "../auth/auth";
 import { Activity } from "@prisma/client";
 import { ActivityWithIncludes } from "./types";
 import prisma from "./prisma";
@@ -5,15 +6,32 @@ import prisma from "./prisma";
 /**
  * Creates an activity log entry.
  *
- * @param {Omit<Activity, "id">} params - Activity log details
- * @returns {Promise<Activity>} - Created activity log entry
+ * @param type - Type of action ("Create", "Update", or "Delete")
+ * @param entity - Model that was changed
+ * @param entity_id - ID of the entity that was changed
+ * @returns {Promise<Activity>} - The created activity log entry
  */
 export async function createActivityLog(
-  params: Omit<Activity, "id">
+  type: string,
+  entity: string,
+  entity_id: number,
+  user_id?: number
 ): Promise<Activity> {
+  const session = await auth();
+
+  if (!session || !session.user || !user_id) {
+    throw new Error("User is not authenticated");
+  }
+
   const activity = await prisma.activity.create({
     data: {
-      ...params,
+      description: `${
+        session?.user?.name
+      } ${type.toLowerCase()}d a new ${entity}.`,
+      type: type,
+      timestamp: new Date(),
+      user_id: user_id ? user_id : parseInt(session.user.id!),
+      [`${entity}_id`]: entity_id,
     },
   });
   return activity;

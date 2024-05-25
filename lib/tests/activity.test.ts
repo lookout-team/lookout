@@ -26,7 +26,7 @@ beforeAll(async () => {
     title: "Project Z",
     description: "This project is classified!",
     last_updated: null,
-    current_sprint_id: null
+    current_sprint_id: null,
   });
   projectId = project.id;
 
@@ -66,15 +66,21 @@ beforeAll(async () => {
 
 describe("Activity tests", () => {
   test("Create 3 activities", async () => {
+    let types = ["Create", "Update", "Delete"];
+    let entity = ["project", "sprint", "task"];
+    let entity_id = [projectId, sprintId, taskId];
     for (let i = 1; i < 4; i++) {
-      const activity = {
-        description: `Sample activity #${i}`,
-        timestamp: new Date("2024-05-08T08:00:00Z"),
+      const data = await createActivityLog(
+        types[i],
+        entity[i],
+        entity_id[i],
+        userId
+      );
+      expect(data).toMatchObject({
+        type: types[i],
         user_id: userId,
-        task_id: taskId,
-      };
-      const data = await createActivityLog(activity);
-      expect(data).toMatchObject(activity);
+        [`${entity}_id`]: entity[i],
+      });
       activityIds.push(data.id);
     }
   });
@@ -85,20 +91,14 @@ describe("Activity tests", () => {
     expect(data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          description: "Sample activity #1",
-          timestamp: new Date("2024-05-08T08:00:00Z"),
           user_id: userId,
-          task_id: taskId,
+          project_id: projectId,
         }),
         expect.objectContaining({
-          description: "Sample activity #2",
-          timestamp: new Date("2024-05-08T08:00:00Z"),
           user_id: userId,
-          task_id: taskId,
+          sprint_id: sprintId,
         }),
         expect.objectContaining({
-          description: "Sample activity #3",
-          timestamp: new Date("2024-05-08T08:00:00Z"),
           user_id: userId,
           task_id: taskId,
         }),

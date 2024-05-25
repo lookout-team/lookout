@@ -2,6 +2,7 @@ import prisma from "./prisma";
 import { User } from "@prisma/client";
 import { UserWithIncludes } from "./types";
 import { genSaltSync, hashSync } from "bcrypt-ts/browser";
+import { createActivityLog } from "./activity";
 
 const inclusions = {
   task: true,
@@ -24,6 +25,7 @@ export async function createUser(params: Omit<User, "id">): Promise<User> {
       ...params,
     },
   });
+  createActivityLog("Create", "user", user.id);
   return user;
 }
 
@@ -70,6 +72,7 @@ export async function updateUser(params: Partial<User>): Promise<User> {
     where: { id: params.id },
     data: { ...params },
   });
+  createActivityLog("Update", "user", user.id);
   return user;
 }
 
@@ -83,6 +86,7 @@ export async function deleteUser(id: number): Promise<User> {
   const user = await prisma.user.delete({
     where: { id: id },
   });
+  createActivityLog("Delete", "user", id);
   return user;
 }
 

@@ -1,10 +1,11 @@
 import { Comment } from "@prisma/client";
 import { CommentWithIncludes } from "./types";
 import prisma from "./prisma";
+import { createActivityLog } from "./activity";
 
 /**
  * Adds comment to a task.
- * 
+ *
  * @param {Omit<Comment, "id">}params - Comment details
  * @returns {Promise<Comment>} - New comment
  */
@@ -16,12 +17,13 @@ export async function createComment(
       ...params,
     },
   });
+  createActivityLog("Create", "comment", comment.id);
   return comment;
 }
 
 /**
  * Retrieves all comments for given task.
- * 
+ *
  * @param {number} taskId - Task ID
  * @returns - Task comments
  */
@@ -48,6 +50,7 @@ export async function updateComment(
     where: { id: params.id },
     data: { ...params },
   });
+  createActivityLog("Update", "comment", comment.id);
   return comment;
 }
 
@@ -61,5 +64,6 @@ export async function deleteComment(id: number): Promise<Comment> {
   const comment = await prisma.comment.delete({
     where: { id: id },
   });
+  createActivityLog("Delete", "comment", comment.id);
   return comment;
 }

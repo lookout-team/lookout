@@ -1,3 +1,4 @@
+import { createActivityLog } from "./activity";
 import prisma from "./prisma";
 import { Project } from "@prisma/client";
 
@@ -15,6 +16,7 @@ export async function createProject(
       ...params,
     },
   });
+  createActivityLog("Create", "project", project.id);
   return project;
 }
 
@@ -68,6 +70,7 @@ export async function updateProject(
     },
   });
 
+  createActivityLog("Update", "project", project.id);
   return project;
 }
 
@@ -83,5 +86,6 @@ export async function deleteProject(id: number): Promise<Project> {
       id: id,
     },
   });
+  createActivityLog("Delete", "project", project.id);
   return project;
 }
