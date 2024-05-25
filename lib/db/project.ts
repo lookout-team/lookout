@@ -1,3 +1,4 @@
+import { createActivityLog } from "./activity";
 import prisma from "./prisma";
 import { Project } from "@prisma/client";
 
@@ -15,6 +16,7 @@ export async function createProject(
       ...params,
     },
   });
+  await createActivityLog("Create", "project", project.id, params);
   return project;
 }
 
@@ -68,6 +70,7 @@ export async function updateProject(
     },
   });
 
+  await createActivityLog("Update", "project", project.id, params);
   return project;
 }
 

@@ -2,6 +2,7 @@ import prisma from "./prisma";
 import { User } from "@prisma/client";
 import { UserWithIncludes } from "./types";
 import { genSaltSync, hashSync } from "bcrypt-ts/browser";
+import { createActivityLog } from "./activity";
 
 const inclusions = {
   task: true,
@@ -70,6 +71,7 @@ export async function updateUser(params: Partial<User>): Promise<User> {
     where: { id: params.id },
     data: { ...params },
   });
+  await createActivityLog("Update", "user", user.id, params);
   return user;
 }
 
@@ -99,6 +101,6 @@ export async function signUp(params: Omit<User, "id" | "salt">): Promise<User> {
     salt: userSalt,
     password: hashSync(params.password, userSalt),
   };
-  const user = createUser(data);
+  const user = await createUser(data);
   return user;
 }

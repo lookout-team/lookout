@@ -1,6 +1,7 @@
 import prisma from "./prisma";
 import { Task } from "@prisma/client";
 import { TaskWithIncludes } from "./types";
+import { createActivityLog } from "./activity";
 
 /**
  * Retrieves a single task based on provided parameters.
@@ -64,6 +65,7 @@ export async function createTask(params: Omit<Task, "id">): Promise<Task> {
       ...params,
     },
   });
+  await createActivityLog("Create", "task", task.id, params);
   return task;
 }
 
@@ -77,14 +79,14 @@ export async function updateTask(params: Partial<Task>): Promise<Task> {
   if (typeof params.id === "string") {
     params.id = +params.id;
   }
-  
+
   const task = await prisma.task.update({
     where: { id: params.id },
     data: {
       ...params,
     },
   });
-
+  await createActivityLog("Update", "task", task.id, params);
   return task;
 }
 

@@ -14,7 +14,7 @@ model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
   email      String     @unique
-  password   String     
+  password   String
   first_name String
   last_name  String
   salt       String
@@ -27,34 +27,44 @@ model User {
 }
 
 model Project {
-  id                Int       @id @default(autoincrement())
+  id                Int        @id @default(autoincrement())
   title             String
   description       String
   last_updated      DateTime?
   current_sprint_id Int?
   users             User[]
   sprints           Sprint[]
+  activities        Activity[]
 }
 
 model Activity {
   id          Int      @id @default(autoincrement())
   description String
+  type        String
   timestamp   DateTime
-  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  changes     String
+  user        User     @relation(fields: [user_id], references: [id])
   user_id     Int
-  task        Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
-  task_id     Int
+  task        Task?    @relation(fields: [task_id], references: [id])
+  task_id     Int?
+  project     Project? @relation(fields: [project_id], references: [id])
+  project_id  Int?
+  sprint      Sprint?  @relation(fields: [sprint_id], references: [id])
+  sprint_id   Int?
+  comment     Comment? @relation(fields: [comment_id], references: [id])
+  comment_id  Int?
 }
 
 model Sprint {
-  id               Int       @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   title            String
   start_date       DateTime
   end_date         DateTime?
   planned_capacity Int
-  project          Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project          Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
   project_id       Int
   tasks            Task[]
+  activities       Activity[]
 }
 
 model Task {
@@ -69,22 +79,23 @@ model Task {
   assigned_to         Int?
   sprint              Sprint     @relation(fields: [sprint_id], references: [id], onDelete: Cascade)
   sprint_id           Int
-  status              Status?     @relation(fields: [status_id], references: [id])
-  status_id           Int?
-  priority            Priority?   @relation(fields: [priority_id], references: [id])
-  priority_id         Int?
+  status              Status     @relation(fields: [status_id], references: [id])
+  status_id           Int
+  priority            Priority   @relation(fields: [priority_id], references: [id])
+  priority_id         Int
   comments            Comment[]
   activities          Activity[]
 }
 
 model Comment {
-  id            Int       @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   text          String
   last_modified DateTime?
-  task          Task      @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  task          Task       @relation(fields: [task_id], references: [id], onDelete: Cascade)
   task_id       Int
-  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id       Int
+  activities    Activity[]
 }
 
 model Role {

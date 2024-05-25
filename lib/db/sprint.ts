@@ -1,6 +1,7 @@
 import prisma from "./prisma";
 import { Sprint } from "@prisma/client";
 import { SprintWithIncludes } from "./types";
+import { createActivityLog } from "./activity";
 
 /**
  * Retrieves a single sprint based on provided parameters.
@@ -52,6 +53,7 @@ export async function createSprint(
       ...params,
     },
   });
+  await createActivityLog("Create", "sprint", sprint.id, params);
   return sprint;
 }
 
@@ -72,7 +74,7 @@ export async function updateSprint(params: Partial<Sprint>): Promise<Sprint> {
       ...params,
     },
   });
-
+  await createActivityLog("Update", "sprint", sprint.id, params);
   return sprint;
 }
 

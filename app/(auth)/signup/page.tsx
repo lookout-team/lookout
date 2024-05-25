@@ -26,7 +26,7 @@ export default async function Page() {
       return;
     }
 
-    const newUser = {
+    const userDetails = {
       first_name: first_name,
       last_name: last_name,
       username: username,
@@ -34,9 +34,11 @@ export default async function Page() {
       password: password,
     };
 
-    await signUp(newUser);
-
-    const credentials = { login: newUser.email, password: newUser.password };
+    const newUser = await signUp(userDetails);
+    const credentials = {
+      login: userDetails.email,
+      password: userDetails.password,
+    };
     await signIn("credentials", credentials);
     redirect("/dashboard/projects");
   }
