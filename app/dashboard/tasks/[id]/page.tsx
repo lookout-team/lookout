@@ -1,12 +1,24 @@
 import PageBreadcrumbs from "@/app/ui/core/breadcrumbs";
+import CommentSection from "@/app/ui/tasks/comment-section";
 import TaskDetails from "@/app/ui/tasks/task-details";
+import { auth } from "@/lib/auth/auth";
+import {
+  createComment,
+  deleteComment,
+  getTaskComments,
+  updateComment,
+} from "@/lib/db/comment";
 import { getSprint, getSprints } from "@/lib/db/sprint";
 import { getTask, updateTask } from "@/lib/db/task";
 import { getUsers } from "@/lib/db/user";
 import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function Page({ params }: { params: { id: number } }) {
+  const session = await auth();
+  if (!session || !session.user?.id) redirect("/signin");
+  const userId = +session?.user?.id;
+
   const task = await getTask({ id: +params.id });
   if (!task) return notFound();
 
@@ -15,11 +27,45 @@ export default async function Page({ params }: { params: { id: number } }) {
 
   const sprints = await getSprints({ project_id: sprint.project_id });
   const users = await getUsers();
+  const comments = await getTaskComments(task.id);
 
-  async function updateAction(form: FormData) {
+  async function updateTaskAction(form: FormData) {
     "use server";
     const task = Object.fromEntries(form.entries());
     await updateTask(task);
+    revalidatePath(`/dashboard/tasks/${task.id}`);
+  }
+
+  async function createCommentAction(form: FormData) {
+    "use server";
+    const comment = form.get("comment")?.toString();
+    if (!comment || !task?.id) return;
+    const newComment = { text: comment, task_id: task?.id, user_id: userId };
+    await createComment(newComment);
+    console.log(newComment);
+    revalidatePath(`/dashboard/tasks/${task.id}`);
+  }
+
+  async function updateCommentAction(form: FormData) {
+    "use server";
+    const commentId = form.get("id")?.toString();
+    const comment = form.get("comment")?.toString();
+    if (!comment || !commentId || !task?.id) return;
+
+    await updateComment({
+      id: +commentId,
+      text: comment,
+      last_modified: new Date(),
+    });
+
+    revalidatePath(`/dashboard/tasks/${task.id}`);
+  }
+
+  async function deleteCommentAction(form: FormData) {
+    "use server";
+    const commentId = form.get("id")?.toString();
+    if (!commentId || !task?.id) return;
+    await deleteComment(+commentId);
     revalidatePath(`/dashboard/tasks/${task.id}`);
   }
 
@@ -39,7 +85,24 @@ export default async function Page({ params }: { params: { id: number } }) {
   return (
     <>
       <PageBreadcrumbs items={breadcrumbs} />
-      <TaskDetails task={task} sprints={sprints} users={users} updateAction={updateAction} />
+      <TaskDetails
+        task={task}
+        sprints={sprints}
+        users={users}
+        updateAction={updateTaskAction}
+      />
+      <div className="grid grid-cols-10">
+        <div className="col-span-7">
+          <h1 className="text-xl font-medium mb-4">Discussion</h1>
+          <CommentSection
+            comments={comments}
+            userId={userId}
+            createAction={createCommentAction}
+            updateAction={updateCommentAction}
+            deleteAction={deleteCommentAction}
+          />
+        </div>
+      </div>
     </>
   );
 }

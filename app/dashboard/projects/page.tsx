@@ -7,7 +7,7 @@ import {
   getProjects,
   updateProject,
 } from "@/lib/db/project";
-import { SquarePen } from "lucide-react";
+import { SquareGanttChart, SquarePen } from "lucide-react";
 import { revalidatePath } from "next/cache";
 
 export default async function Page() {
@@ -15,8 +15,17 @@ export default async function Page() {
 
   async function createAction(form: FormData) {
     "use server";
-    const project = Object.fromEntries(form.entries());
-    await createProject({ ...project });
+    const title = form.get("title")?.toString();
+    const description = form.get("description")?.toString();
+    if (!title || !description) return;
+
+    await createProject({
+      title: title,
+      description: description,
+      last_updated: null,
+      current_sprint_id: null,
+    });
+    
     revalidatePath("/dashboard/projects");
   }
 
@@ -51,12 +60,19 @@ export default async function Page() {
           submitAction={createAction}
         />
       </div>
-      {projects.length > 0 && (
+      {projects.length > 0 ? (
         <ProjectTable
           projects={projects}
           editAction={editAction}
           deleteAction={deleteAction}
         />
+      ) : (
+        <div className="flex items-center place-content-center h-20 opacity-75">
+          <SquareGanttChart size={36} className="me-4" />
+          <h1 className="text-xl">
+            No projects yet! Create one to get started.
+          </h1>
+        </div>
       )}
     </div>
   );
