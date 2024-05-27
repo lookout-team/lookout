@@ -35,12 +35,12 @@ export async function getTask(
  * @returns {Promise<TaskWithIncludes[]>} - Task array
  */
 export async function getTasks(
-  params?: Partial<Task>
+  params?: Partial<Task>,
+  order: "asc" | "desc" = "asc"
 ): Promise<TaskWithIncludes[]> {
   const task = await prisma.task.findMany({
-    where: {
-      ...params,
-    },
+    where: { ...params, },
+    orderBy: { id: order },
     include: {
       user: true,
       activities: true,

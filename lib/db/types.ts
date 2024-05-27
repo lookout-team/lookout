@@ -50,6 +50,7 @@ export type ActivityWithIncludes = Prisma.ActivityGetPayload<
 
 const CommentWithIncludes = Prisma.validator<Prisma.CommentDefaultArgs>()({
   include: {
+    task: true,
     user: true,
   },
 });

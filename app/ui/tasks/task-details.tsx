@@ -8,10 +8,12 @@ import {
   Select,
   SelectItem,
   Textarea,
+  Tooltip,
 } from "@nextui-org/react";
 import { Sprint, User } from "@prisma/client";
 import { useRef, useState } from "react";
 import { handleTextAreaSubmit } from "../utils";
+import { Pencil } from "lucide-react";
 
 interface ComponentProps {
   task: TaskWithIncludes;
@@ -83,11 +85,18 @@ export default function TaskDetails(props: ComponentProps) {
             />
           </form>
         ) : (
-          <div className="mb-4 hover:p-3 rounded-md hover:border-dashed hover:border-2 hover: hover:cursor-pointer">
-            <p className="text-3xl" onClick={() => setEditTitleFlag(true)}>
-              {title}
-            </p>
-          </div>
+          <Tooltip
+            className="p-2"
+            content={<Pencil size={20} />}
+            placement="left-start"
+            delay={250}
+          >
+            <div className="mb-4 rounded-md hover:cursor-pointer">
+              <p className="text-3xl" onClick={() => setEditTitleFlag(true)}>
+                {title}
+              </p>
+            </div>
+          </Tooltip>
         )}
         {isEditingDescription ? (
           <form
@@ -108,15 +117,20 @@ export default function TaskDetails(props: ComponentProps) {
             />
           </form>
         ) : (
-          <div
-            className="mb-4 hover:p-3 rounded-md hover:border-dashed hover:border-2 hover: hover:cursor-pointer"
-            onClick={() => setEditDescFlag(true)}
+          <Tooltip
+            className="p-2"
+            content={<Pencil size={20} />}
+            placement="left-start"
+            delay={250}
           >
-            <p className="text-xl font-medium mb-1">Description</p>
-            <p className="text-md whitespace-break-spaces">
-              {description}
-            </p>
-          </div>
+            <div
+              className="mb-4 rounded-md hover:cursor-pointer"
+              onClick={() => setEditDescFlag(true)}
+            >
+              <p className="text-xl font-medium mb-1">Description</p>
+              <p className="text-md whitespace-break-spaces">{description}</p>
+            </div>
+          </Tooltip>
         )}
         {isEditingRequirements ? (
           <form
@@ -137,15 +151,20 @@ export default function TaskDetails(props: ComponentProps) {
             />
           </form>
         ) : (
-          <div
-            className="mb-4 hover:p-3 rounded-md hover:border-dashed hover:border-2 hover: hover:cursor-pointer"
-            onClick={() => setEditReqFlag(true)}
+          <Tooltip
+            className="p-2"
+            content={<Pencil size={20} />}
+            placement="left-start"
+            delay={250}
           >
-            <p className="text-xl font-medium mb-1">Requirements</p>
-            <p className="text-md whitespace-break-spaces">
-              {requirements}
-            </p>
-          </div>
+            <div
+              className="mb-4 rounded-md hover:cursor-pointer"
+              onClick={() => setEditReqFlag(true)}
+            >
+              <p className="text-xl font-medium mb-1">Requirements</p>
+              <p className="text-md whitespace-break-spaces">{requirements}</p>
+            </div>
+          </Tooltip>
         )}
         {isEditingCriteria ? (
           <form
@@ -166,13 +185,20 @@ export default function TaskDetails(props: ComponentProps) {
             />
           </form>
         ) : (
-          <div
-            className="mb-4 hover:p-3 rounded-md hover:border-dashed hover:border-2 hover: hover:cursor-pointer"
-            onClick={() => setEditCriteriaFlag(true)}
+          <Tooltip
+            className="p-2"
+            content={<Pencil size={20} />}
+            placement="left-start"
+            delay={250}
           >
-            <p className="text-xl font-medium mb-1">Acceptance Criteria</p>
-            <p className="text-md whitespace-break-spaces">{criteria}</p>
-          </div>
+            <div
+              className="mb-4 rounded-md hover:cursor-pointer"
+              onClick={() => setEditCriteriaFlag(true)}
+            >
+              <p className="text-xl font-medium mb-1">Acceptance Criteria</p>
+              <p className="text-md whitespace-break-spaces">{criteria}</p>
+            </div>
+          </Tooltip>
         )}
       </div>
       <div className="col-span-3">
@@ -181,11 +207,11 @@ export default function TaskDetails(props: ComponentProps) {
           variant="bordered"
           name="sprint_id"
           className="w-full mb-4"
-          selectedKeys={sprintId}
+          selectedKeys={[`Sprint_${sprintId}`]}
           onChange={(e) => setSprintId(e.target.value)}
         >
           {props.sprints.map((sprint) => (
-            <SelectItem key={sprint.id} value={sprint.id}>
+            <SelectItem key={`Sprint_${sprint.id}`} value={sprint.id}>
               {sprint.title}
             </SelectItem>
           ))}
@@ -195,12 +221,12 @@ export default function TaskDetails(props: ComponentProps) {
           variant="bordered"
           className="w-full mb-4"
           name="user_id"
-          selectedKeys={assignee}
+          selectedKeys={[`User_${assignee}`]}
           onChange={(e) => setAssignee(e.target.value)}
         >
           {users.map((user) => (
-            <SelectItem key={user.id} value={user.id}>
-              {user.first_name} {user.last_name}
+            <SelectItem key={`User_${user.id}`} value={user.id}>
+              {`${user.first_name} ${user.last_name}`}
             </SelectItem>
           ))}
         </Select>
@@ -236,7 +262,7 @@ export default function TaskDetails(props: ComponentProps) {
           onValueChange={setPriority}
         >
           {priorities.map((priority) => (
-            <Radio key={priority.id} value={priority.id}>
+            <Radio key={`Priority_${priority.id}`} value={priority.id}>
               {priority.name}
             </Radio>
           ))}

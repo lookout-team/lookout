@@ -9,15 +9,15 @@ export function getDuration(dateTime: Date): string {
 
   const diff = Date.now() - dateTime.getTime();
   let duration = diff;
-  let unit;
+  let unit = units[0];
 
   for (let i = 0; i < divisors.length; i++) {
     if (duration / divisors[i] < 1) break;
-    duration = diff / divisors[i];
+    duration = duration / divisors[i];
     unit = units[i];
   }
 
-  return `${duration} ${unit}`;
+  return `${Math.round(duration)} ${unit} ago`;
 }
 
 export function handleTextAreaSubmit(e: any, formRef: any) {

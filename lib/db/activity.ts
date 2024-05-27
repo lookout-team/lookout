@@ -82,6 +82,7 @@ export async function getActivityLogs(
 ): Promise<ActivityWithIncludes[]> {
   const activityLogs = await prisma.activity.findMany({
     where: { ...params },
+    orderBy: { id: "desc" },
     include: inclusions,
   });
   return activityLogs;
