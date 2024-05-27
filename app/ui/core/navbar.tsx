@@ -10,6 +10,7 @@ import {
 } from "@nextui-org/react";
 import { User } from "@prisma/client";
 import { CircleUser, LogOut } from "lucide-react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 interface Props {
@@ -40,6 +41,7 @@ export default function AppNavbar(props: Props) {
   return (
     <Navbar className="justify-center" maxWidth="xl" isBordered>
       <NavbarBrand>
+        <Image src="/logo.png" alt={""} width={48} height={48} />
         <p className="font-bold text-inherit">Lookout</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
