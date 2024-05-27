@@ -10,15 +10,33 @@ import { createActivityLog } from "./activity";
  * @returns {Promise<Comment>} - New comment
  */
 export async function createComment(
-  params: Omit<Comment, "id">
+  params: Omit<Comment, "id" | "last_modified">
 ): Promise<Comment> {
   const comment = await prisma.comment.create({
     data: {
       ...params,
+      last_modified: new Date(),
     },
   });
   await createActivityLog("Create", "comment", comment.id, params);
   return comment;
+}
+
+/**
+ * Retrieves comments.
+ *
+ * @param {number} params - Query parameters
+ * @returns - Array of comments
+ */
+export async function getComments(
+  params?: Partial<Comment>
+): Promise<CommentWithIncludes[]> {
+  const comments = await prisma.comment.findMany({
+    where: params,
+    orderBy: { id: "desc" },
+    include: { user: true, task: true },
+  });
+  return comments;
 }
 
 /**
@@ -30,11 +48,7 @@ export async function createComment(
 export async function getTaskComments(
   taskId: number
 ): Promise<CommentWithIncludes[]> {
-  const comments = await prisma.comment.findMany({
-    where: { task_id: taskId },
-    include: { user: true },
-  });
-  return comments;
+  return await getComments({ task_id: taskId });
 }
 
 /**
@@ -48,7 +62,10 @@ export async function updateComment(
 ): Promise<Comment> {
   const comment = await prisma.comment.update({
     where: { id: params.id },
-    data: { ...params },
+    data: {
+      ...params,
+      last_modified: new Date(),
+    },
   });
   await createActivityLog("Update", "comment", comment.id, params);
   return comment;
