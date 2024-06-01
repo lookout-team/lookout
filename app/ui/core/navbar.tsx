@@ -9,7 +9,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { User } from "@prisma/client";
-import { CircleUser, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -24,7 +24,8 @@ export default function AppNavbar(props: Props) {
   const pages = ["Home", "Projects", "Assistant"];
 
   for (const page of pages) {
-    const isActive = pathname.includes(page.toLowerCase());
+    let isActive = pathname.includes(page.toLowerCase());
+    isActive = page == "Projects" && pathname.includes("tasks");
     const link = `/dashboard/${page.toLowerCase()}`;
     const color = isActive ? undefined : "foreground";
     const underline = isActive ? "active" : undefined;
@@ -41,7 +42,7 @@ export default function AppNavbar(props: Props) {
   return (
     <Navbar className="justify-center" maxWidth="xl" isBordered>
       <NavbarBrand>
-        <Image src="/logo.png" alt={""} width={48} height={48} />
+        <Image src="/logo.png" alt={""} width={42} height={42} />
         <p className="font-bold text-inherit">Lookout</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
@@ -51,11 +52,6 @@ export default function AppNavbar(props: Props) {
         {props.user ? (
           <>
             <NavbarItem>Hi {props.user.first_name}!</NavbarItem>
-            <NavbarItem className="pt-1">
-              <Link color="foreground" href="/settings">
-                <CircleUser size={18} />
-              </Link>
-            </NavbarItem>
             <NavbarItem className="pt-1">
               <Link color="foreground" href="/signout">
                 <LogOut size={18} />
