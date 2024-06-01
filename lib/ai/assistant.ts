@@ -113,9 +113,12 @@ class LookoutAssistant {
     }
 
     // Status
-    let status: "confirmed" | "canceled" | "pending";
-    status = this.actionConfirmed ? "confirmed" : "pending";
-    status = userInput === "Cancel action" ? "canceled" : status;
+    let status: "confirmed" | "canceled" | "pending" = "confirmed";
+
+    if (this.responseType === "write") {
+      status = this.actionConfirmed ? "confirmed" : "pending";
+      status = userInput === "Cancel action" ? "canceled" : status;
+    }
 
     // Compile response props
     const assistantResponse: AssistantResponse = {

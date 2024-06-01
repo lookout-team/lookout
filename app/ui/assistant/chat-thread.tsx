@@ -5,10 +5,13 @@ import { Chat } from "@prisma/client";
 import { handleTextAreaSubmit } from "../utils";
 import { useEffect, useRef, useState } from "react";
 import DataComponent from "./data-component";
+import ButtonModal from "../core/button-modal";
+import { Trash2 } from "lucide-react";
 
 interface Props {
   conversation: Chat[];
   sendMessageAction: (form: FormData) => Promise<void>;
+  deleteMessagesAction: () => Promise<void>;
 }
 
 export default function ChatThread(props: Props) {
@@ -105,24 +108,38 @@ export default function ChatThread(props: Props) {
           />
         )}
       </div>
-      <div className="mb-10">
-        <form ref={formRef} action={props.sendMessageAction}>
-          <Textarea
-            ref={textAreaRef}
-            radius="lg"
-            className="mt-4"
-            variant="flat"
-            placeholder={
-              isThinking ? "Thinking, one sec..." : "How can I help?"
-            }
-            minRows={1}
-            size="lg"
-            name="message"
-            value={message}
-            onValueChange={setMessage}
-            onKeyDown={(e) => handleSubmit(e)}
+      <div className="mt-4 grid grid-cols-12">
+        <div className="col-span-11">
+          <form ref={formRef} action={props.sendMessageAction}>
+            <Textarea
+              className="w-full"
+              ref={textAreaRef}
+              radius="lg"
+              variant="flat"
+              placeholder={
+                isThinking ? "Thinking, one sec..." : "How can I help?"
+              }
+              minRows={1}
+              size="lg"
+              name="message"
+              value={message}
+              onValueChange={setMessage}
+              onKeyDown={(e) => handleSubmit(e)}
+            />
+          </form>
+        </div>
+        <div className="col-span-1 flex flex-row items-center">
+          <ButtonModal
+            buttonChildren={<Trash2 size={24} />}
+            buttonColor="default"
+            buttonVariant="light"
+            modalTitle="Clear Conversation History?"
+            modalBody="This will permanently delete your messages with Lookout AI."
+            confirmText="Clear my conversation history"
+            confirmColor="danger"
+            submitAction={props.deleteMessagesAction}
           />
-        </form>
+        </div>
       </div>
       <div ref={messagesEndRef} />
     </div>
