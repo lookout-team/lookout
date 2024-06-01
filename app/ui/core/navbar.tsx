@@ -25,7 +25,9 @@ export default function AppNavbar(props: Props) {
 
   for (const page of pages) {
     let isActive = pathname.includes(page.toLowerCase());
-    isActive = page == "Projects" && pathname.includes("tasks");
+    if (page == "Projects" && pathname.includes("tasks")) {
+      isActive = true;
+    }
     const link = `/dashboard/${page.toLowerCase()}`;
     const color = isActive ? undefined : "foreground";
     const underline = isActive ? "active" : undefined;
