@@ -72,18 +72,21 @@ export async function getActivityLogEntry(
 }
 
 /**
- * Retrieves activity log entries
+ * Retrieves activity log entries.
  *
  * @param {Partial<Activity>} params - Activity log parameters
- * @returns {Promise<ActivityWithIncludes[]>} - Array of activity log entries, if found
+ * @returns {Promise<ActivityWithIncludes[]>} - 
+ * Array of activity log entries, if found
  */
 export async function getActivityLogs(
-  params?: Partial<Activity>
+  params?: Partial<Activity>,
+  take: number = 10
 ): Promise<ActivityWithIncludes[]> {
   const activityLogs = await prisma.activity.findMany({
     where: { ...params },
     orderBy: { id: "desc" },
     include: inclusions,
+    take: take
   });
   return activityLogs;
 }
