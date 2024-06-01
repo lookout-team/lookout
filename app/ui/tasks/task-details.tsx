@@ -7,13 +7,10 @@ import {
   RadioGroup,
   Select,
   SelectItem,
-  Textarea,
-  Tooltip,
 } from "@nextui-org/react";
 import { Sprint, User } from "@prisma/client";
-import { useRef, useState } from "react";
-import { handleTextAreaSubmit } from "../utils";
-import { Pencil } from "lucide-react";
+import { useState } from "react";
+import Editable from "../core/editable";
 
 interface ComponentProps {
   task: TaskWithIncludes;
@@ -38,15 +35,6 @@ export default function TaskDetails(props: ComponentProps) {
   const [points, setPoints] = useState(task?.points);
   const [assignee, setAssignee] = useState(`${task?.user?.id}`);
 
-  const [isEditingTitle, setEditTitleFlag] = useState(false);
-  const [isEditingDescription, setEditDescFlag] = useState(false);
-  const [isEditingRequirements, setEditReqFlag] = useState(false);
-  const [isEditingCriteria, setEditCriteriaFlag] = useState(false);
-
-  const descriptionRef = useRef<HTMLFormElement>(null);
-  const requirementsRef = useRef<HTMLFormElement>(null);
-  const criteriaRef = useRef<HTMLFormElement>(null);
-
   const categories = [
     "Story",
     "Feature",
@@ -64,142 +52,64 @@ export default function TaskDetails(props: ComponentProps) {
     { name: "Critical", id: "5" },
   ];
 
-  const hiddenIdInput = task && (
-    <input type="hidden" name="id" value={task.id} />
-  );
-
   return (
     <div className="mt-6 grid grid-cols-10 gap-6">
       <div className="col-span-7">
-        {isEditingTitle ? (
-          <form action={updateAction} onSubmit={() => setEditTitleFlag(false)}>
-            {hiddenIdInput}
-            <Input
-              size="lg"
-              className="mb-4"
-              variant="bordered"
-              label="Title"
-              name="title"
-              value={title ?? undefined}
-              onValueChange={setTitle}
-            />
-          </form>
-        ) : (
-          <Tooltip
-            className="p-2"
-            content={<Pencil size={20} />}
-            placement="left-start"
-            delay={250}
-          >
-            <div className="mb-4 rounded-md hover:cursor-pointer">
-              <p className="text-3xl" onClick={() => setEditTitleFlag(true)}>
-                {title}
-              </p>
-            </div>
-          </Tooltip>
-        )}
-        {isEditingDescription ? (
-          <form
-            ref={descriptionRef}
-            action={updateAction}
-            onSubmit={() => setEditDescFlag(false)}
-          >
-            {hiddenIdInput}
-            <Textarea
-              size="lg"
-              className="mb-4"
-              variant="bordered"
-              label="Description"
-              name="description"
-              value={description ?? undefined}
-              onChange={(e) => setDescription(e.target.value)}
-              onKeyDown={(e) => handleTextAreaSubmit(e, descriptionRef)}
-            />
-          </form>
-        ) : (
-          <Tooltip
-            className="p-2"
-            content={<Pencil size={20} />}
-            placement="left-start"
-            delay={250}
-          >
-            <div
-              className="mb-4 rounded-md hover:cursor-pointer"
-              onClick={() => setEditDescFlag(true)}
-            >
+        <Editable
+          itemId={task.id}
+          initialValue={task.title}
+          setValue={setTitle}
+          itemName="title"
+          itemLabel="Title"
+          displayContent={<p className="text-3xl">{title}</p>}
+          inputType="textarea"
+          submitAction={updateAction}
+        />
+        <Editable
+          itemId={task.id}
+          initialValue={task.description}
+          setValue={setDescription}
+          itemName="description"
+          itemLabel="Description"
+          displayContent={
+            <>
               <p className="text-xl font-medium mb-1">Description</p>
               <p className="text-md whitespace-break-spaces">{description}</p>
-            </div>
-          </Tooltip>
-        )}
-        {isEditingRequirements ? (
-          <form
-            ref={requirementsRef}
-            action={updateAction}
-            onSubmit={() => setEditReqFlag(false)}
-          >
-            {hiddenIdInput}
-            <Textarea
-              size="lg"
-              className="mb-4"
-              variant="bordered"
-              label="Requirements"
-              name="requirements"
-              value={requirements ?? undefined}
-              onChange={(e) => setRequirements(e.target.value)}
-              onKeyDown={(e) => handleTextAreaSubmit(e, requirementsRef)}
-            />
-          </form>
-        ) : (
-          <Tooltip
-            className="p-2"
-            content={<Pencil size={20} />}
-            placement="left-start"
-            delay={250}
-          >
-            <div
-              className="mb-4 rounded-md hover:cursor-pointer"
-              onClick={() => setEditReqFlag(true)}
-            >
+            </>
+          }
+          inputType="textarea"
+          submitAction={updateAction}
+        />
+        <Editable
+          itemId={task.id}
+          initialValue={task.requirements}
+          setValue={setRequirements}
+          itemName="requirements"
+          itemLabel="Requirements"
+          displayContent={
+            <>
               <p className="text-xl font-medium mb-1">Requirements</p>
               <p className="text-md whitespace-break-spaces">{requirements}</p>
-            </div>
-          </Tooltip>
-        )}
-        {isEditingCriteria ? (
-          <form
-            ref={criteriaRef}
-            action={updateAction}
-            onSubmit={() => setEditCriteriaFlag(false)}
-          >
-            {hiddenIdInput}
-            <Textarea
-              size="lg"
-              className="mb-4"
-              variant="bordered"
-              label="Acceptance Criteria"
-              name="acceptance_criteria"
-              value={criteria ?? undefined}
-              onChange={(e) => setCriteria(e.target.value)}
-              onKeyDown={(e) => handleTextAreaSubmit(e, criteriaRef)}
-            />
-          </form>
-        ) : (
-          <Tooltip
-            className="p-2"
-            content={<Pencil size={20} />}
-            placement="left-start"
-            delay={250}
-          >
-            <div
-              className="mb-4 rounded-md hover:cursor-pointer"
-              onClick={() => setEditCriteriaFlag(true)}
-            >
+            </>
+          }
+          inputType="textarea"
+          submitAction={updateAction}
+        />
+        <Editable
+          itemId={task.id}
+          initialValue={task.acceptance_criteria}
+          setValue={setCriteria}
+          itemName="acceptance_criteria"
+          itemLabel="Acceptance Criteria"
+          displayContent={
+            <>
               <p className="text-xl font-medium mb-1">Acceptance Criteria</p>
               <p className="text-md whitespace-break-spaces">{criteria}</p>
-            </div>
-          </Tooltip>
-        )}
+            </>
+          }
+          inputType="textarea"
+          submitAction={updateAction}
+        />
       </div>
       <div className="col-span-3">
         <Select
