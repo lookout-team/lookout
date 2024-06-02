@@ -30,7 +30,7 @@ export default function TaskDetails(props: ComponentProps) {
     { id: "Enhancement", name: "Enhancement" },
   ];
 
-  const [sprintId, setSprintId] = useState(`${sprint.id}`);
+  const [sprintId, setSprintId] = useState(`${sprint!.id}`);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task?.description);
   const [category, setCategory] = useState(task?.category);
@@ -113,7 +113,7 @@ export default function TaskDetails(props: ComponentProps) {
             <>
               <p className="mb-1 text-lg font-medium">Sprint</p>
               <p className="text-md">
-                {task.sprint.title} (Ends {task.sprint.end_date?.toDateString()}
+                {task.sprint!.title} (Ends {task.sprint!.end_date?.toDateString()}
                 )
               </p>
             </>
@@ -183,7 +183,7 @@ export default function TaskDetails(props: ComponentProps) {
           displayContent={
             <>
               <p className="mb-1 text-lg font-medium">Priority</p>
-              <p className="text-md">{task.priority.name}</p>
+              <p className="text-md">{task.priority!.name}</p>
             </>
           }
           inputType="select"
@@ -200,7 +200,7 @@ export default function TaskDetails(props: ComponentProps) {
           displayContent={
             <>
               <p className="mb-1 text-lg font-medium">Status</p>
-              <p className="text-md">{task.status.name}</p>
+              <p className="text-md">{task.status!.name}</p>
             </>
           }
           inputType="select"

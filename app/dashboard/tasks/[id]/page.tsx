@@ -81,12 +81,12 @@ export default async function Page({ params }: { params: { id: number } }) {
   const breadcrumbs = [
     { title: "Projects", link: "/dashboard/projects" },
     {
-      title: sprint.project.title ?? "",
-      link: `/dashboard/projects/${sprint.project.id}`,
+      title: sprint.project!.title ?? "",
+      link: `/dashboard/projects/${sprint.project!.id}`,
     },
     {
       title: sprint.title ?? "",
-      link: `/dashboard/projects/${sprint.project.id}`,
+      link: `/dashboard/projects/${sprint.project!.id}`,
     },
     { title: task.title ?? "", link: undefined },
   ];
