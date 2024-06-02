@@ -16,7 +16,7 @@ export default function TaskCard({ task }: { task: TaskWithIncludes }) {
 
   return (
     <Card
-      className="mt-2 mb-4 border-1"
+      className="mt-2 mb-4 border-1 w-full"
       shadow="none"
       isHoverable
       isPressable

@@ -20,7 +20,7 @@ export default async function Page() {
   return (
     <>
       <div className="mt-4 mb-6 text-2xl font-medium">Home</div>
-      <div className="grid grid-cols-12 gap-8 h-screen">
+      <div className="grid grid-cols-12 gap-6 h-screen">
         <div className="col-span-3">
           <div className="text-xl mb-4">My Items</div>
           {userTasks.length > 0 ? (

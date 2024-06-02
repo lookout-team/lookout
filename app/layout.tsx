@@ -28,7 +28,7 @@ export default async function RootLayout({
     <html lang="en" className="light">
       <body className={`${inter.className} antialiased`}>
         <AppNavbar user={user} />
-        <div className="mt-8 mb-12 sm:ps-12 sm:pe-12 md:ps-24 md:pe-24 lg:ps-36 lg:pe-36 xl:ps-48 xl:pe-48 2xl:ps-64 2xl:pe-64 3xl:ps-80 3xl:pe-80">
+        <div className="mt-8 mb-12 sm:ps-12 sm:pe-12 md:ps-28 md:pe-28 lg:ps-32 lg:pe-32 xl:ps-36 xl:pe-36 2xl:ps-48 2xl:pe-48 3xl:ps-64 3xl:pe-64">
           {children}
         </div>
       </body>
