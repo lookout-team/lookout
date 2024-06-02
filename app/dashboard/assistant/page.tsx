@@ -6,8 +6,14 @@ import {
   getConversationHistory,
   saveExchange,
 } from "@/lib/db/chat";
+import { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Assistant - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page() {
   const session = await auth();

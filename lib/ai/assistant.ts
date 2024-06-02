@@ -38,7 +38,7 @@ class LookoutAssistant {
     const instructions = fs.readFileSync(instructionsPath, "utf-8");
 
     const assistant = await this.openai.beta.assistants.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       name: "Lookout Assistant",
       temperature: 0.4,
       instructions: instructions,
@@ -61,6 +61,7 @@ class LookoutAssistant {
 
     const thread = await this.openai.beta.threads.create();
     this.threads[userId] = thread.id;
+    this.runs[userId] = [];
   }
 
   /**
@@ -83,12 +84,10 @@ class LookoutAssistant {
 
     try {
       parsedResponse = JSON.parse(response);
-    } catch {
-      const userRuns = this.runs[userId];
-      const lastRun = userRuns[userRuns.length - 1];
+    } catch (error) {
       return {
-        message: "An error occurred, please try again.",
-        data: lastRun.last_error,
+        message: `An error occurred: ${error}. Please try again.`,
+        data: error,
         componentType: null,
         status: "canceled",
         type: "read",
@@ -114,11 +113,8 @@ class LookoutAssistant {
 
     // Status
     let status: "confirmed" | "canceled" | "pending" = "confirmed";
-
-    if (this.responseType === "write") {
-      status = this.actionConfirmed ? "confirmed" : "pending";
-      status = userInput === "Cancel action" ? "canceled" : status;
-    }
+    status = this.actionConfirmed ? "confirmed" : "pending";
+    status = userInput === "Cancel action" ? "canceled" : status;
 
     // Compile response props
     const assistantResponse: AssistantResponse = {
@@ -145,7 +141,7 @@ class LookoutAssistant {
 
     try {
       const lastRun = this.getLastRun(userId);
-      await threads.runs.cavncel(threadId, lastRun.id);
+      await threads.runs.cancel(threadId, lastRun.id);
     } catch {}
 
     await threads.messages.create(threadId, {
@@ -162,6 +158,8 @@ class LookoutAssistant {
       assistant_id: this.assistantId,
       additional_instructions: additional_instructions,
     });
+
+    this.runs[userId].push(run);
 
     if (run.status === "requires_action") {
       await this.handleRequiresAction(userId, run);
@@ -187,7 +185,7 @@ class LookoutAssistant {
           const args = this.parseArguments(toolName, tool.function.arguments);
 
           // Determine if function is a read or write operation
-          const isWriteOperation = toolName in this.writeFunctions;
+          const isWriteOperation = this.writeFunctions.hasOwnProperty(toolName);
 
           this.responseType = isWriteOperation ? "write" : "read";
 
@@ -206,7 +204,7 @@ class LookoutAssistant {
           }
 
           // Call tool and return tool output
-          const output = await func(args);
+          const output = await func(...Object.values(args));
 
           return {
             tool_call_id: tool.id,
@@ -236,20 +234,26 @@ class LookoutAssistant {
   parseArguments(toolName: string, toolArgs: string) {
     let ids = [];
     let optionals = [];
-    const args = JSON.parse(toolArgs);
+    let args = JSON.parse(toolArgs);
 
     switch (toolName) {
       case "createProject":
         args.last_updated = null;
         args.current_sprint_id = null;
+        args = { arg1: args };
         break;
 
       case "createSprint":
         args.start_date = new Date(args.start_date);
         args.planned_capacity = +args.planned_capacity;
         args["end_date"] = args.hasOwnProperty("end_date")
-          ? args["end_date"]
+          ? new Date(args["end_date"])
           : null;
+
+        const project_title = args.project_title;
+        delete args.project_title;
+
+        args = { arg1: args, arg2: project_title };
         break;
 
       case "createTask":
@@ -270,8 +274,19 @@ class LookoutAssistant {
         }
 
         for (const id of ids) {
-          args[id] = args[id] ? +args[id] : null;
+          args[id] = args.hasOwnProperty(id) ? +args[id] : 1;
         }
+
+        const projectTitle = args.project_title;
+        const sprintTitle = args.sprint_title;
+        delete args.project_title;
+        delete args.sprint_title;
+
+        args = { arg1: args, arg2: sprintTitle, arg3: projectTitle };
+        break;
+
+      default:
+        args = { arg1: args };
         break;
     }
 

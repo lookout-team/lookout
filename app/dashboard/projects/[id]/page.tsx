@@ -20,9 +20,15 @@ import TaskForm from "@/app/ui/tasks/task-form";
 import { getStatuses } from "@/lib/db/status";
 import { getPriorities } from "@/lib/db/priority";
 import { getUsers } from "@/lib/db/user";
+import { Metadata } from "next";
 
 type QueryParams = {
   view: "board" | "table";
+};
+
+export const metadata: Metadata = {
+  title: "Sprints - Lookout",
+  description: "AI-Powered Project Management Platform",
 };
 
 export default async function Page({
@@ -34,7 +40,7 @@ export default async function Page({
 }) {
   const pathname = `/dashboard/projects/${params.id}`;
 
-  const project = await getProject(+params.id);
+  const project = await getProject({ id: +params.id });
   if (!project) return notFound();
 
   async function createSprintAction(form: FormData) {

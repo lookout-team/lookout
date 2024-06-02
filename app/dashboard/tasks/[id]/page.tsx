@@ -13,8 +13,14 @@ import { getSprint, getSprints } from "@/lib/db/sprint";
 import { getStatuses } from "@/lib/db/status";
 import { getTask, updateTask } from "@/lib/db/task";
 import { getUsers } from "@/lib/db/user";
+import { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Tasks - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page({ params }: { params: { id: number } }) {
   const session = await auth();
@@ -24,7 +30,7 @@ export default async function Page({ params }: { params: { id: number } }) {
   const task = await getTask({ id: +params.id });
   if (!task) return notFound();
 
-  const sprint = await getSprint({ id: task?.sprint_id });
+  const sprint = await getSprint({ id: task?.sprint_id! });
   if (!sprint) return notFound();
 
   const sprints = await getSprints({ project_id: sprint.project_id });

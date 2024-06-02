@@ -6,7 +6,13 @@ import { getActivityLogs } from "@/lib/db/activity";
 import { getComments } from "@/lib/db/comment";
 import { getTasks } from "@/lib/db/task";
 import { Newspaper, SquareCheck } from "lucide-react";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Home - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page() {
   const session = await auth();

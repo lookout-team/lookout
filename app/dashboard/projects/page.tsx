@@ -8,7 +8,13 @@ import {
   updateProject,
 } from "@/lib/db/project";
 import { SquareGanttChart, SquarePen } from "lucide-react";
+import { Metadata } from "next";
 import { revalidatePath } from "next/cache";
+
+export const metadata: Metadata = {
+  title: "Projects - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page() {
   const projects = await getProjects();

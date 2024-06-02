@@ -21,16 +21,16 @@ export async function createProject(
 }
 
 /**
- * Retrieves project by ID.
+ * Retrieves project with given details.
  *
- * @param {number} id - Project ID
- * @returns {Promise<Project>} The created project
+ * @param {Partial<Project>} params - Project details
+ * @returns {Promise<Project | null>} - Project, if found
  */
-export async function getProject(id: number): Promise<Project | null> {
+export async function getProject(
+  params?: Partial<Project>
+): Promise<Project | null> {
   const project = await prisma.project.findFirst({
-    where: {
-      id: id,
-    },
+    where: params,
   });
   return project;
 }
@@ -75,7 +75,7 @@ export async function updateProject(
 }
 
 /**
- * Deletes project.
+ * Deletes project by ID.
  *
  * @param {number} id - Project ID
  * @returns {Promise<Project>} - The deleted project
