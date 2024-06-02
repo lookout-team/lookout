@@ -49,7 +49,7 @@ export default async function Page() {
           ) : (
             <div className="flex items-center place-content-center opacity-75 h-20">
               <Newspaper size={28} className="me-2" />
-              <h1 className="text-md">It's quiet today...</h1>
+              <h1 className="text-md">Nothing yet...</h1>
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ import AppNavbar from "./ui/core/navbar";
 import { auth } from "@/lib/auth/auth";
 import { getUser } from "@/lib/db/user";
 
-export const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
 export default async function RootLayout({
   children,
