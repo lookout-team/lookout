@@ -39,7 +39,7 @@ export async function getTasks(
   order: "asc" | "desc" = "asc"
 ): Promise<TaskWithIncludes[]> {
   const task = await prisma.task.findMany({
-    where: { ...params, },
+    where: { ...params },
     orderBy: { id: order },
     include: {
       user: true,
@@ -76,8 +76,21 @@ export async function createTask(params: Omit<Task, "id">): Promise<Task> {
  * @returns {Promise<Task>} - The updated task
  */
 export async function updateTask(params: Partial<Task>): Promise<Task> {
-  if (typeof params.id === "string") {
-    params.id = +params.id;
+  const ids = [
+    "id",
+    "sprint_id",
+    "user_id",
+    "status_id",
+    "priority_id",
+    "points",
+  ];
+
+  for (const id of ids) {
+    if (typeof id === "string" && id in params) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      params[id] = +params[id];
+    }
   }
 
   const task = await prisma.task.update({
@@ -86,6 +99,7 @@ export async function updateTask(params: Partial<Task>): Promise<Task> {
       ...params,
     },
   });
+  
   await createActivityLog("Update", "task", task.id, params);
   return task;
 }

@@ -1,6 +1,13 @@
 "use client";
 
-import { Textarea, Tooltip } from "@nextui-org/react";
+import {
+  Radio,
+  RadioGroup,
+  Select,
+  SelectItem,
+  Textarea,
+  Tooltip,
+} from "@nextui-org/react";
 import { Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { handleTextAreaSubmit } from "../utils";
@@ -11,6 +18,8 @@ interface Props {
   itemId: number;
   itemName: string;
   itemLabel: string;
+  displayProp?: string;
+  itemList?: any[];
   displayContent: any;
   inputType: "textarea" | "select" | "radio";
   submitAction: (form: FormData) => Promise<void>;
@@ -55,6 +64,46 @@ export default function Editable(props: Props) {
           onKeyDown={(e) => handleTextAreaSubmit(e, formRef)}
         />
       );
+      break;
+    case "select":
+      inputElement = (
+        <Select
+          name={props.itemName}
+          label={props.itemLabel}
+          variant="bordered"
+          className="w-full mb-4"
+          value={value}
+          selectedKeys={[value]}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => handleTextAreaSubmit(e, formRef)}
+        >
+          {props.itemList!.map((item) => (
+            <SelectItem key={item.id} value={item.id}>
+              {item[props.displayProp!]}
+            </SelectItem>
+          ))}
+        </Select>
+      );
+      break;
+    case "radio":
+      inputElement = (
+        <RadioGroup
+          className="ms-2 mb-4"
+          name={props.itemName}
+          label={props.itemLabel}
+          orientation="horizontal"
+          value={value}
+          onValueChange={setValue}
+          onKeyDown={(e) => handleTextAreaSubmit(e, formRef)}
+        >
+          {props.itemList!.map((item) => (
+            <Radio key={item.id} value={item.id.toString()}>
+              {item.name}
+            </Radio>
+          ))}
+        </RadioGroup>
+      );
+      break;
   }
 
   return isEditing ? (

@@ -8,7 +8,9 @@ import {
   getTaskComments,
   updateComment,
 } from "@/lib/db/comment";
+import { getPriorities } from "@/lib/db/priority";
 import { getSprint, getSprints } from "@/lib/db/sprint";
+import { getStatuses } from "@/lib/db/status";
 import { getTask, updateTask } from "@/lib/db/task";
 import { getUsers } from "@/lib/db/user";
 import { revalidatePath } from "next/cache";
@@ -28,6 +30,8 @@ export default async function Page({ params }: { params: { id: number } }) {
   const sprints = await getSprints({ project_id: sprint.project_id });
   const users = await getUsers();
   const comments = await getTaskComments(task.id);
+  const statuses = await getStatuses();
+  const priorities = await getPriorities();
 
   async function updateTaskAction(form: FormData) {
     "use server";
@@ -42,7 +46,6 @@ export default async function Page({ params }: { params: { id: number } }) {
     if (!comment || !task?.id) return;
     const newComment = { text: comment, task_id: task?.id, user_id: userId };
     await createComment(newComment);
-    console.log(newComment);
     revalidatePath(`/dashboard/tasks/${task.id}`);
   }
 
@@ -89,6 +92,8 @@ export default async function Page({ params }: { params: { id: number } }) {
         task={task}
         sprints={sprints}
         users={users}
+        statuses={statuses}
+        priorities={priorities}
         updateAction={updateTaskAction}
       />
       <div className="grid grid-cols-10">

@@ -57,6 +57,7 @@ export default async function Page() {
           modalTitle="Create New Project"
           modalBody={<ProjectForm />}
           confirmText="Create Project"
+          confirmColor="primary"
           submitAction={createAction}
         />
       </div>

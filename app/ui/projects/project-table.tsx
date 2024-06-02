@@ -75,6 +75,7 @@ export default function ProjectTable(props: ComponentProps) {
             modalTitle="Delete Project"
             modalBody={deleteModalBody}
             confirmText="Delete Project"
+            confirmColor="danger"
             submitAction={props.deleteAction}
           />
         </TableCell>

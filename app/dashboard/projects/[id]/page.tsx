@@ -112,8 +112,8 @@ export default async function Page({
       requirements: requirements,
       acceptance_criteria: criteria,
       points: points,
-      assigned_to: userId
-    }
+      assigned_to: userId,
+    };
 
     await createTask(task);
     revalidatePath(pathname);
@@ -147,7 +147,11 @@ export default async function Page({
           updateAction={updateSprintAction}
           deleteAction={deleteSprintAction}
         />
-        <SprintBoard tasks={tasks} statuses={statuses} priorities={priorities} />
+        <SprintBoard
+          tasks={tasks}
+          statuses={statuses}
+          priorities={priorities}
+        />
       </div>
     );
 
@@ -165,29 +169,33 @@ export default async function Page({
       <div className="flex justify-between items-center mt-4 mb-2">
         <div className="text-2xl font-medium">{project.title}</div>
         <div className="flex items-row gap-2">
+          {sprints.length > 0 && (
+            <ButtonModal
+              buttonChildren={
+                <>
+                  <SquarePen size={16} /> Create Task
+                </>
+              }
+              buttonColor="primary"
+              modalTitle="Create New Task"
+              modalSize="2xl"
+              modalBody={<TaskForm sprints={sprints} users={users} />}
+              modalScroll="outside"
+              confirmText="Create Task"
+              confirmColor="primary"
+              submitAction={createTaskAction}
+            />
+          )}
           <ButtonModal
             buttonChildren={
               <>
-                <SquarePen size={16} /> Create Task
+                <CalendarPlus size={16} /> Create Sprint
               </>
             }
             buttonColor="primary"
-            modalTitle="Create New Task"
-            modalSize="2xl"
-            modalBody={<TaskForm sprints={sprints} users={users} />}
-            modalScroll="outside"
-            confirmText="Create Task"
-            submitAction={createTaskAction}
-          />
-          <ButtonModal
-            buttonChildren={
-              <>
-                <CalendarPlus size={16} /> Add Sprint
-              </>
-            }
-            buttonColor="primary"
-            modalTitle="Add New Sprint"
+            modalTitle="Create New Sprint"
             modalBody={<SprintForm />}
+            confirmColor="primary"
             submitAction={createSprintAction}
           />
         </div>
