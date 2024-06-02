@@ -8,7 +8,13 @@ import {
   updateProject,
 } from "@/lib/db/project";
 import { SquareGanttChart, SquarePen } from "lucide-react";
+import { Metadata } from "next";
 import { revalidatePath } from "next/cache";
+
+export const metadata: Metadata = {
+  title: "Projects - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page() {
   const projects = await getProjects();
@@ -57,6 +63,7 @@ export default async function Page() {
           modalTitle="Create New Project"
           modalBody={<ProjectForm />}
           confirmText="Create Project"
+          confirmColor="primary"
           submitAction={createAction}
         />
       </div>

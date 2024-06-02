@@ -23,18 +23,20 @@ export async function createComment(
 }
 
 /**
- * Retrieves comments.
+ * Retrieves last 10 comments.
  *
  * @param {number} params - Query parameters
  * @returns - Array of comments
  */
 export async function getComments(
-  params?: Partial<Comment>
+  params?: Partial<Comment>,
+  take: number = 10
 ): Promise<CommentWithIncludes[]> {
   const comments = await prisma.comment.findMany({
     where: params,
     orderBy: { id: "desc" },
     include: { user: true, task: true },
+    take: take
   });
   return comments;
 }

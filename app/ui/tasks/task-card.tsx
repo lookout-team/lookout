@@ -16,7 +16,7 @@ export default function TaskCard({ task }: { task: TaskWithIncludes }) {
 
   return (
     <Card
-      className="mt-2 mb-4 border-1"
+      className="mt-2 mb-4 border-1 w-full"
       shadow="none"
       isHoverable
       isPressable
@@ -24,10 +24,12 @@ export default function TaskCard({ task }: { task: TaskWithIncludes }) {
       onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
     >
       <CardHeader>
-        <span>
-          {task.user?.first_name} {task.user?.last_name}
-        </span>
-        <span className="ms-2 text-gray-500">@{task.user?.username}</span>
+        <div>
+          <h1>
+            {task.user?.first_name} {task.user?.last_name}
+          </h1>
+          <h2 className="ms-1 text-gray-500">@{task.user?.username}</h2>
+        </div>
       </CardHeader>
       <Divider />
       <CardBody>{task.title}</CardBody>

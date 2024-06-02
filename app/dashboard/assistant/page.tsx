@@ -1,9 +1,19 @@
 import ChatThread from "@/app/ui/assistant/chat-thread";
 import assistant from "@/lib/ai/assistant";
 import { auth } from "@/lib/auth/auth";
-import { getConversationHistory, saveExchange } from "@/lib/db/chat";
+import {
+  deleteConversationHistory,
+  getConversationHistory,
+  saveExchange,
+} from "@/lib/db/chat";
+import { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Assistant - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page() {
   const session = await auth();
@@ -36,9 +46,22 @@ export default async function Page() {
     revalidatePath("/dashboard/assistant");
   }
 
+  async function clearConversation() {
+    "use server";
+    await deleteConversationHistory(userId);
+    revalidatePath("/dashboard/assistant");
+  }
+
   return (
-    <div className="sm:ms-10 sm:me-10 lg:ms-20 lg:me-20 xl:ms-40 xl:me-40">
-      <ChatThread conversation={conversation} sendMessageAction={sendMessage} />
-    </div>
+    <>
+      <div className="sm:ms-10 sm:me-10 lg:ms-20 lg:me-20 xl:ms-40 xl:me-40">
+        <div className="mt-4 mb-4 text-2xl font-medium">Assistant</div>
+        <ChatThread
+          conversation={conversation}
+          sendMessageAction={sendMessage}
+          deleteMessagesAction={clearConversation}
+        />
+      </div>
+    </>
   );
 }

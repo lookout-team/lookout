@@ -10,17 +10,19 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 
+type ButtonColor = 
+| "primary"
+| "default"
+| "secondary"
+| "success"
+| "warning"
+| "danger"
+| undefined;
+
 interface Props {
   buttonChildren: any;
   buttonSize?: "lg" | "sm" | "md" | undefined;
-  buttonColor?:
-    | "primary"
-    | "default"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger"
-    | undefined;
+  buttonColor?: ButtonColor;
   buttonVariant?:
     | "flat"
     | "solid"
@@ -54,6 +56,7 @@ interface Props {
   modalBody: React.ReactNode;
   modalScroll?: "inside" | "outside";
   confirmText?: string;
+  confirmColor?: ButtonColor;
   cancelText?: string;
   submitAction: (form: FormData) => Promise<void>;
 }
@@ -89,7 +92,7 @@ export default function ButtonModal(props: Props) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   {props.cancelText ?? "Cancel"}
                 </Button>
-                <Button type="submit" color="primary" onPress={onClose}>
+                <Button type="submit" color={props.confirmColor} onPress={onClose}>
                   {props.confirmText ?? "Confirm"}
                 </Button>
               </ModalFooter>

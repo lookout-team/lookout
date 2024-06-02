@@ -6,7 +6,13 @@ import { getActivityLogs } from "@/lib/db/activity";
 import { getComments } from "@/lib/db/comment";
 import { getTasks } from "@/lib/db/task";
 import { Newspaper, SquareCheck } from "lucide-react";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Home - Lookout",
+  description: "AI-Powered Project Management Platform",
+};
 
 export default async function Page() {
   const session = await auth();
@@ -20,7 +26,7 @@ export default async function Page() {
   return (
     <>
       <div className="mt-4 mb-6 text-2xl font-medium">Home</div>
-      <div className="grid grid-cols-12 gap-8 h-screen">
+      <div className="grid grid-cols-12 gap-6 h-screen">
         <div className="col-span-3">
           <div className="text-xl mb-4">My Items</div>
           {userTasks.length > 0 ? (

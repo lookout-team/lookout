@@ -8,15 +8,15 @@ import {
 import {
   createSprint,
   deleteSprint,
-  getSprint,
-  getSprints,
+  getSprintWithoutInclusions,
+  getSprintsWithoutInclusions,
   updateSprint,
 } from "../db/sprint";
 import {
   createTask,
   deleteTask,
-  getTask,
-  getTasks,
+  getTaskWithoutInclusions,
+  getTasksWithoutInclusions,
   updateTask,
 } from "../db/task";
 import { ProjectParams, SprintParams, TaskParams } from "./params";
@@ -25,16 +25,17 @@ const projectRequired = ["title", "description"];
 const sprintRequired = [
   "title",
   "start_date",
+  "end_date",
   "planned_capacity",
-  "project_id",
+  "project_title",
 ];
 const taskRequired = [
   "title",
   "description",
   "category",
   "points",
-  "sprint_id",
-  "status_id",
+  "project_title",
+  "sprint_title",
 ];
 
 export function initializeTools() {
@@ -76,7 +77,7 @@ function defineModelTools(
         description: `Retrieve one ${model}`,
         parameters: {
           ...params,
-          required: ["id"],
+          required: ["title"],
         },
       },
     },
@@ -120,10 +121,10 @@ export function readFunctions() {
   const functionMap: Record<string, (...args: any) => unknown> = {
     getProject: getProject,
     getProjects: getProjects,
-    getSprint: getSprint,
-    getSprints: getSprints,
-    getTask: getTask,
-    getTasks: getTasks,
+    getSprint: getSprintWithoutInclusions,
+    getSprints: getSprintsWithoutInclusions,
+    getTask: getTaskWithoutInclusions,
+    getTasks: getTasksWithoutInclusions,
   };
   return functionMap;
 }

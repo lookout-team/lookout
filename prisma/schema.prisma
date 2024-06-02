@@ -61,8 +61,8 @@ model Sprint {
   start_date       DateTime
   end_date         DateTime?
   planned_capacity Int
-  project          Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  project_id       Int
+  project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project_id       Int?
   tasks            Task[]
   activities       Activity[]
 }
@@ -77,12 +77,12 @@ model Task {
   points              Int
   user                User?      @relation(fields: [assigned_to], references: [id])
   assigned_to         Int?
-  sprint              Sprint     @relation(fields: [sprint_id], references: [id], onDelete: Cascade)
-  sprint_id           Int
-  status              Status     @relation(fields: [status_id], references: [id])
-  status_id           Int
-  priority            Priority   @relation(fields: [priority_id], references: [id])
-  priority_id         Int
+  sprint              Sprint?    @relation(fields: [sprint_id], references: [id], onDelete: Cascade)
+  sprint_id           Int?
+  status              Status?    @relation(fields: [status_id], references: [id])
+  status_id           Int?
+  priority            Priority?  @relation(fields: [priority_id], references: [id])
+  priority_id         Int?
   comments            Comment[]
   activities          Activity[]
 }
