@@ -41,7 +41,20 @@ export default async function Page() {
     const message = form.get("message")?.toString();
     if (!message || !userId) return;
 
-    const response = await assistant.processUserInput(userId, message);
+    let response = null;
+    
+    try {
+      response = await assistant.processUserInput(userId, message);
+    } catch (e) {
+      response = {
+        message: `An error occurred. Please try again.`,
+        data: [{ error: e }],
+        componentType: null,
+        status: "canceled" as "canceled" | "pending" | "confirmed",
+        type: "read" as "read" | "write",
+      };
+    }
+
     await saveExchange(userId, message, response);
     revalidatePath("/dashboard/assistant");
   }

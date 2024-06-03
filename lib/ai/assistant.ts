@@ -77,23 +77,11 @@ class LookoutAssistant {
   ): Promise<AssistantResponse> {
     // Check if message is a confirmation action
     this.actionConfirmed = userInput === "Confirm action";
+    this.responseType = "write" as "read" | "write";
 
     // Send user input to assistant and destructure raw response
     const response = await this.queryAssistant(userId, userInput);
-    let parsedResponse = null;
-
-    try {
-      parsedResponse = JSON.parse(response);
-    } catch (error) {
-      return {
-        message: `An error occurred: ${error}. Please try again.`,
-        data: error,
-        componentType: null,
-        status: "canceled",
-        type: "read",
-      };
-    }
-
+    const parsedResponse = JSON.parse(response);
     let { message, data } = parsedResponse;
 
     // Ensure data is always an array if not null
@@ -112,9 +100,12 @@ class LookoutAssistant {
     }
 
     // Status
-    let status: "confirmed" | "canceled" | "pending" = "confirmed";
-    status = this.actionConfirmed ? "confirmed" : "pending";
-    status = userInput === "Cancel action" ? "canceled" : status;
+    let status: "confirmed" | "canceled" | "pending" = "pending";
+
+    if (this.responseType === "write") {
+      status = this.actionConfirmed ? "confirmed" : "pending";
+      status = userInput === "Cancel action" ? "canceled" : status;
+    }
 
     // Compile response props
     const assistantResponse: AssistantResponse = {
@@ -152,7 +143,7 @@ class LookoutAssistant {
     const additional_instructions = `Because write operations are expensive
     and consequential, you must always ask the user to review a summary of any
     planned write changes. You can only call create, update, or delete functions
-    once you requestedh and recieved explicit confirmation from the user!`;
+    once you requested and recieved explicit confirmation from the user!`;
 
     const run = await threads.runs.createAndPoll(threadId, {
       assistant_id: this.assistantId,
@@ -186,7 +177,6 @@ class LookoutAssistant {
 
           // Determine if function is a read or write operation
           const isWriteOperation = this.writeFunctions.hasOwnProperty(toolName);
-
           this.responseType = isWriteOperation ? "write" : "read";
 
           const func = isWriteOperation

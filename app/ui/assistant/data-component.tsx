@@ -92,7 +92,7 @@ export default function DataComponent(props: Props) {
     <div>
       {dataComponent}
       <div className="mt-4">
-        {status === "pending" && props.isActionable && (
+        {type === "write" && status === "pending" && props.isActionable && (
           <div className="flex items-row gap-2">
             <Button
               isDisabled={isDisabled}
